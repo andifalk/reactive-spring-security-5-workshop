@@ -1,0 +1,251 @@
+= Spring Security 5 Hands-On Workshop
+Andreas Falk <andreas.falk@novatec-gmbh.de>
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+:numbered: ''
+:docinfo:
+
+== Introduction
+
+== Spring Boot Auto Configuration
+
+== Customize Authentication
+
+== Add Authorization
+
+== Security Testing
+
+== Add OAuth2 Client
+
+=== What we will build
+
+.We will extend the existing two microservices to use single sign authentication based on OAuth2.
+
+* OAuth2 Authorization Server: This is the new microservice for single sign on which holds all users with their credentials
+* OAuth2 Resource Server (Product Backend): The microservice providing product data maps to a resource server
+* OAuth2 Client (UI Microservice): The thymeleaf UI microservice consuming the products maps to an OAuth2 client
+
+image::images/oauth2services.png[scaledwidth="75%",alt="OAuth2 roles"]
+
+These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).
+
+.Microservice URL Adresses
+|===
+|Microservice |URL
+|Authorization Server
+|http://localhost:9999/users
+|Client (UI)
+|http://localhost:8081
+|Resource Server (Library-Server)
+|http://localhost:8080
+|===
+
+TIP: You can find more information on building OAuth2 secured microservices with spring in
+http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot Reference Documentation]
+and in https://projects.spring.io/spring-security-oauth/docs/oauth2.html[Spring Security OAuth2 Developers Guide]
+
+In step 1 we will build a basic OAuth2 secured microservices infrastructure using simple user credentials provided
+via properties in _application.properties_.
+
+[[authorization-server]]
+=== Authorization Server
+
+TIP: You may look into the spring boot reference documentation http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-authorization-server[Spring Boot Reference Documentation]
+on how to implement an authorization server.
+
+IMPORTANT: To prevent conflicts with different JSESSION cookies the authorization server must run
+on a separate context path (not '/'). In our example please use '/users' as context path. In spring boot
+this can be achieved by the _server.context_ property
+
+To ensure OAuth2 authorization code grant works correctly with the other components the end points
+of the authorization server must be as follows:
+
+.Authorization Server Endpoints
+|===
+|Endpoint |Description |Caller
+|/oauth/authorize
+|Authorization endpoint (for login and client authorization)
+|Client
+|/oauth/token
+|Token endpoint (exchanges given authorization code for access token)
+|Client
+|/oauth/check_token
+|Check token endpoint (returns internal contents for access token)
+|Resource Server
+|===
+
+[[authorization-server-maven-dependencies]]
+==== Maven dependencies
+
+include::{snippets}/authserver-mavenpom.adoc[]
+
+<1> Dependency for OAuth2 security support
+
+==== Java Implementation
+
+include::{snippets}/authserver-java.adoc[]
+
+<1> Annotation to enable auto configuration of an Authorization Server
+
+[[authorization-server-configuration]]
+==== Configuration
+
+include::{snippets}/authserver-props.adoc[]
+
+<1> Definition of username for authentication
+<2> Definition of user password for authentication
+<3> Client id for OAuth2 authorization code grant
+<4> Client secret for OAuth2 authorization code grant
+<5> Scopes to authorize for OAuth2
+<6> Open endpoint for getting token details for authenticated users
+
+[[resource-server]]
+=== Resource Server (Products)
+
+[[resource-server-maven-dependencies]]
+==== Maven dependencies
+
+Add the following required dependencies to the existing maven pom file.
+
+include::{snippets}/resourceserver-mavenpom.adoc[]
+
+==== Java Implementation
+
+The existing products service now should act as an OAuth2 resource server.
+Therefore it has to be marked as such.
+
+include::{snippets}/resourceserver-java.adoc[]
+
+<1> Annotation to enable this as a OAuth2 resource server.
+
+[[resource-server-configuration]]
+==== Configuration
+
+The following additional properties are required to make the resource server work with our new
+authorization server.
+
+include::{snippets}/resourceserver-props.adoc[]
+
+<1> This password won't be used as this microservice is protected by OAuth2 now
+<2> Endpoint for getting token details required for products resource server
+<3> Client id for OAuth2 authorization code grant
+<4> Client secret for OAuth2 authorization code grant
+
+[[client]]
+=== OAuth2 Client (Thymeleaf UI)
+
+[[client-maven-dependencies]]
+==== Maven dependencies
+
+Add the following required dependencies to the existing maven pom file.
+
+include::{snippets}/client-mavenpom.adoc[]
+
+[[client-java-implementation]]
+==== Java Implementation
+
+The UI client now acts as OAuth2 client and must be marked as such.
+Additionally to automatically use the OAuth2 tokens with all calls to REST services
+the currently used _RestTemplate_ has to be replaced with new _OAuth2RestTemplate_
+
+NOTE: In more advanced cloud scenarios you may also
+use http://cloud.spring.io/spring-cloud-static/Dalston.RELEASE/#spring-cloud-feign[Feign Client]
+instead of _OAuth2RestTemplate_ to call the REST Api. In that case you have to add an interceptor
+for OAuth2.
+
+include::{snippets}/client-java.adoc[]
+
+<1> Add _@EnableOAuth2Sso_ annotation to secure complete UI using OAuth2
+<2> Add new _@Bean_ configuration for OAuth2RestTemplate (will replace the standard _RestTemplate_)
+
+include::{snippets}/client-service-java.adoc[]
+
+<1> Replace standard _RestTemplate_ with _OAuth2RestTemplate_
+<2> Reconfigure HystrixCommand to use Semaphore to propagate the security context
+
+[[client-configuration]]
+==== Configuration
+
+The following additional properties are required to make the UI client work with our new
+authorization server.
+
+include::{snippets}/client-props.adoc[]
+
+<1> This password won't be used as this microservice is protected by OAuth2 now
+<2> Client id for OAuth2 authorization code grant
+<3> Client secret for OAuth2 authorization code grant
+<4> Endpoint for exchanging authorization code for access token
+<5> Endpoint for redirecting to authorization server for authentication
+<6> Scope for the request
+<7> Endpoint for validating token details
+
+.To make the sample application even more secure we will enhance the authorization server to...
+- ...enable login using a form login page
+- ...use a persistent store for users
+- ...encrypt the passwords
+
+=== Provide form based login
+
+A form based login is more user friendly authentication and should always be preferred over
+basic authentication popups.
+To provide an automatically generated form based login just extend the predefined class _WebSecurityConfigurerAdapter_.
+
+include::{snippets}/authserver-formlogin-java.adoc[]
+
+=== Use persistent store
+
+Until now we have authenticated ourselves using credentials that are defined via application properties
+which is ok for demo purposes but definitely not for production use.
+
+.Therefore we introduce a new persistent _User_ entity which has the following attributes:
+- firstname
+- lastname
+- email
+- password
+
+NOTE: To actually use the new _User_ entity with spring security this entity class has to implement the predefined
+interface _UserDetails_ as well. Please use the attribute _email_ as _username_.
+
+A corresponding repository interface and a data initializer component (just like the one for products)
+have to be implemented as well.
+
+Finally spring security must be aware to use the persistent users now instead of the one
+defined in the properties. To achieve this you have to implement the interface
+_UserDetailsService_ as well to provide an operation loading a user for authentication.
+
+include::{snippets}/authserver-userdetailsservice-java.adoc[]
+
+include::{snippets}/authserver-userdetailsservice-cfg-java.adoc[]
+
+=== Encrypt the passwords
+
+In the last step we want to change the storage of cleartext passwords for the users in the database.
+If any attacker gets hold of our database then all passwords are leaked.
+Therefore a production system must *ALWAYS* store any sensible data like passwords, credit card numbers etc.
+encrypted using a proven cryptographic algorithm.
+
+include::{snippets}/password-encoder-java.adoc[]
+
+.Lucklily spring security already provides safe implementations of a _PasswordEncoder_:
+- Pbkdf2PasswordEncoder
+- BCryptPasswordEncoder
+- SCryptPasswordEncoder
+
+To support authentication using encrypted passwords the current web security configuration has to be extended
+by the _PasswordEncoder_ to be used.
+
+include::{snippets}/authserver-passwordencoder-cfg-java.adoc[]
+
+NOTE: The passwords have to be stored in encrypted form as well,
+so don't forget to inject and use a _PasswordEncoder_ instance in
+your user data initializer.
+
+TIP: You may use the h2 console to have a look into the in-memory database to see that the user passwords
+are really stored as encrypted values now.
+See http://docs.spring.io/spring-boot/docs/1.5.3.RELEASE/reference/htmlsingle/#boot-features-sql-h2-console[Spring Boot Reference Docs] on
+how to use and configure this.
+

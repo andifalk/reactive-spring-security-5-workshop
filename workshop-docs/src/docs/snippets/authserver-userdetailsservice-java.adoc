@@ -1,0 +1,22 @@
+[source,options="nowrap"]
+----
+@Service
+public class StandardUserDetailsService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+
+    public StandardUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        User user = userRepository.findOneByEmail(userName);
+        if (user == null) {
+            throw new UsernameNotFoundException("No user found for " + userName);
+        } else {
+            return user;
+        }
+    }
+}
+----

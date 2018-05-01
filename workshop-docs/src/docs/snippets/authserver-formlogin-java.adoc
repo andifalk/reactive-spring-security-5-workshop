@@ -1,0 +1,6 @@
+[source,options="nowrap"]
+----
+@Configuration
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+}
+----

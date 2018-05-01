@@ -1,0 +1,9 @@
+[source,options="nowrap"]
+----
+security.user.password=none # <1>
+
+security.oauth2.resource.token-info-uri=http://localhost:9999/users/oauth/check_token # <2>
+security.oauth2.client.client-id=productclient # <3>
+security.oauth2.client.client-secret=secretkey # <4>
+----
+
