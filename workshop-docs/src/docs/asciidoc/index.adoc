@@ -9,7 +9,17 @@ Andreas Falk <andreas.falk@novatec-gmbh.de>
 :numbered: ''
 :docinfo:
 
+image::images/spring_io_workshop.jpg[scaledwidth="50%", scaledheight="50%",alt="springio_workshop"]
+
 == Introduction
+
+=== Common Web Security Risks
+
+image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="owasp_top_10"]
+
+=== Initial application
+
+
 
 == Spring Boot Auto Configuration
 
