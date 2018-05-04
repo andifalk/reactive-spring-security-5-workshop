@@ -1,5 +1,6 @@
 package com.example.library.server.dataaccess;
 
+import com.example.library.server.common.Role;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -23,6 +24,9 @@ public class User {
     private String lastName;
 
     private List<Role> roles;
+
+    public User() {
+    }
 
     @PersistenceConstructor
     public User(UUID id, String email, String firstName, String lastName, List<Role> roles) {

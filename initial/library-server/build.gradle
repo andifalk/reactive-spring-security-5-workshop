@@ -2,12 +2,16 @@ buildscript {
     ext {
         springBootVersion = '2.0.1.RELEASE'
         junitVersion = '5.1.1'
+        asciidoctorVersion = '1.5.3'
+        snippetsDir = file('build/generated-snippets')
     }
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.asciidoctor:asciidoctor-gradle-plugin:${asciidoctorVersion}")
     }
 }
 
@@ -15,6 +19,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: "org.asciidoctor.convert"
 
 group = 'com.example'
 version = '1.0.0-SNAPSHOT'
@@ -24,12 +29,39 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+}
+
+asciidoctor {
+    setOptions([
+            'doctype': 'book',
+            'backend': 'html5'
+    ])
+    setAttributes([
+            'snippets'          : snippetsDir,
+            'source-highlighter': 'coderay',
+            'toc'               : 'left',
+            'toclevels'         : '3',
+            'sectlinks'         : 'true'
+    ])
+    dependsOn test
+}
+
+bootJar {
+    dependsOn test, asciidoctor
+    from("${asciidoctor.outputDir}/html5") {
+        into 'BOOT-INF/classes/static/docs'
+    }
+}
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('org.springframework.boot:spring-boot-starter-webflux')
-    compile('org.apache.commons:commons-lang3:3.7')
+    compile('org.apache.commons:commons-lang3')
     compile('org.modelmapper:modelmapper:1.1.0')
+    //asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor")
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
     testCompile('org.springframework.boot:spring-boot-starter-test') {
@@ -38,7 +70,7 @@ dependencies {
     testCompile('io.projectreactor:reactor-test')
     testCompile('org.springframework.restdocs:spring-restdocs-webtestclient')
     testCompile('org.junit.jupiter:junit-jupiter-api')
-    testCompile('org.junit.jupiter:junit-jupiter-engine')
-    testCompile('org.junit.platform:junit-platform-engine')
-    testCompile('org.junit.platform:junit-platform-launcher:1.2.0')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine')
+    testRuntime('org.junit.platform:junit-platform-engine')
+    testRuntime('org.junit.platform:junit-platform-launcher:1.2.0')
 }

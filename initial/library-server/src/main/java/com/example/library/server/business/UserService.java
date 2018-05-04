@@ -5,6 +5,7 @@ import com.example.library.server.dataaccess.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,10 +15,12 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final IdGenerator idGenerator;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, IdGenerator idGenerator) {
         this.userRepository = userRepository;
+        this.idGenerator = idGenerator;
     }
 
     public Mono<UserResource> findOneByEmail(String email) {
@@ -30,6 +33,13 @@ public class UserService {
         return userRepository.save(new ModelMapper().map(userResource, User.class)).map(
             u -> new ModelMapper().map(u, UserResource.class)
         );
+    }
+
+    public Mono<Void> create(Mono<UserResource> userResource) {
+        return userRepository.insert(
+                userResource.map(
+                        ur -> new User(idGenerator.generateId(), ur.getEmail(), ur.getFirstName(), ur.getLastName(), ur.getRoles())))
+                .then();
     }
 
     public Mono<UserResource> findById(UUID uuid) {

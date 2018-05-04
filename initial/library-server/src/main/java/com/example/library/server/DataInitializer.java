@@ -1,5 +1,6 @@
 package com.example.library.server;
 
+import com.example.library.server.common.Role;
 import com.example.library.server.dataaccess.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +11,11 @@ import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
+/**
+ * Store initial users and books in mongodb.
+ */
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -66,7 +69,7 @@ public class DataInitializer implements CommandLineRunner {
                 .subscribe();
 
         Flux<User> users = userRepository.findAll();
-        users.delaySubscription(Duration.ofMillis(100)).take(3L).onBackpressureLatest().subscribe(
+        users.delaySubscription(Duration.ofMillis(100)).subscribe(
             u -> logger.info("User '{}' created with id '{}'", u.getEmail(), u.getId())
         );
     }
@@ -92,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
                             "that will instill within you the values of a software craftsman and make you a better " +
                             "programmer—but only if you work at it.",
                     List.of("Bob C. Martin"),
-                    new BorrowState(Instant.now(), user)))
+                    true, user))
             .subscribe();
         bookRepository
             .save(
@@ -105,7 +108,7 @@ public class DataInitializer implements CommandLineRunner {
                                     "maintain their competitive edge and stay well ahead of the competition. " +
                                     "This practical guide shows Java/JVM developers how to build better software, " +
                                     "faster, using Spring Boot, Spring Cloud, and Cloud Foundry.",
-                            List.of("Josh Long", "Kenny Bastiani"), null))
+                            List.of("Josh Long", "Kenny Bastiani"), false, null))
             .subscribe();
         bookRepository
             .save(
@@ -119,7 +122,7 @@ public class DataInitializer implements CommandLineRunner {
                                     "short snippets and an ongoing example as you learn to build simple and efficient " +
                                     "J2EE applications. Author Craig Walls has a special knack for crisp and " +
                                     "entertaining examples that zoom in on the features and techniques you really need.",
-                            List.of("Craig Walls"), null))
+                            List.of("Craig Walls"), false, null))
             .subscribe();
         bookRepository
             .save(
@@ -131,11 +134,11 @@ public class DataInitializer implements CommandLineRunner {
                                     "Patrick Debois and John Willis developed this book for anyone looking to transform " +
                                     "their IT organization—especially those who want to make serious changes through the " +
                                     "DevOps methodology to increase productivity, profitability and win the marketplace.",
-                            List.of("Gene Kim", "Jez Humble", "Patrick Debois"), null))
+                            List.of("Gene Kim", "Jez Humble", "Patrick Debois"), false, null))
             .subscribe();
 
         Flux<Book> books = bookRepository.findAll();
-        books.delaySubscription(Duration.ofMillis(100)).take(3L).onBackpressureLatest().subscribe(
+        books.delaySubscription(Duration.ofMillis(100)).subscribe(
                 b -> logger.info("Book '{}' created with isbn '{}' and id '{}'", b.getTitle(), b.getIsbn(), b.getId())
         );
 

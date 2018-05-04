@@ -26,16 +26,22 @@ public class Book {
 
     private List<String> authors;
 
-    private BorrowState borrowed;
+    private boolean borrowed;
+
+    private User borrowedBy;
+
+    public Book() {
+    }
 
     @PersistenceConstructor
-    public Book(UUID id, String isbn, String title, String description, List<String> authors, BorrowState borrowed) {
+    public Book(UUID id, String isbn, String title, String description, List<String> authors, boolean borrowed, User borrowedBy) {
         this.id = id;
         this.isbn = isbn;
         this.title = title;
         this.description = description;
         this.authors = authors;
         this.borrowed = borrowed;
+        this.borrowedBy = borrowedBy;
     }
 
     public UUID getId() {
@@ -58,7 +64,25 @@ public class Book {
         return authors;
     }
 
-    public BorrowState getBorrowed() {
+    public boolean isBorrowed() {
         return borrowed;
+    }
+
+    public User getBorrowedBy() {
+        return borrowedBy;
+    }
+
+    public void doBorrow(User user) {
+        if (!this.borrowed) {
+            this.borrowed = true;
+            this.borrowedBy = user;
+        }
+    }
+
+    public void doReturn() {
+        if (this.borrowed) {
+            this.borrowed = false;
+            this.borrowedBy = null;
+        }
     }
 }

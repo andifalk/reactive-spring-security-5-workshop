@@ -1,5 +1,6 @@
 package com.example.library.server.business;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,26 +8,34 @@ public class BookResource {
 
     private UUID id;
 
+    @NotNull
     private String isbn;
 
+    @NotNull
     private String title;
 
+    @NotNull
     private String description;
 
+    @NotNull
     private List<String> authors;
 
-    private BorrowStateResource borrowed;
+    private boolean borrowed;
+
+    private UserResource borrowedBy;
+
 
     public BookResource() {
     }
 
-    public BookResource(UUID id, String isbn, String title, String description, List<String> authors, BorrowStateResource borrowed) {
+    public BookResource(UUID id, String isbn, String title, String description, List<String> authors, boolean borrowed, UserResource borrowedBy) {
         this.id = id;
         this.isbn = isbn;
         this.title = title;
         this.description = description;
         this.authors = authors;
         this.borrowed = borrowed;
+        this.borrowedBy = borrowedBy;
     }
 
     public UUID getId() {
@@ -49,7 +58,7 @@ public class BookResource {
         return authors;
     }
 
-    public BorrowStateResource getBorrowed() {
+    public boolean isBorrowed() {
         return borrowed;
     }
 
@@ -73,7 +82,15 @@ public class BookResource {
         this.authors = authors;
     }
 
-    public void setBorrowed(BorrowStateResource borrowed) {
+    public void setBorrowed(boolean borrowed) {
         this.borrowed = borrowed;
+    }
+
+    public UserResource getBorrowedBy() {
+        return borrowedBy;
+    }
+
+    public void setBorrowedBy(UserResource borrowedBy) {
+        this.borrowedBy = borrowedBy;
     }
 }

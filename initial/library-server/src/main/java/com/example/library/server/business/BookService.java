@@ -2,12 +2,13 @@ package com.example.library.server.business;
 
 import com.example.library.server.dataaccess.Book;
 import com.example.library.server.dataaccess.BookRepository;
-import com.example.library.server.dataaccess.BorrowState;
+import com.example.library.server.dataaccess.User;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeMap;
+import org.reactivestreams.Publisher;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,32 +18,55 @@ import java.util.UUID;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final IdGenerator idGenerator;
 
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, IdGenerator idGenerator) {
         this.bookRepository = bookRepository;
+        this.idGenerator = idGenerator;
     }
 
-    public Mono<BookResource> save(BookResource bookResource) {
-        Book book = new ModelMapper().map(bookResource, Book.class);
-        return bookRepository.save(book)
-                .map(s -> new ModelMapper().map(s, BookResource.class));
+    public Mono<Void> create(Mono<BookResource> bookResource) {
+
+        Mono<Book> book = bookResource.map(
+                br -> new Book(
+                        idGenerator.generateId(), br.getIsbn(), br.getTitle(), br.getDescription(),
+                        br.getAuthors(), br.isBorrowed(), br.getBorrowedBy() != null ? new ModelMapper().map(br.getBorrowedBy(), User.class) : null))
+                .doOnError(e -> LoggerFactory.getLogger(getClass()).error("Error: " + e.getMessage()));
+        return bookRepository.insert(book).then();
     }
 
     public Mono<BookResource> findById(UUID uuid) {
         return bookRepository.findById(uuid).map(
-                b -> new ModelMapper().map(b, BookResource.class));
+                book -> new ModelMapper().map(book, BookResource.class));
+    }
+
+    public void borrowById(UUID uuid, UserResource user) {
+        bookRepository.findById(uuid).subscribe(
+            book ->  {
+                book.doBorrow(null);
+                bookRepository.save(book).subscribe();
+            }
+        );
+    }
+
+    public void returnById(UUID uuid, UserResource user) {
+        bookRepository.findById(uuid).subscribe(
+                book ->  {
+                    book.doReturn();
+                    bookRepository.save(book).subscribe();
+                }
+        );
     }
 
     public Flux<BookResource> findAll() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.typeMap(BorrowState.class, BorrowStateResource.class).addMapping(BorrowState::getBy, BorrowStateResource::setBy);
         return bookRepository.findAll().map(
                 b -> modelMapper.map(b, BookResource.class)
         );
     }
 
     public Mono<Void> deleteById(UUID uuid) {
-        return bookRepository.deleteById(uuid);
+        return bookRepository.deleteById(uuid).then();
     }
 }

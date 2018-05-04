@@ -1,6 +1,6 @@
 package com.example.library.server.business;
 
-import com.example.library.server.dataaccess.Role;
+import com.example.library.server.common.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
