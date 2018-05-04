@@ -61,7 +61,6 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.apache.commons:commons-lang3')
     compile('org.modelmapper:modelmapper:1.1.0')
-    //asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor")
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
     testCompile('org.springframework.boot:spring-boot-starter-test') {
