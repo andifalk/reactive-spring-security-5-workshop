@@ -15,7 +15,7 @@ Andreas Falk <andreas.falk@novatec-gmbh.de> +
 https://twitter.com/andifalk[Twitter Handle] +
 https://blog.novatec-gmbh.de[NovaTec Blog]
 
-== Introduction (What's in for participants?)
+== Introduction
 
 Target of this workshop is to learn how to make an initially unsecured web application
 more and more secure step-by-step.
@@ -28,13 +28,7 @@ This will be done in following steps:
 4. Implement security integration tests
 5. Experiment with new OAuth2 Login Client
 
-=== Requirements for this workshop
-
-- Some free disk space
-- A Java 9 JDK
-- Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
-
-=== Common Web Security Risks
+== Common Web Security Risks
 
 In this workshop you will strive various parts of securing a web application that
 fit into the https://www.owasp.org/index.php/Top_10-2017_Top_10[OWASP Top 10 2017 list].
@@ -52,7 +46,13 @@ image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="o
 You may also have a look into the https://www.owasp.org/index.php/OWASP_Proactive_Controls[OWASP ProActive Controls] document which describes how to develop
 your applications using good security patterns.
 
-=== Initial application
+== Requirements for this workshop
+
+- Some free disk space
+- A Java 9 JDK
+- Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
+
+== Initial application
 
 In this workshop you will be provided a finished but completely unsecured reactive
 web application. This application provides a RESTful service for administering books.
@@ -68,17 +68,19 @@ The application is build using
 - Spring Data MongoDB with reactive driver
 - In-VM Mongodb to have an easier setup for workshop participants
 
-== Spring Boot Auto Configuration
+== Workshop Steps
 
-== Customize Authentication
+=== Spring Boot Auto Configuration
 
-== Add Authorization
+=== Customize Authentication
 
-== Security Testing
+=== Add Authorization
 
-== Add OAuth2 Client
+=== Security Testing
 
-=== What we will build
+=== Add OAuth2 Client
+
+==== What we will build
 
 .We will extend the existing two microservices to use single sign authentication based on OAuth2.
 
@@ -109,7 +111,7 @@ In step 1 we will build a basic OAuth2 secured microservices infrastructure usin
 via properties in _application.properties_.
 
 [[authorization-server]]
-=== Authorization Server
+==== Authorization Server
 
 TIP: You may look into the spring boot reference documentation http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-authorization-server[Spring Boot Reference Documentation]
 on how to implement an authorization server.
@@ -136,13 +138,13 @@ of the authorization server must be as follows:
 |===
 
 [[authorization-server-maven-dependencies]]
-==== Maven dependencies
+===== Maven dependencies
 
 include::{snippets}/authserver-mavenpom.adoc[]
 
 <1> Dependency for OAuth2 security support
 
-==== Java Implementation
+===== Java Implementation
 
 include::{snippets}/authserver-java.adoc[]
 
