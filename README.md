@@ -12,9 +12,9 @@ In this workshop an initial application (providing a unsecured rest interface) w
 
 To start the workshop you need
 
-[The workshop tutorial documentation](https://andifalk.github.io/spring-security-5-workshop/)
+[the workshop tutorial documentation](https://andifalk.github.io/spring-security-5-workshop/)
 
 and 
 
-[The initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/initial/library-server)
+[the initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/initial/library-server)
 
