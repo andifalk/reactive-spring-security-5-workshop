@@ -1,8 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.1.RELEASE'
-        junitVersion = '5.1.1'
-        asciidoctorVersion = '1.5.3'
+        springBootVersion = '2.0.2.RELEASE'
+        asciidoctorVersion = '1.5.6'
         snippetsDir = file('build/generated-snippets')
     }
     repositories {
@@ -31,6 +30,7 @@ repositories {
 
 test {
     useJUnitPlatform()
+    jvmArgs '--illegal-access=deny'
 }
 
 asciidoctor {

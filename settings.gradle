@@ -1,0 +1,3 @@
+rootProject.name = 'library-server'
+include 'workshop-docs'
+include 'initial:library-server'

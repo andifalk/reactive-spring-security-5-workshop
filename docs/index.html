@@ -432,15 +432,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Spring Security 5 Hands-On Workshop</h1>
 <div class="details">
 <span id="author" class="author">Andreas Falk</span><br>
-<span id="email" class="email"><a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a></span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">1. Introduction</a>
+<li><a href="#_introduction_what_s_in_for_participants">1. Introduction (What&#8217;s in for participants?)</a>
 <ul class="sectlevel2">
-<li><a href="#_common_web_security_risks">1.1. Common Web Security Risks</a></li>
-<li><a href="#_initial_application">1.2. Initial application</a></li>
+<li><a href="#_requirements_for_this_workshop">1.1. Requirements for this workshop</a></li>
+<li><a href="#_common_web_security_risks">1.2. Common Web Security Risks</a></li>
+<li><a href="#_initial_application">1.3. Initial application</a></li>
 </ul>
 </li>
 <li><a href="#_spring_boot_auto_configuration">2. Spring Boot Auto Configuration</a></li>
@@ -457,14 +457,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#authorization-server-configuration">6.2.3. Configuration</a></li>
 </ul>
 </li>
-<li><a href="#resource-server">6.3. Resource Server (Products)</a>
+<li><a href="#resource-server">6.3. Resource Server (Library-Server)</a>
 <ul class="sectlevel3">
 <li><a href="#resource-server-maven-dependencies">6.3.1. Maven dependencies</a></li>
 <li><a href="#_java_implementation_2">6.3.2. Java Implementation</a></li>
 <li><a href="#resource-server-configuration">6.3.3. Configuration</a></li>
 </ul>
 </li>
-<li><a href="#client">6.4. OAuth2 Client (Thymeleaf UI)</a>
+<li><a href="#client">6.4. OAuth2 Client (UI)</a>
 <ul class="sectlevel3">
 <li><a href="#client-maven-dependencies">6.4.1. Maven dependencies</a></li>
 <li><a href="#client-java-implementation">6.4.2. Java Implementation</a></li>
@@ -487,22 +487,132 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <img src="images/spring_io_workshop.jpg" alt="springio_workshop">
 </div>
 </div>
+<div class="paragraph">
+<p>Andreas Falk &lt;<a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a>&gt;<br>
+<a href="https://twitter.com/andifalk">Twitter Handle</a><br>
+<a href="https://blog.novatec-gmbh.de">NovaTec Blog</a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">1. Introduction</a></h2>
+<h2 id="_introduction_what_s_in_for_participants"><a class="link" href="#_introduction_what_s_in_for_participants">1. Introduction (What&#8217;s in for participants?)</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Target of this workshop is to learn how to make an initially unsecured web application
+more and more secure step-by-step.</p>
+</div>
+<div class="paragraph">
+<p>This will be done in following steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add spring boot security starter dependency for simple auto configuration of security</p>
+</li>
+<li>
+<p>Customize authentication configuration (provide our own user store and adapted authentication rules)</p>
+</li>
+<li>
+<p>Add authorization (access controls) to web and method layers</p>
+</li>
+<li>
+<p>Implement security integration tests</p>
+</li>
+<li>
+<p>Experiment with new OAuth2 Login Client</p>
+</li>
+</ol>
+</div>
 <div class="sect2">
-<h3 id="_common_web_security_risks"><a class="link" href="#_common_web_security_risks">1.1. Common Web Security Risks</a></h3>
+<h3 id="_requirements_for_this_workshop"><a class="link" href="#_requirements_for_this_workshop">1.1. Requirements for this workshop</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Some free disk space</p>
+</li>
+<li>
+<p>A Java 9 JDK</p>
+</li>
+<li>
+<p>Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_common_web_security_risks"><a class="link" href="#_common_web_security_risks">1.2. Common Web Security Risks</a></h3>
+<div class="paragraph">
+<p>In this workshop you will strive various parts of securing a web application that
+fit into the <a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">OWASP Top 10 2017 list</a>.</p>
+</div>
+<div class="paragraph">
+<p>We will look at:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A2: Broken Authentication</p>
+</li>
+<li>
+<p>A3: Sensitive Data Exposure</p>
+</li>
+<li>
+<p>A5: Broken Access Control</p>
+</li>
+<li>
+<p>A6: Security Misconfiguration</p>
+</li>
+<li>
+<p>A10: Insufficient Logging &amp; Monitoring</p>
+</li>
+</ul>
+</div>
 <div class="imageblock">
 <div class="content">
 <img src="images/owasp_top_10_2017.png" alt="owasp_top_10">
 </div>
 </div>
+<div class="paragraph">
+<p>You may also have a look into the <a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls">OWASP ProActive Controls</a> document which describes how to develop
+your applications using good security patterns.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_initial_application"><a class="link" href="#_initial_application">1.2. Initial application</a></h3>
-
+<h3 id="_initial_application"><a class="link" href="#_initial_application">1.3. Initial application</a></h3>
+<div class="paragraph">
+<p>In this workshop you will be provided a finished but completely unsecured reactive
+web application. This application provides a RESTful service for administering books.
+There are three target users for this application:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Standard users: A standard user can borrow and return borrowed books</p>
+</li>
+<li>
+<p>Curators: A curator user can add, modify or delete books</p>
+</li>
+<li>
+<p>Administrators: An administrator user can add or remove users</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The application is build using</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Spring 5 WebFlux on netty</p>
+</li>
+<li>
+<p>Spring Data MongoDB with reactive driver</p>
+</li>
+<li>
+<p>In-VM Mongodb to have an easier setup for workshop participants</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
@@ -570,10 +680,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Authorization Server</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9999/users" class="bare">http://localhost:9999/users</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9999/auth" class="bare">http://localhost:9999/auth</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client (UI)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Client (Library-UI)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081" class="bare">http://localhost:8081</a></p></td>
 </tr>
 <tr>
@@ -624,7 +734,7 @@ on how to implement an authorization server.
 </td>
 <td class="content">
 To prevent conflicts with different JSESSION cookies the authorization server must run
-on a separate context path (not '/'). In our example please use '/users' as context path. In spring boot
+on a separate context path (not '/'). In our example please use '/auth' as context path. In spring boot
 this can be achieved by the <em>server.context</em> property
 </td>
 </tr>
@@ -829,7 +939,7 @@ security.oauth2.authorization.check-token-access=isAuthenticated() <i class="con
 </div>
 </div>
 <div class="sect2">
-<h3 id="resource-server"><a class="link" href="#resource-server">6.3. Resource Server (Products)</a></h3>
+<h3 id="resource-server"><a class="link" href="#resource-server">6.3. Resource Server (Library-Server)</a></h3>
 <div class="sect3">
 <h4 id="resource-server-maven-dependencies"><a class="link" href="#resource-server-maven-dependencies">6.3.1. Maven dependencies</a></h4>
 <div class="paragraph">
@@ -915,7 +1025,7 @@ security.oauth2.client.client-secret=secretkey <i class="conum" data-value="4"><
 </div>
 </div>
 <div class="sect2">
-<h3 id="client"><a class="link" href="#client">6.4. OAuth2 Client (Thymeleaf UI)</a></h3>
+<h3 id="client"><a class="link" href="#client">6.4. OAuth2 Client (UI)</a></h3>
 <div class="sect3">
 <h4 id="client-maven-dependencies"><a class="link" href="#client-maven-dependencies">6.4.1. Maven dependencies</a></h4>
 <div class="paragraph">
@@ -1293,7 +1403,7 @@ how to use and configure this.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-04 18:22:27 CEST
+Last updated 2018-05-17 08:50:57 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
