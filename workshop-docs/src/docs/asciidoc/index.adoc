@@ -46,16 +46,28 @@ image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="o
 You may also have a look into the https://www.owasp.org/index.php/OWASP_Proactive_Controls[OWASP ProActive Controls] document which describes how to develop
 your applications using good security patterns.
 
-== Requirements for this workshop
+== Workshop Organization
+
+This interactive hands-on workshop is organized into 5 steps with one step building upon each other.
+Except step 1 all steps always include two sub-directories:
+
+* initial
+* complete
+
+=== Requirements for this workshop
 
 - Some free disk space
 - A Java 9 JDK
 - Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
 
-== Initial application
+=== The workshop application
 
 In this workshop you will be provided a finished but completely unsecured reactive
-web application. This application provides a RESTful service for administering books.
+web application. This application provides a RESTful service for administering books and users.
+
+The RESTful service for books is build using the Spring WebFlux annotation model and the RESZful service for
+users is build using the Spring WebFlux router model.
+
 There are three target users for this application:
 
 - Standard users: A standard user can borrow and return borrowed books
@@ -70,15 +82,42 @@ The application is build using
 
 == Workshop Steps
 
-=== Spring Boot Auto Configuration
+=== Step 1: Auto Configuration
 
-=== Customize Authentication
+In the first step we start quite simple by just adding the spring boot starter dependency for spring security
+to the _build.gradle_ file of the initial application.
 
-=== Add Authorization
+.build.gradle
 
-=== Security Testing
+include::{snippets}/step-1-gradle-build.adoc[]
 
-=== Add OAuth2 Client
+Please start the application by running the class _LibraryServerApplication_.
+If you browse to http://localhost:8080/books[localhost:8080/books] then you will notice
+that a login form appears in the browser window.
+
+[TIP]
+====
+But wait - what are the credentials for a user to log in?
+
+With spring security autoconfigured by spring boot the credentials are as follows:
+
+* Username=user
+* Password=<Look into the console log!>
+====
+
+.console log
+
+include::{snippets}/default-password-console.adoc[]
+
+
+
+=== Step 2: Customize Authentication
+
+=== Step 3: Add Authorization
+
+=== Step 4: Security Testing
+
+=== Step 5: Add OAuth2 Client
 
 ==== What we will build
 
@@ -138,7 +177,7 @@ of the authorization server must be as follows:
 |===
 
 [[authorization-server-maven-dependencies]]
-===== Maven dependencies
+===== Gradle dependencies
 
 include::{snippets}/authserver-mavenpom.adoc[]
 
@@ -151,7 +190,7 @@ include::{snippets}/authserver-java.adoc[]
 <1> Annotation to enable auto configuration of an Authorization Server
 
 [[authorization-server-configuration]]
-==== Configuration
+===== Configuration
 
 include::{snippets}/authserver-props.adoc[]
 
@@ -163,16 +202,16 @@ include::{snippets}/authserver-props.adoc[]
 <6> Open endpoint for getting token details for authenticated users
 
 [[resource-server]]
-=== Resource Server (Library-Server)
+==== Resource Server (Library-Server)
 
 [[resource-server-maven-dependencies]]
-==== Maven dependencies
+===== Maven dependencies
 
 Add the following required dependencies to the existing maven pom file.
 
 include::{snippets}/resourceserver-mavenpom.adoc[]
 
-==== Java Implementation
+===== Java Implementation
 
 The existing products service now should act as an OAuth2 resource server.
 Therefore it has to be marked as such.
@@ -182,7 +221,7 @@ include::{snippets}/resourceserver-java.adoc[]
 <1> Annotation to enable this as a OAuth2 resource server.
 
 [[resource-server-configuration]]
-==== Configuration
+===== Configuration
 
 The following additional properties are required to make the resource server work with our new
 authorization server.
@@ -195,17 +234,17 @@ include::{snippets}/resourceserver-props.adoc[]
 <4> Client secret for OAuth2 authorization code grant
 
 [[client]]
-=== OAuth2 Client (UI)
+==== OAuth2 Client (UI)
 
 [[client-maven-dependencies]]
-==== Maven dependencies
+===== Maven dependencies
 
 Add the following required dependencies to the existing maven pom file.
 
 include::{snippets}/client-mavenpom.adoc[]
 
 [[client-java-implementation]]
-==== Java Implementation
+===== Java Implementation
 
 The UI client now acts as OAuth2 client and must be marked as such.
 Additionally to automatically use the OAuth2 tokens with all calls to REST services
@@ -227,7 +266,7 @@ include::{snippets}/client-service-java.adoc[]
 <2> Reconfigure HystrixCommand to use Semaphore to propagate the security context
 
 [[client-configuration]]
-==== Configuration
+===== Configuration
 
 The following additional properties are required to make the UI client work with our new
 authorization server.
@@ -247,7 +286,7 @@ include::{snippets}/client-props.adoc[]
 - ...use a persistent store for users
 - ...encrypt the passwords
 
-=== Provide form based login
+==== Provide form based login
 
 A form based login is more user friendly authentication and should always be preferred over
 basic authentication popups.
@@ -255,7 +294,7 @@ To provide an automatically generated form based login just extend the predefine
 
 include::{snippets}/authserver-formlogin-java.adoc[]
 
-=== Use persistent store
+==== Use persistent store
 
 Until now we have authenticated ourselves using credentials that are defined via application properties
 which is ok for demo purposes but definitely not for production use.
@@ -280,7 +319,7 @@ include::{snippets}/authserver-userdetailsservice-java.adoc[]
 
 include::{snippets}/authserver-userdetailsservice-cfg-java.adoc[]
 
-=== Encrypt the passwords
+==== Encrypt the passwords
 
 In the last step we want to change the storage of cleartext passwords for the users in the database.
 If any attacker gets hold of our database then all passwords are leaked.

@@ -16,5 +16,5 @@ To start the workshop you need
 
 and 
 
-[the initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/initial/library-server)
+[the initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/00-library-server)
 

@@ -1,0 +1,11 @@
+[source,groovy,options="nowrap"]
+----
+dependencies {
+    ...
+    compile('org.springframework.boot:spring-boot-starter-security') # <1>
+    ...
+    testCompile('org.springframework.security:spring-security-test') # <2>
+}
+----
+<1> The spring boot starter for spring security
+<2> Adds testing support for spring security
