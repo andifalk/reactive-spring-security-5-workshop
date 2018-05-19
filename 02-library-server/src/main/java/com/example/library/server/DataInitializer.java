@@ -1,7 +1,10 @@
 package com.example.library.server;
 
 import com.example.library.server.common.Role;
-import com.example.library.server.dataaccess.*;
+import com.example.library.server.dataaccess.Book;
+import com.example.library.server.dataaccess.BookRepository;
+import com.example.library.server.dataaccess.User;
+import com.example.library.server.dataaccess.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,8 @@ import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -56,7 +60,7 @@ public class DataInitializer implements CommandLineRunner {
                                 passwordEncoder.encode("user"),
                                 "Library",
                                 "User",
-                                List.of(Role.USER)))
+                                Collections.singletonList(Role.USER)))
                 .subscribe();
         userRepository
                 .save(
@@ -66,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
                                 passwordEncoder.encode("curator"),
                                 "Library",
                                 "Curator",
-                                List.of(Role.USER, Role.CURATOR)))
+                                Arrays.asList(Role.USER, Role.CURATOR)))
                 .subscribe();
         userRepository
                 .save(
@@ -76,7 +80,7 @@ public class DataInitializer implements CommandLineRunner {
                                 passwordEncoder.encode("admin"),
                                 "Library",
                                 "Administrator",
-                                List.of(Role.USER, Role.CURATOR, Role.ADMIN)))
+                                Arrays.asList(Role.USER, Role.CURATOR, Role.ADMIN)))
                 .subscribe();
 
         Flux<User> users = userRepository.findAll();
@@ -105,7 +109,7 @@ public class DataInitializer implements CommandLineRunner {
                             "Object Mentor to distill their best agile practice of cleaning code “on the fly” into a book " +
                             "that will instill within you the values of a software craftsman and make you a better " +
                             "programmer—but only if you work at it.",
-                    List.of("Bob C. Martin"),
+                        Collections.singletonList("Bob C. Martin"),
                     true, user))
             .subscribe();
         bookRepository
@@ -119,7 +123,7 @@ public class DataInitializer implements CommandLineRunner {
                                     "maintain their competitive edge and stay well ahead of the competition. " +
                                     "This practical guide shows Java/JVM developers how to build better software, " +
                                     "faster, using Spring Boot, Spring Cloud, and Cloud Foundry.",
-                            List.of("Josh Long", "Kenny Bastiani"), false, null))
+                            Arrays.asList("Josh Long", "Kenny Bastiani"), false, null))
             .subscribe();
         bookRepository
             .save(
@@ -133,7 +137,7 @@ public class DataInitializer implements CommandLineRunner {
                                     "short snippets and an ongoing example as you learn to build simple and efficient " +
                                     "J2EE applications. Author Craig Walls has a special knack for crisp and " +
                                     "entertaining examples that zoom in on the features and techniques you really need.",
-                            List.of("Craig Walls"), false, null))
+                            Collections.singletonList("Craig Walls"), false, null))
             .subscribe();
         bookRepository
             .save(
@@ -145,7 +149,7 @@ public class DataInitializer implements CommandLineRunner {
                                     "Patrick Debois and John Willis developed this book for anyone looking to transform " +
                                     "their IT organization—especially those who want to make serious changes through the " +
                                     "DevOps methodology to increase productivity, profitability and win the marketplace.",
-                            List.of("Gene Kim", "Jez Humble", "Patrick Debois"), false, null))
+                            Arrays.asList("Gene Kim", "Jez Humble", "Patrick Debois"), false, null))
             .subscribe();
 
         Flux<Book> books = bookRepository.findAll();

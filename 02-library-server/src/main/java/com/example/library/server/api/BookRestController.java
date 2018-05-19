@@ -2,8 +2,10 @@ package com.example.library.server.api;
 
 import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
+import com.example.library.server.security.LibraryUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -37,14 +39,16 @@ public class BookRestController {
     }
 
     @PostMapping("/books/{bookId}/borrow")
-    public Mono<ResponseEntity<Void>> borrowBookById(@PathVariable("bookId") UUID bookId) {
-        bookService.borrowById(bookId, null);
+    public Mono<ResponseEntity<Void>> borrowBookById(
+            @PathVariable("bookId") UUID bookId, @AuthenticationPrincipal LibraryUser libraryUser) {
+        bookService.borrowById(bookId, libraryUser.getUserResource().getId());
         return Mono.just(ResponseEntity.ok().build());
     }
 
     @PostMapping("/books/{bookId}/return")
-    public Mono<ResponseEntity<Void>> returnBookById(@PathVariable("bookId") UUID bookId) {
-        bookService.returnById(bookId, null);
+    public Mono<ResponseEntity<Void>> returnBookById(
+            @PathVariable("bookId") UUID bookId, @AuthenticationPrincipal LibraryUser libraryUser) {
+        bookService.returnById(bookId, libraryUser.getUserResource().getId());
         return Mono.just(ResponseEntity.ok().build());
     }
 

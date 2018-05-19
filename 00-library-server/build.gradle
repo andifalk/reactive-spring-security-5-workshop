@@ -22,7 +22,7 @@ apply plugin: "org.asciidoctor.convert"
 
 group = 'com.example'
 version = '1.0.0-SNAPSHOT'
-sourceCompatibility = 9
+sourceCompatibility = 8
 
 repositories {
     mavenCentral()

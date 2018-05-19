@@ -79,7 +79,7 @@ public class Book {
         }
     }
 
-    public void doReturn() {
+    public void doReturn(User user) {
         if (this.borrowed) {
             this.borrowed = false;
             this.borrowedBy = null;

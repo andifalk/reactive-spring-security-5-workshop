@@ -22,7 +22,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,8 +55,13 @@ class UserApiIntegrationTests {
     given(userService.findAll())
         .willReturn(
             Flux.just(
-                new UserResource(userId, "test@example.com", "test", "first", "last",
-                        List.of(Role.USER))));
+                new UserResource(
+                    userId,
+                    "test@example.com",
+                    "test",
+                    "first",
+                    "last",
+                    Collections.singletonList(Role.USER))));
 
     webClient
         .get()
@@ -78,9 +83,15 @@ class UserApiIntegrationTests {
     UUID userId = UUID.randomUUID();
 
     given(userService.findById(userId))
-            .willReturn(
-                    Mono.just(
-                            new UserResource(userId, "test@example.com", "test", "first", "last", List.of(Role.USER))));
+        .willReturn(
+            Mono.just(
+                new UserResource(
+                    userId,
+                    "test@example.com",
+                    "test",
+                    "first",
+                    "last",
+                    Collections.singletonList(Role.USER))));
 
     webClient
             .get().uri("/users/{userId}", userId).accept(MediaType.APPLICATION_JSON)
@@ -115,7 +126,14 @@ class UserApiIntegrationTests {
   @DisplayName("to create a new user")
   void verifyAndDocumentCreateUser() throws JsonProcessingException {
 
-    UserResource userResource = new UserResource(null, "test@example.com", "test", "first", "last", List.of(Role.USER));
+    UserResource userResource =
+        new UserResource(
+            null,
+            "test@example.com",
+            "test",
+            "first",
+            "last",
+            Collections.singletonList(Role.USER));
 
     given(userService.create(any())).willAnswer(
             i -> {

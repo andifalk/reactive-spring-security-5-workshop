@@ -51,20 +51,30 @@ public class BookService {
                 book -> modelMapper.map(book, BookResource.class));
     }
 
-    public void borrowById(UUID uuid, @AuthenticationPrincipal LibraryUser libraryUser) {
+    public void borrowById(UUID uuid, UUID userId) {
         bookRepository.findById(uuid).subscribe(
             book ->  {
-                book.doBorrow(null);
-                bookRepository.save(book).subscribe();
+                // current user not yet available without security!
+                userRepository.findById(userId).subscribe(
+                    u -> {
+                        book.doBorrow(u);
+                        bookRepository.save(book).subscribe();
+                    }
+                );
             }
         );
     }
 
-    public void returnById(UUID uuid, @AuthenticationPrincipal LibraryUser libraryUser) {
+    public void returnById(UUID uuid, UUID userId) {
         bookRepository.findById(uuid).subscribe(
                 book ->  {
-                    book.doReturn(null);
-                    bookRepository.save(book).subscribe();
+                    // current user not yet available without security!
+                    userRepository.findById(userId).subscribe(
+                        u -> {
+                            book.doReturn(u);
+                            bookRepository.save(book).subscribe();
+                        }
+                    );
                 }
         );
     }

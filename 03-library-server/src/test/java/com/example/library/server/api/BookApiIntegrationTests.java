@@ -18,7 +18,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -44,9 +44,17 @@ class BookApiIntegrationTests {
   void verifyAndDocumentGetBooks() {
 
     UUID bookId = UUID.randomUUID();
-    given(bookService.findAll()).willReturn(Flux.just(
-            new BookResource(bookId, "1234566", "title", "description", List.of("Author"),
-                    false, null)));
+    given(bookService.findAll())
+        .willReturn(
+            Flux.just(
+                new BookResource(
+                    bookId,
+                    "1234566",
+                    "title",
+                    "description",
+                    Collections.singletonList("Author"),
+                    false,
+                    null)));
 
     webClient
         .get()
@@ -66,9 +74,17 @@ class BookApiIntegrationTests {
   void verifyAndDocumentGetBook() {
 
     UUID bookId = UUID.randomUUID();
-    given(bookService.findById(bookId)).willReturn(Mono.just(
-            new BookResource(bookId, "1234566", "title", "description", List.of("Author"),
-                    false, null)));
+    given(bookService.findById(bookId))
+        .willReturn(
+            Mono.just(
+                new BookResource(
+                    bookId,
+                    "1234566",
+                    "title",
+                    "description",
+                    Collections.singletonList("Author"),
+                    false,
+                    null)));
 
     webClient
             .get().uri("/books/{bookId}", bookId).accept(MediaType.APPLICATION_JSON)
@@ -138,8 +154,15 @@ class BookApiIntegrationTests {
   @DisplayName("to create a new book")
   void verifyAndDocumentCreateBook() throws JsonProcessingException {
 
-    BookResource bookResource = new BookResource(null, "1234566", "title", "description", List.of("Author"),
-            false, null);
+    BookResource bookResource =
+        new BookResource(
+            null,
+            "1234566",
+            "title",
+            "description",
+            Collections.singletonList("Author"),
+            false,
+            null);
 
     given(bookService.create(any())).willAnswer(
       i -> {

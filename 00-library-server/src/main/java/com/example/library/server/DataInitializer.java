@@ -1,7 +1,10 @@
 package com.example.library.server;
 
 import com.example.library.server.common.Role;
-import com.example.library.server.dataaccess.*;
+import com.example.library.server.dataaccess.Book;
+import com.example.library.server.dataaccess.BookRepository;
+import com.example.library.server.dataaccess.User;
+import com.example.library.server.dataaccess.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,8 @@ import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -46,35 +50,35 @@ public class DataInitializer implements CommandLineRunner {
 
         logger.info("Creating users with USER, CURATOR and ADMIN roles...");
         userRepository
-                .save(
-                        new User(
-                                USER_IDENTIFIER,
-                                "user@example.com",
-                                "user",
-                                "Library",
-                                "User",
-                                List.of(Role.USER)))
-                .subscribe();
+            .save(
+                new User(
+                    USER_IDENTIFIER,
+                    "user@example.com",
+                    "user",
+                    "Library",
+                    "User",
+                    Collections.singletonList(Role.USER)))
+            .subscribe();
         userRepository
-                .save(
-                        new User(
-                                CURATOR_IDENTIFIER,
-                                "curator@example.com",
-                                "curator",
-                                "Library",
-                                "Curator",
-                                List.of(Role.USER, Role.CURATOR)))
-                .subscribe();
+            .save(
+                new User(
+                    CURATOR_IDENTIFIER,
+                    "curator@example.com",
+                    "curator",
+                    "Library",
+                    "Curator",
+                    Arrays.asList(Role.USER, Role.CURATOR)))
+            .subscribe();
         userRepository
-                .save(
-                        new User(
-                                ADMIN_IDENTIFIER,
-                                "admin@example.com",
-                                "admin",
-                                "Library",
-                                "Administrator",
-                                List.of(Role.USER, Role.CURATOR, Role.ADMIN)))
-                .subscribe();
+            .save(
+                new User(
+                    ADMIN_IDENTIFIER,
+                    "admin@example.com",
+                    "admin",
+                    "Library",
+                    "Administrator",
+                    Arrays.asList(Role.USER, Role.CURATOR, Role.ADMIN)))
+            .subscribe();
 
         Flux<User> users = userRepository.findAll();
         users.delaySubscription(Duration.ofMillis(100)).subscribe(
@@ -102,47 +106,47 @@ public class DataInitializer implements CommandLineRunner {
                             "Object Mentor to distill their best agile practice of cleaning code “on the fly” into a book " +
                             "that will instill within you the values of a software craftsman and make you a better " +
                             "programmer—but only if you work at it.",
-                    List.of("Bob C. Martin"),
+                        Collections.singletonList("Bob C. Martin"),
                     true, user))
             .subscribe();
         bookRepository
             .save(
-                    new Book(
-                            idGenerator.generateId(),
-                            "9781449374648",
-                            "Cloud Native Java",
-                            "What separates the traditional enterprise from the likes of Amazon, Netflix, " +
-                                    "and Etsy? Those companies have refined the art of cloud native development to " +
-                                    "maintain their competitive edge and stay well ahead of the competition. " +
-                                    "This practical guide shows Java/JVM developers how to build better software, " +
-                                    "faster, using Spring Boot, Spring Cloud, and Cloud Foundry.",
-                            List.of("Josh Long", "Kenny Bastiani"), false, null))
+                new Book(
+                    idGenerator.generateId(),
+                    "9781449374648",
+                    "Cloud Native Java",
+                    "What separates the traditional enterprise from the likes of Amazon, Netflix, " +
+                            "and Etsy? Those companies have refined the art of cloud native development to " +
+                            "maintain their competitive edge and stay well ahead of the competition. " +
+                            "This practical guide shows Java/JVM developers how to build better software, " +
+                            "faster, using Spring Boot, Spring Cloud, and Cloud Foundry.",
+                    Arrays.asList("Josh Long", "Kenny Bastiani"), false, null))
             .subscribe();
         bookRepository
             .save(
-                    new Book(
-                            idGenerator.generateId(),
-                            "9781617291203",
-                            "Spring in Action: Covers Spring 4",
-                            "Spring in Action, Fourth Edition is a hands-on guide to the Spring Framework, " +
-                                    "updated for version 4. It covers the latest features, tools, and practices " +
-                                    "including Spring MVC, REST, Security, Web Flow, and more. You'll move between " +
-                                    "short snippets and an ongoing example as you learn to build simple and efficient " +
-                                    "J2EE applications. Author Craig Walls has a special knack for crisp and " +
-                                    "entertaining examples that zoom in on the features and techniques you really need.",
-                            List.of("Craig Walls"), false, null))
+                new Book(
+                    idGenerator.generateId(),
+                    "9781617291203",
+                    "Spring in Action: Covers Spring 4",
+                    "Spring in Action, Fourth Edition is a hands-on guide to the Spring Framework, " +
+                            "updated for version 4. It covers the latest features, tools, and practices " +
+                            "including Spring MVC, REST, Security, Web Flow, and more. You'll move between " +
+                            "short snippets and an ongoing example as you learn to build simple and efficient " +
+                            "J2EE applications. Author Craig Walls has a special knack for crisp and " +
+                            "entertaining examples that zoom in on the features and techniques you really need.",
+                    Collections.singletonList("Craig Walls"), false, null))
             .subscribe();
         bookRepository
             .save(
-                    new Book(
-                            idGenerator.generateId(),
-                            "9781942788003",
-                            "The DevOps Handbook",
-                            "Wondering if The DevOps Handbook is for you? Authors, Gene Kim, Jez Humble, " +
-                                    "Patrick Debois and John Willis developed this book for anyone looking to transform " +
-                                    "their IT organization—especially those who want to make serious changes through the " +
-                                    "DevOps methodology to increase productivity, profitability and win the marketplace.",
-                            List.of("Gene Kim", "Jez Humble", "Patrick Debois"), false, null))
+                new Book(
+                    idGenerator.generateId(),
+                    "9781942788003",
+                    "The DevOps Handbook",
+                    "Wondering if The DevOps Handbook is for you? Authors, Gene Kim, Jez Humble, " +
+                            "Patrick Debois and John Willis developed this book for anyone looking to transform " +
+                            "their IT organization—especially those who want to make serious changes through the " +
+                            "DevOps methodology to increase productivity, profitability and win the marketplace.",
+                    Arrays.asList("Gene Kim", "Jez Humble", "Patrick Debois"), false, null))
             .subscribe();
 
         Flux<Book> books = bookRepository.findAll();
