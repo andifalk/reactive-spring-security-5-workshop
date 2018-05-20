@@ -129,7 +129,7 @@ class BookApiIntegrationTests {
             .expectBody()
             .consumeWith(document("borrow-book"));
 
-    verify(bookService).borrowById(eq(bookId), any());
+    verify(bookService).borrowById(any(), any());
   }
 
   @Test
@@ -146,7 +146,7 @@ class BookApiIntegrationTests {
             .expectBody()
             .consumeWith(document("return-book"));
 
-    verify(bookService).returnById(eq(bookId), any());
+    verify(bookService).returnById(any(), any());
   }
 
   @SuppressWarnings("unchecked")

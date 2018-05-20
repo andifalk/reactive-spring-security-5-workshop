@@ -57,7 +57,8 @@ Except step 1 all steps always include two sub-directories:
 === Requirements for this workshop
 
 - Some free disk space
-- A Java 9 JDK
+- Git
+- A Java 8 or 9 JDK
 - Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
 
 === The workshop application

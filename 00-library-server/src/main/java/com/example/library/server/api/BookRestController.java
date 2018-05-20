@@ -17,6 +17,10 @@ import java.util.UUID;
 @RestController
 public class BookRestController {
 
+    private static final String PATH_VARIABLE_BOOK_ID = "bookId";
+
+    private static final String PATH_BOOK_ID = "{" + PATH_VARIABLE_BOOK_ID + "}";
+
     private final BookService bookService;
 
     @Autowired
@@ -29,33 +33,30 @@ public class BookRestController {
         return bookService.findAll();
     }
 
-    @GetMapping("/books/{bookId}")
-    public Mono<ResponseEntity<BookResource>> getBookById(@PathVariable("bookId") UUID bookId) {
+    @GetMapping("/books/" + PATH_BOOK_ID)
+    public Mono<ResponseEntity<BookResource>> getBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
         return bookService.findById(bookId)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/books/{bookId}/borrow")
-    public Mono<ResponseEntity<Void>> borrowBookById(@PathVariable("bookId") UUID bookId) {
-        bookService.borrowById(bookId, null);
-        return Mono.just(ResponseEntity.ok().build());
+    @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
+    public Mono<Void> borrowBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
+        return bookService.borrowById(bookId, null);
     }
 
-    @PostMapping("/books/{bookId}/return")
-    public Mono<ResponseEntity<Void>> returnBookById(@PathVariable("bookId") UUID bookId) {
-        bookService.returnById(bookId, null);
-        return Mono.just(ResponseEntity.ok().build());
+    @PostMapping("/books/" + PATH_BOOK_ID + "/return")
+    public Mono<Void> returnBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
+        return bookService.returnById(bookId, null);
     }
 
     @PostMapping("/books")
-    public Mono<ResponseEntity<Void>> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
-        bookService.create(bookResource).subscribe();
-        return Mono.just(ResponseEntity.ok().build());
+    public Mono<Void> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
+        return bookService.create(bookResource);
     }
 
-    @DeleteMapping("/books/{bookId}")
-    public Mono<ResponseEntity<Void>> deleteBook(@PathVariable("bookId") UUID bookId) {
-        return bookService.deleteById(bookId).map(ResponseEntity::ok);
+    @DeleteMapping("/books/" + PATH_BOOK_ID)
+    public Mono<Void> deleteBook(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
+        return bookService.deleteById(bookId);
     }
 }

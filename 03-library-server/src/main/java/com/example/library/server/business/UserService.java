@@ -2,7 +2,6 @@ package com.example.library.server.business;
 
 import com.example.library.server.dataaccess.User;
 import com.example.library.server.dataaccess.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -18,42 +17,40 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final IdGenerator idGenerator;
-    private final ModelMapper modelMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, IdGenerator idGenerator, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, IdGenerator idGenerator) {
         this.userRepository = userRepository;
         this.idGenerator = idGenerator;
-        this.modelMapper = modelMapper;
     }
 
+    @PreAuthorize("isAnonymous()")
     public Mono<UserResource> findOneByEmail(String email) {
-        return userRepository.findOneByEmail(email).map(
-            u -> modelMapper.map(u, UserResource.class)
-        );
+        return userRepository.findOneByEmail(email).map(this::convert);
     }
 
     public Mono<Void> create(Mono<UserResource> userResource) {
-        return userRepository.insert(
-                userResource.map(
-                        ur -> new User(idGenerator.generateId(), ur.getEmail(), ur.getPassword(),
-                                        ur.getFirstName(), ur.getLastName(), ur.getRoles())))
-                .then();
+        return userRepository.insert(userResource.map(this::convert)).then();
     }
 
     public Mono<UserResource> findById(UUID uuid) {
-        return userRepository.findById(uuid).map(
-            u -> modelMapper.map(u, UserResource.class)
-        );
+        return userRepository.findById(uuid).map(this::convert);
     }
 
     public Flux<UserResource> findAll() {
-        return userRepository.findAll().map(
-            u -> modelMapper.map(u, UserResource.class)
-        );
+        return userRepository.findAll().map(this::convert);
     }
 
     public Mono<Void> deleteById(UUID uuid) {
         return userRepository.deleteById(uuid);
+    }
+
+    private UserResource convert(User u) {
+        return new UserResource(u.getId(), u.getEmail(), u.getPassword(), u.getFirstName(), u.getLastName(), u.getRoles());
+    }
+
+    private User convert(UserResource ur) {
+        return new User(ur.getId() == null ? idGenerator.generateId() : ur.getId(), ur.getEmail(), ur.getPassword(),
+                ur.getFirstName(), ur.getLastName(), ur.getRoles());
     }
 }

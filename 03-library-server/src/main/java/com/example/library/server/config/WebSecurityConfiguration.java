@@ -19,6 +19,7 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
+                //.csrf().disable()
                 .authorizeExchange()
                 .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .matchers(EndpointRequest.to("health")).permitAll()

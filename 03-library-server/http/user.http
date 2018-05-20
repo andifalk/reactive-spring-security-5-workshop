@@ -24,12 +24,12 @@ Accept: application/json
 
 ###
 
-GET http://localhost:8080/users/bae9cf47-9345-4925-acef-edd81883b36d
+GET http://localhost:8080/users/0d2c04f1-e25f-41b5-b4cd-3566a081200f
 Accept: application/json
 
 ###
 
-DELETE http://localhost:8080/users/bae9cf47-9345-4925-acef-edd81883b36d
+DELETE http://localhost:8080/users/0d2c04f1-e25f-41b5-b4cd-3566a081200f
 Accept: application/json
 
 ###

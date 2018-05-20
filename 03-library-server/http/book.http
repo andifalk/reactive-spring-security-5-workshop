@@ -5,8 +5,14 @@
 # * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
 # * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
 
+# Basic Authentication
+# user@example.com: Basic dXNlckBleGFtcGxlLmNvbTp1c2Vy
+# curator@example.com: Basic Y3VyYXRvckBleGFtcGxlLmNvbTpjdXJhdG9y
+# admin@example.com: Basic YWRtaW5AZXhhbXBsZS5jb206YWRtaW4=
+
 POST http://localhost:8080/books
 Content-Type: application/json
+Authorization: Basic dXNlckBleGFtcGxlLmNvbTp1c2Vy
 
 {
     "isbn": "123456789",
@@ -29,12 +35,12 @@ Accept: application/json
 
 ###
 
-DELETE http://localhost:8080/books/{id}
+DELETE http://localhost:8080/books/37afebc5-df42-4452-b4a9-68dda1a7778c
 Accept: application/json
 
 ###
 
-POST http://localhost:8080/books/bf0dbaea-3718-4bc3-a7cf-115541454e29/borrow
+POST http://localhost:8080/books/f8dee58f-1f9c-4c63-9d1a-e3247cdc541b/borrow
 Accept: application/json
 
 ###

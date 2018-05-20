@@ -3,5 +3,6 @@ include '00-library-server'
 include '01-library-server'
 include '02-library-server'
 include '03-library-server'
+include '04-library-server'
 include 'workshop-docs'
 
