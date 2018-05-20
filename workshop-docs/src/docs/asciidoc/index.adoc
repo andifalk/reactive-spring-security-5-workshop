@@ -263,7 +263,7 @@ include::{snippets}/step-4-user-authorization-test.adoc[]
 * OAuth2 Resource Server (Product Backend): The microservice providing product data maps to a resource server
 * OAuth2 Client (UI Microservice): The thymeleaf UI microservice consuming the products maps to an OAuth2 client
 
-image::images/oauth2services.png[scaledwidth="75%",alt="OAuth2 roles"]
+image::images/oauth2_spring_roles.png[scaledwidth="75%",alt="OAuth2 roles"]
 
 These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).
 
