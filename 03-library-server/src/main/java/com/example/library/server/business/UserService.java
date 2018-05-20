@@ -24,7 +24,7 @@ public class UserService {
         this.idGenerator = idGenerator;
     }
 
-    @PreAuthorize("isAnonymous()")
+    @PreAuthorize("isAnonymous() or isAuthenticated()")
     public Mono<UserResource> findOneByEmail(String email) {
         return userRepository.findOneByEmail(email).map(this::convert);
     }

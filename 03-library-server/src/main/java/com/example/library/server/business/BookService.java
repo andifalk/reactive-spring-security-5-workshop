@@ -37,6 +37,7 @@ public class BookService {
         return bookRepository.findById(uuid).map(this::convert);
     }
 
+    @PreAuthorize("hasRole('USER')")
     public Mono<Void> borrowById(UUID uuid, UUID userId) {
 
         if (uuid == null || userId == null) {
@@ -44,7 +45,6 @@ public class BookService {
         }
 
         return bookRepository.findById(uuid)
-                .log()
                 .flatMap(b -> {
                     userRepository.findById(userId).subscribe(
                             u -> {
@@ -57,6 +57,7 @@ public class BookService {
                 .switchIfEmpty(Mono.empty());
     }
 
+    @PreAuthorize("hasRole('USER')")
     public Mono<Void> returnById(UUID uuid, UUID userId) {
 
         if (uuid == null || userId == null) {
@@ -64,7 +65,6 @@ public class BookService {
         }
 
         return bookRepository.findById(uuid)
-                .log()
                 .flatMap(b -> {
                     userRepository.findById(userId).subscribe(
                             u -> {

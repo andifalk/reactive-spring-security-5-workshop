@@ -1,5 +1,5 @@
 = Spring Security 5 Hands-On Workshop
-Andreas Falk
+Andreas Falk <andreas.falk@novatec-gmbh.de>
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -10,10 +10,6 @@ Andreas Falk
 :docinfo:
 
 image::images/spring_io_workshop.jpg[scaledwidth="50%", scaledheight="50%",alt="springio_workshop"]
-
-Andreas Falk <andreas.falk@novatec-gmbh.de> +
-https://twitter.com/andifalk[Twitter Handle] +
-https://blog.novatec-gmbh.de[NovaTec Blog]
 
 == Introduction
 
@@ -26,7 +22,7 @@ This will be done in following steps:
 2. Customize authentication configuration (provide our own user store and adapted authentication rules)
 3. Add authorization (access controls) to web and method layers
 4. Implement security integration tests
-5. Experiment with new OAuth2 Login Client
+5. Experiment with new reactive OAuth2 Login Client
 
 == Common Web Security Risks
 
@@ -46,13 +42,54 @@ image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="o
 You may also have a look into the https://www.owasp.org/index.php/OWASP_Proactive_Controls[OWASP ProActive Controls] document which describes how to develop
 your applications using good security patterns.
 
+== The workshop application
+
+In this workshop you will be provided a finished but completely unsecured reactive
+web application. This library server application provides a RESTful service for administering books and users.
+
+The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
+users is build using the Spring WebFlux router model.
+
+The application contains a complete documentation for the RESTful API build with spring rest docs
+which you can find in the directory _build/asciidoc/html5_
+after performing a full gradle build.
+
+The domain model of this application is quite simple and just consists of _Book_ and _User_.
+The packages of the application are organized as follows:
+
+- *api*: Contains the complete RESTful service
+- *business*: All the service classes (quite simple for workshop, usually containing business logic)
+- *dataaccess*: All domain models and repositories
+- *config*: All spring configuration classes
+
+[NOTE]
+====
+For users of IntelliJ you find http scripts to test all the RESTful services in sub directory _http_
+of all projects.
+====
+
+There are three target user roles for this application:
+
+- *Standard users*: A standard user can borrow and return his currently borrowed books
+- *Curators*: A curator user can add or delete books
+- *Administrators*: An administrator user can add or remove users
+
+The application is build using
+
+- Spring 5 WebFlux on Netty
+- Spring Data MongoDB with reactive driver
+- In-memory Mongodb to have an easier setup for the workshop
+
 == Workshop Organization
 
-This interactive hands-on workshop is organized into 5 steps with one step building upon each other.
-Except step 1 all steps always include two sub-directories:
+This interactive hands-on workshop is organized into several step with one step building upon each other.
+There is a separate project for each step:
 
-* initial
-* complete
+- 00-library-server: This contains the initial unsecured application
+- 01-library-server: This has just added the spring boot starter dependencies for spring security
+- 02-library-server: This adds a persistent user store for authentication
+- 03-library-server: This adds custom authentication and authorization rules
+- 04-library-server: This adds automatic integration tests for authorization
 
 === Requirements for this workshop
 
@@ -61,38 +98,32 @@ Except step 1 all steps always include two sub-directories:
 - A Java 8 or 9 JDK
 - Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
 
-=== The workshop application
-
-In this workshop you will be provided a finished but completely unsecured reactive
-web application. This application provides a RESTful service for administering books and users.
-
-The RESTful service for books is build using the Spring WebFlux annotation model and the RESZful service for
-users is build using the Spring WebFlux router model.
-
-There are three target users for this application:
-
-- Standard users: A standard user can borrow and return borrowed books
-- Curators: A curator user can add, modify or delete books
-- Administrators: An administrator user can add or remove users
-
-The application is build using
-
-- Spring 5 WebFlux on netty
-- Spring Data MongoDB with reactive driver
-- In-VM Mongodb to have an easier setup for workshop participants
-
 == Workshop Steps
+
+To start the workshop please begin by adapting the _00-library-server_ application.
+
+[NOTE]
+====
+If you are not able to keep up with completing a particular step you
+always can just start over with the existing application of next step.
+
+For example if you could not manage to complete the tutorial based on _01-library-server_
+just continue using _02-library-server_.
+====
 
 === Step 1: Auto Configuration
 
-In the first step we start quite simple by just adding the spring boot starter dependency for spring security
-to the _build.gradle_ file of the initial application.
+In the first step we start quite easy by just adding the spring boot starter dependency for spring security
+to the _build.gradle_ file of the initial application (_00-library-server_).
 
 .build.gradle
 
 include::{snippets}/step-1-gradle-build.adoc[]
 
 Please start the application by running the class _LibraryServerApplication_.
+
+image::images/loginform.png[scaledwidth="40%", scaledheight="40%",alt="owasp_top_10"]
+
 If you browse to http://localhost:8080/books[localhost:8080/books] then you will notice
 that a login form appears in the browser window.
 
@@ -108,15 +139,119 @@ With spring security autoconfigured by spring boot the credentials are as follow
 
 .console log
 
-include::{snippets}/default-password-console.adoc[]
+include::{snippets}/step-1-default-password-console.adoc[]
 
+As you can see, if Spring Security is on the classpath,
+then the web application is secured by default.
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security[Spring boot] auto-configured
+basic authentication and form based authentication for all web endpoints.
 
+This also applies to all actuator endpoints like http://localhost:8080/actuator/health[/actuator/health].
+All monitoring web endpoints can now only be accessed with an authenticated user.
+See https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-actuator[Actuator Security]
+for details.
+
+Additionally spring security improved the security of the web application automatically for:
+
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation[Session Fixation]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf[Cross Site Request Forgery (CSRF)]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#default-security-headers[Default Security Headers]
+** This automatically adds all recommended security response headers to all http responses. You can find more information about this topic
+   in the https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#tab=Main[OWASP Secure Headers Project]
+
+.default security response headers
+
+include::{snippets}/step-1-security-response-header.adoc[]
+
+Spring security 5 also added a bit more user friendly logout functionality out of the box.
+If you direct your browser to http://localhost:8080/logout[localhost:8080/logout] you will see the following
+dialog on the screen.
+
+image::images/logoutform.png[scaledwidth="40%", scaledheight="40%",alt="owasp_top_10"]
+
+This concludes the first step. Now let's proceed to next step and start with customizing
+the authentication part.
 
 === Step 2: Customize Authentication
 
+Now it is time to start customizing the auto-configuration. The spring boot auto-configuration will back-off a bit in
+this step and will back-off completely in next step.
+
+We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
+To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
+contents.
+
+.WebSecurityConfiguration class
+
+include::{snippets}/step-2-password-encoder-config.adoc[]
+
+This does two things:
+
+. This adds the _SecurityWebFilterChain_. If you already have secured servlet based spring mvc web applications
+  then you might know what's called the _spring security filter chain_. In spring webflux the _SecurityWebFilterChain_ is the similar approach
+  based on WebFilter.
+. Configures a _PasswordEncoder_. A password encoder is used by spring security to encrypt passwords and to check
+  if a given password matches the encrypted one.
+
+.PasswordEncoder interface
+
+include::{snippets}/step-2-password-encoder.adoc[]
+
+Now that we already have configured the encrypting part for passwords of our user storage
+we need to connect our own user store (the users already stored in the MongoDB) with spring security's
+authentication manager.
+
+
+.LibraryUser class
+
+include::{snippets}/step-2-library-user.adoc[]
+
+
+.LibraryReactiveUserDetailsService class
+
+include::{snippets}/step-2-library-user-details-service.adoc[]
+
+
+.DataInitializer class
+
+include::{snippets}/step-2-data-initializer.adoc[]
+
+
+
 === Step 3: Add Authorization
 
+
+.WebSecurityConfiguration class
+
+include::{snippets}/step-3-spring-security-filter-chain.adoc[]
+
+
+.BookService class
+
+include::{snippets}/step-3-book-authorization.adoc[]
+
+
+.UserService class
+
+include::{snippets}/step-3-user-authorization.adoc[]
+
+
+.BookRestController class
+
+include::{snippets}/step-3-authentication-principal.adoc[]
+
+
 === Step 4: Security Testing
+
+
+.BookServiceTest class
+
+include::{snippets}/step-4-book-authorization-test.adoc[]
+
+
+.UserServiceTest class
+
+include::{snippets}/step-4-user-authorization-test.adoc[]
 
 === Step 5: Add OAuth2 Client
 

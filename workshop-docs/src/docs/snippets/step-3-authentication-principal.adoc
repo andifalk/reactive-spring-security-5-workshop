@@ -1,0 +1,28 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.api;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+@RestController
+public class BookRestController {
+
+    ...
+
+    @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
+    public Mono<Void> borrowBookById(
+            @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { # <1>
+        return bookService.borrowById(bookId, user.getUserResource().getId());
+    }
+
+    @PostMapping("/books/" + PATH_BOOK_ID + "/return")
+    public Mono<Void> returnBookById(@PathVariable(
+            PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { # <2>
+        return bookService.returnById(bookId, user.getUserResource().getId());
+    }
+
+    ...
+}
+----
+<1> Now that we have an authenticated user context we can add the current user as the one to borrow a book
+<2> Now that we have an authenticated user context we can add the current user as the one to return his borrowed a book

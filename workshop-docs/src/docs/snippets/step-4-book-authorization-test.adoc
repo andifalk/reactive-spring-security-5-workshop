@@ -1,0 +1,62 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.business;
+
+...
+
+@DisplayName("Verify that book service")
+@SpringJUnitConfig(LibraryServerApplication.class) # <1>
+class BookServiceTest {
+
+  @Autowired
+  private BookService bookService;
+
+  @MockBean # <2>
+  private BookRepository bookRepository;
+
+  @MockBean
+  private UserRepository userRepository;
+
+  @MockBean
+  private IdGenerator idGenerator;
+
+  @DisplayName("grants access to create a book for role 'CURATOR'")
+  @Test
+  @WithMockUser(roles = "CURATOR")
+  void verifyCreateAccessIsGrantedForCurator() { # <3>
+    when(bookRepository.insert(Mockito.<Mono<Book>>any())).thenReturn(Flux.just(new Book()));
+    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
+                    "123456789", "title", "description", Collections.singletonList("author"),
+                    false, null)
+            ))).verifyComplete();
+  }
+
+  @DisplayName("denies access to create a book for roles 'USER' and 'ADMIN'")
+  @Test
+  @WithMockUser(roles = {"USER", "ADMIN"})
+  void verifyCreateAccessIsDeniedForUserAndAdmin() { # <4>
+    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
+            "123456789", "title", "description", Collections.singletonList("author"),
+            false, null)
+    ))).verifyError(AccessDeniedException.class);
+  }
+
+  @DisplayName("denies access to create a book for anonymous user")
+  @Test
+  void verifyCreateAccessIsDeniedForUnauthenticated() { # <5>
+    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
+            "123456789", "title", "description", Collections.singletonList("author"),
+            false, null)
+    ))).verifyError(AccessDeniedException.class);
+  }
+
+  ...
+
+}
+----
+<1> As this is a JUnit 5 based integration test we use _@SpringJUnitConfig_ to add spring JUnit 5 extension and configure the application context
+<2> All data access (the repositories) is mocked
+<3> Positive test case of access control for creating books with role 'CURATOR'
+<4> Negative test case of access control for creating books with roles 'USER' or 'ADMIN'
+<5> Negative test case of access control for creating books with anonymous user
+

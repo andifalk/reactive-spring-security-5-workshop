@@ -3,12 +3,8 @@ package com.example.library.server.api;
 import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
 import com.example.library.server.security.LibraryUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -67,11 +63,4 @@ public class BookRestController {
     public Mono<Void> deleteBook(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
         return bookService.deleteById(bookId);
     }
-
-    /*@ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> handle(AccessDeniedException ex) {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-        logger.error(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }*/
 }

@@ -1,0 +1,66 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.security;
+
+import com.example.library.server.business.UserResource;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+public class LibraryUser implements UserDetails { # <1>
+
+    private final UserResource userResource; # <2>
+
+    public LibraryUser(UserResource userResource) {
+        this.userResource = userResource;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return AuthorityUtils
+                .commaSeparatedStringToAuthorityList(
+                        userResource.getRoles().stream()
+                                .map(rn -> "ROLE_" + rn.name())
+                                .collect(Collectors.joining(",")));
+    }
+
+    @Override
+    public String getPassword() {
+        return userResource.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return userResource.getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public UserResource getUserResource() {
+        return userResource;
+    }
+}
+----
+<1> To provide our own user store we have to implement the spring security's predefined interface _UserDetails_
+<2> The implementation for _UserDetails_ is backed up by our existing _UserResource_ value object

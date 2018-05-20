@@ -1,0 +1,32 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.security;
+
+import com.example.library.server.business.UserService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+@Service
+public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsService { # <1>
+
+    private final UserService userService; # <2>
+
+    public LibraryReactiveUserDetailsService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Override
+    public Mono<UserDetails> findByUsername(String username) { # <3>
+        return userService.findOneByEmail(username).map(LibraryUser::new);
+    }
+}
+----
+<1> To provide our own user store we have to implement the spring security's predefined interface _ReactiveUserDetailsService_
+    which is the binding component between the authentication service and our _LibraryUser_
+
+<2> To search and load the targeted user for authentication we use our existing _UserService_
+
+<3> This will be called when authentication happens to get user details for validating the password and
+    adding this user to the security context

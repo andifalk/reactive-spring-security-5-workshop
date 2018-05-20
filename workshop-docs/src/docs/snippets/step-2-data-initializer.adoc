@@ -1,0 +1,42 @@
+[source,options="nowrap"]
+----
+package com.example.library.server;
+...
+import org.springframework.security.crypto.password.PasswordEncoder;
+...
+
+@Component
+public class DataInitializer implements CommandLineRunner {
+
+    ...
+    private final PasswordEncoder passwordEncoder; # <1>
+
+    @Autowired
+    public DataInitializer(BookRepository bookRepository, UserRepository userRepository,
+                            IdGenerator idGenerator, PasswordEncoder passwordEncoder) {
+        ...
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    ...
+
+    private void createUsers() {
+        ...
+        userRepository
+                .save(
+                        new User(
+                                USER_IDENTIFIER,
+                                "user@example.com",
+                                passwordEncoder.encode("user"), # <2>
+                                "Library",
+                                "User",
+                                Collections.singletonList(Role.USER)))
+                .subscribe();
+        ...
+    }
+    ...
+}
+----
+<1> Inject _PasswordEncoder_ to encrypt user passwords
+
+<2> Change cleartext passwords into encrypted ones (using BCrypt as default)

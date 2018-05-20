@@ -432,33 +432,34 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Spring Security 5 Hands-On Workshop</h1>
 <div class="details">
 <span id="author" class="author">Andreas Falk</span><br>
+<span id="email" class="email"><a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a></span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_introduction">1. Introduction</a></li>
 <li><a href="#_common_web_security_risks">2. Common Web Security Risks</a></li>
-<li><a href="#_workshop_organization">3. Workshop Organization</a>
+<li><a href="#_the_workshop_application">3. The workshop application</a></li>
+<li><a href="#_workshop_organization">4. Workshop Organization</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements_for_this_workshop">3.1. Requirements for this workshop</a></li>
-<li><a href="#_the_workshop_application">3.2. The workshop application</a></li>
+<li><a href="#_requirements_for_this_workshop">4.1. Requirements for this workshop</a></li>
 </ul>
 </li>
-<li><a href="#_workshop_steps">4. Workshop Steps</a>
+<li><a href="#_workshop_steps">5. Workshop Steps</a>
 <ul class="sectlevel2">
-<li><a href="#_step_1_auto_configuration">4.1. Step 1: Auto Configuration</a></li>
-<li><a href="#_step_2_customize_authentication">4.2. Step 2: Customize Authentication</a></li>
-<li><a href="#_step_3_add_authorization">4.3. Step 3: Add Authorization</a></li>
-<li><a href="#_step_4_security_testing">4.4. Step 4: Security Testing</a></li>
-<li><a href="#_step_5_add_oauth2_client">4.5. Step 5: Add OAuth2 Client</a>
+<li><a href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></li>
+<li><a href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></li>
+<li><a href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></li>
+<li><a href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></li>
+<li><a href="#_step_5_add_oauth2_client">5.5. Step 5: Add OAuth2 Client</a>
 <ul class="sectlevel3">
-<li><a href="#_what_we_will_build">4.5.1. What we will build</a></li>
-<li><a href="#authorization-server">4.5.2. Authorization Server</a></li>
-<li><a href="#resource-server">4.5.3. Resource Server (Library-Server)</a></li>
-<li><a href="#client">4.5.4. OAuth2 Client (UI)</a></li>
-<li><a href="#_provide_form_based_login">4.5.5. Provide form based login</a></li>
-<li><a href="#_use_persistent_store">4.5.6. Use persistent store</a></li>
-<li><a href="#_encrypt_the_passwords">4.5.7. Encrypt the passwords</a></li>
+<li><a href="#_what_we_will_build">5.5.1. What we will build</a></li>
+<li><a href="#authorization-server">5.5.2. Authorization Server</a></li>
+<li><a href="#resource-server">5.5.3. Resource Server (Library-Server)</a></li>
+<li><a href="#client">5.5.4. OAuth2 Client (UI)</a></li>
+<li><a href="#_provide_form_based_login">5.5.5. Provide form based login</a></li>
+<li><a href="#_use_persistent_store">5.5.6. Use persistent store</a></li>
+<li><a href="#_encrypt_the_passwords">5.5.7. Encrypt the passwords</a></li>
 </ul>
 </li>
 </ul>
@@ -473,11 +474,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <img src="images/spring_io_workshop.jpg" alt="springio_workshop">
 </div>
-</div>
-<div class="paragraph">
-<p>Andreas Falk &lt;<a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a>&gt;<br>
-<a href="https://twitter.com/andifalk">Twitter Handle</a><br>
-<a href="https://blog.novatec-gmbh.de">NovaTec Blog</a></p>
 </div>
 </div>
 </div>
@@ -506,7 +502,7 @@ more and more secure step-by-step.</p>
 <p>Implement security integration tests</p>
 </li>
 <li>
-<p>Experiment with new OAuth2 Login Client</p>
+<p>Experiment with new reactive OAuth2 Login Client</p>
 </li>
 </ol>
 </div>
@@ -553,55 +549,69 @@ your applications using good security patterns.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_workshop_organization"><a class="link" href="#_workshop_organization">3. Workshop Organization</a></h2>
+<h2 id="_the_workshop_application"><a class="link" href="#_the_workshop_application">3. The workshop application</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This interactive hands-on workshop is organized into 5 steps with one step building upon each other.
-Except step 1 all steps always include two sub-directories:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>initial</p>
-</li>
-<li>
-<p>complete</p>
-</li>
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_requirements_for_this_workshop"><a class="link" href="#_requirements_for_this_workshop">3.1. Requirements for this workshop</a></h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Some free disk space</p>
-</li>
-<li>
-<p>A Java 9 JDK</p>
-</li>
-<li>
-<p>Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_the_workshop_application"><a class="link" href="#_the_workshop_application">3.2. The workshop application</a></h3>
-<div class="paragraph">
 <p>In this workshop you will be provided a finished but completely unsecured reactive
-web application. This application provides a RESTful service for administering books.
-There are three target users for this application:</p>
+web application. This library server application provides a RESTful service for administering books and users.</p>
+</div>
+<div class="paragraph">
+<p>The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
+users is build using the Spring WebFlux router model.</p>
+</div>
+<div class="paragraph">
+<p>The application contains a complete documentation for the RESTful API build with spring rest docs
+which you can find in the directory <em>build/asciidoc/html5</em>
+after performing a full gradle build.</p>
+</div>
+<div class="paragraph">
+<p>The domain model of this application is quite simple and just consists of <em>Book</em> and <em>User</em>.
+The packages of the application are organized as follows:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Standard users: A standard user can borrow and return borrowed books</p>
+<p><strong>api</strong>: Contains the complete RESTful service</p>
 </li>
 <li>
-<p>Curators: A curator user can add, modify or delete books</p>
+<p><strong>business</strong>: All the service classes (quite simple for workshop, usually containing business logic)</p>
 </li>
 <li>
-<p>Administrators: An administrator user can add or remove users</p>
+<p><strong>dataaccess</strong>: All domain models and repositories</p>
+</li>
+<li>
+<p><strong>config</strong>: All spring configuration classes</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For users of IntelliJ you find http scripts to test all the RESTful services in sub directory <em>http</em>
+of all projects.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>There are three target user roles for this application:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Standard users</strong>: A standard user can borrow and return his currently borrowed books</p>
+</li>
+<li>
+<p><strong>Curators</strong>: A curator user can add or delete books</p>
+</li>
+<li>
+<p><strong>Administrators</strong>: An administrator user can add or remove users</p>
 </li>
 </ul>
 </div>
@@ -611,13 +621,59 @@ There are three target users for this application:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Spring 5 WebFlux on netty</p>
+<p>Spring 5 WebFlux on Netty</p>
 </li>
 <li>
 <p>Spring Data MongoDB with reactive driver</p>
 </li>
 <li>
-<p>In-VM Mongodb to have an easier setup for workshop participants</p>
+<p>In-memory Mongodb to have an easier setup for the workshop</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_workshop_organization"><a class="link" href="#_workshop_organization">4. Workshop Organization</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This interactive hands-on workshop is organized into several step with one step building upon each other.
+There is a separate project for each step:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>00-library-server: This contains the initial unsecured application</p>
+</li>
+<li>
+<p>01-library-server: This has just added the spring boot starter dependencies for spring security</p>
+</li>
+<li>
+<p>02-library-server: This adds a persistent user store for authentication</p>
+</li>
+<li>
+<p>03-library-server: This adds custom authentication and authorization rules</p>
+</li>
+<li>
+<p>04-library-server: This adds automatic integration tests for authorization</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_requirements_for_this_workshop"><a class="link" href="#_requirements_for_this_workshop">4.1. Requirements for this workshop</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Some free disk space</p>
+</li>
+<li>
+<p>Git</p>
+</li>
+<li>
+<p>A Java 8 or 9 JDK</p>
+</li>
+<li>
+<p>Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
 </li>
 </ul>
 </div>
@@ -625,13 +681,35 @@ There are three target users for this application:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_workshop_steps"><a class="link" href="#_workshop_steps">4. Workshop Steps</a></h2>
+<h2 id="_workshop_steps"><a class="link" href="#_workshop_steps">5. Workshop Steps</a></h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_step_1_auto_configuration"><a class="link" href="#_step_1_auto_configuration">4.1. Step 1: Auto Configuration</a></h3>
 <div class="paragraph">
-<p>In the first step we start quite simple by just adding the spring boot starter dependency for spring security
-to the <em>build.gradle</em> file of the initial application.</p>
+<p>To start the workshop please begin by adapting the <em>00-library-server</em> application.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you are not able to keep up with completing a particular step you
+always can just start over with the existing application of next step.</p>
+</div>
+<div class="paragraph">
+<p>For example if you could not manage to complete the tutorial based on <em>01-library-server</em>
+just continue using <em>02-library-server</em>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_step_1_auto_configuration"><a class="link" href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></h3>
+<div class="paragraph">
+<p>In the first step we start quite easy by just adding the spring boot starter dependency for spring security
+to the <em>build.gradle</em> file of the initial application (<em>00-library-server</em>).</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -657,8 +735,15 @@ to the <em>build.gradle</em> file of the initial application.</p>
 </table>
 </div>
 <div class="paragraph">
-<p>Please start the application by running the class <em>LibraryServerApplication</em>.
-If you browse to <a href="http://localhost:8080/books">localhost:8080/books</a> then you will notice
+<p>Please start the application by running the class <em>LibraryServerApplication</em>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/loginform.png" alt="owasp_top_10">
+</div>
+</div>
+<div class="paragraph">
+<p>If you browse to <a href="http://localhost:8080/books">localhost:8080/books</a> then you will notice
 that a login form appears in the browser window.</p>
 </div>
 <div class="admonitionblock tip">
@@ -696,23 +781,714 @@ that a login form appears in the browser window.</p>
 Using default security password: ded10c78-0b2f-4ae8-89fe-c267f9a29e1d</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>As you can see, if Spring Security is on the classpath,
+then the web application is secured by default.
+<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security">Spring boot</a> auto-configured
+basic authentication and form based authentication for all web endpoints.</p>
+</div>
+<div class="paragraph">
+<p>This also applies to all actuator endpoints like <a href="http://localhost:8080/actuator/health">/actuator/health</a>.
+All monitoring web endpoints can now only be accessed with an authenticated user.
+See <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-actuator">Actuator Security</a>
+for details.</p>
+</div>
+<div class="paragraph">
+<p>Additionally spring security improved the security of the web application automatically for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation">Session Fixation</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf">Cross Site Request Forgery (CSRF)</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#default-security-headers">Default Security Headers</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This automatically adds all recommended security response headers to all http responses. You can find more information about this topic
+in the <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#tab=Main">OWASP Secure Headers Project</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">default security response headers</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Expires: 0
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1 ; mode=block</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Spring security 5 also added a bit more user friendly logout functionality out of the box.
+If you direct your browser to <a href="http://localhost:8080/logout">localhost:8080/logout</a> you will see the following
+dialog on the screen.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/logoutform.png" alt="owasp_top_10">
+</div>
+</div>
+<div class="paragraph">
+<p>This concludes the first step. Now let&#8217;s proceed to next step and start with customizing
+the authentication part.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_step_2_customize_authentication"><a class="link" href="#_step_2_customize_authentication">4.2. Step 2: Customize Authentication</a></h3>
+<h3 id="_step_2_customize_authentication"><a class="link" href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></h3>
+<div class="paragraph">
+<p>Now it is time to start customizing the auto-configuration. The spring boot auto-configuration will back-off a bit in
+this step and will back-off completely in next step.</p>
+</div>
+<div class="paragraph">
+<p>We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
+To do this we add a new class <em>WebSecurityConfiguration</em> to package <em>com.example.library.server.config</em> having the following
+contents.</p>
+</div>
+<div class="listingblock">
+<div class="title">WebSecurityConfiguration class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.config;
 
-</div>
-<div class="sect2">
-<h3 id="_step_3_add_authorization"><a class="link" href="#_step_3_add_authorization">4.3. Step 3: Add Authorization</a></h3>
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-</div>
-<div class="sect2">
-<h3 id="_step_4_security_testing"><a class="link" href="#_step_4_security_testing">4.4. Step 4: Security Testing</a></h3>
+@EnableWebFluxSecurity <i class="conum" data-value="1"></i><b>(1)</b>
+public class WebSecurityConfiguration {
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder(); <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This auto-configures the SecurityWebFilterChain</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This adds the new delegating password encoder introduced in spring security 5</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This does two things:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>This adds the <em>SecurityWebFilterChain</em>. If you already have secured servlet based spring mvc web applications
+then you might know what&#8217;s called the <em>spring security filter chain</em>. In spring webflux the <em>SecurityWebFilterChain</em> is the similar approach
+based on WebFilter.</p>
+</li>
+<li>
+<p>Configures a <em>PasswordEncoder</em>. A password encoder is used by spring security to encrypt passwords and to check
+if a given password matches the encrypted one.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">PasswordEncoder interface</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package org.springframework.security.crypto.password;
+
+public interface PasswordEncoder {
+
+	String encode(CharSequence rawPassword); <i class="conum" data-value="1"></i><b>(1)</b>
+
+	boolean matches(CharSequence rawPassword, String encodedPassword); <i class="conum" data-value="2"></i><b>(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Encrypts the given cleartext password</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Validates the given cleartext password with the encrypted one (without revealing the unencrypted one)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now that we already have configured the encrypting part for passwords of our user storage
+we need to connect our own user store (the users already stored in the MongoDB) with spring security&#8217;s
+authentication manager.</p>
+</div>
+<div class="listingblock">
+<div class="title">LibraryUser class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.security;
+
+import com.example.library.server.business.UserResource;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+public class LibraryUser implements UserDetails { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    private final UserResource userResource; <i class="conum" data-value="2"></i><b>(2)</b>
+
+    public LibraryUser(UserResource userResource) {
+        this.userResource = userResource;
+    }
+
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+        return AuthorityUtils
+                .commaSeparatedStringToAuthorityList(
+                        userResource.getRoles().stream()
+                                .map(rn -&gt; "ROLE_" + rn.name())
+                                .collect(Collectors.joining(",")));
+    }
+
+    @Override
+    public String getPassword() {
+        return userResource.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return userResource.getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public UserResource getUserResource() {
+        return userResource;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To provide our own user store we have to implement the spring security&#8217;s predefined interface <em>UserDetails</em></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The implementation for <em>UserDetails</em> is backed up by our existing <em>UserResource</em> value object</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">LibraryReactiveUserDetailsService class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.security;
+
+import com.example.library.server.business.UserService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+@Service
+public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsService { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    private final UserService userService; <i class="conum" data-value="2"></i><b>(2)</b>
+
+    public LibraryReactiveUserDetailsService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Override
+    public Mono&lt;UserDetails&gt; findByUsername(String username) { <i class="conum" data-value="3"></i><b>(3)</b>
+        return userService.findOneByEmail(username).map(LibraryUser::new);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To provide our own user store we have to implement the spring security&#8217;s predefined interface <em>ReactiveUserDetailsService</em>
+which is the binding component between the authentication service and our <em>LibraryUser</em></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>To search and load the targeted user for authentication we use our existing <em>UserService</em></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This will be called when authentication happens to get user details for validating the password and
+adding this user to the security context</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">DataInitializer class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server;
+...
+import org.springframework.security.crypto.password.PasswordEncoder;
+...
+
+@Component
+public class DataInitializer implements CommandLineRunner {
+
+    ...
+    private final PasswordEncoder passwordEncoder; <i class="conum" data-value="1"></i><b>(1)</b>
+
+    @Autowired
+    public DataInitializer(BookRepository bookRepository, UserRepository userRepository,
+                            IdGenerator idGenerator, PasswordEncoder passwordEncoder) {
+        ...
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    ...
+
+    private void createUsers() {
+        ...
+        userRepository
+                .save(
+                        new User(
+                                USER_IDENTIFIER,
+                                "user@example.com",
+                                passwordEncoder.encode("user"), <i class="conum" data-value="2"></i><b>(2)</b>
+                                "Library",
+                                "User",
+                                Collections.singletonList(Role.USER)))
+                .subscribe();
+        ...
+    }
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Inject <em>PasswordEncoder</em> to encrypt user passwords</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Change cleartext passwords into encrypted ones (using BCrypt as default)</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_step_5_add_oauth2_client"><a class="link" href="#_step_5_add_oauth2_client">4.5. Step 5: Add OAuth2 Client</a></h3>
+<h3 id="_step_3_add_authorization"><a class="link" href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></h3>
+<div class="listingblock">
+<div class="title">WebSecurityConfiguration class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.config;
+
+...
+
+@EnableWebFluxSecurity
+@EnableReactiveMethodSecurity <i class="conum" data-value="1"></i><b>(1)</b>
+public class WebSecurityConfiguration {
+
+    @Bean <i class="conum" data-value="2"></i><b>(2)</b>
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        return http
+                .authorizeExchange()
+                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() <i class="conum" data-value="3"></i><b>(3)</b>
+                .matchers(EndpointRequest.to("health")).permitAll() <i class="conum" data-value="4"></i><b>(4)</b>
+                .matchers(EndpointRequest.to("info")).permitAll()
+                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name()) <i class="conum" data-value="5"></i><b>(5)</b>
+                .pathMatchers(HttpMethod.POST, "/books").hasRole(Role.CURATOR.name()) <i class="conum" data-value="6"></i><b>(6)</b>
+                .pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
+                .pathMatchers("/users/**").hasRole(Role.ADMIN.name()) <i class="conum" data-value="7"></i><b>(7)</b>
+                .anyExchange().authenticated() <i class="conum" data-value="8"></i><b>(8)</b>
+                .and()
+                .httpBasic().and().formLogin().and() <i class="conum" data-value="9"></i><b>(9)</b>
+                .logout().logoutSuccessHandler(logoutSuccessHandler()) <i class="conum" data-value="10"></i><b>(10)</b>
+                .and()
+                .build();
+    }
+
+    @Bean <i class="conum" data-value="11"></i><b>(11)</b>
+    public ServerLogoutSuccessHandler logoutSuccessHandler() {
+        RedirectServerLogoutSuccessHandler logoutSuccessHandler = new RedirectServerLogoutSuccessHandler();
+        logoutSuccessHandler.setLogoutSuccessUrl(URI.create("/books"));
+        return logoutSuccessHandler;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This adds support for method level authorization</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Configures authentication and web layer authorization for all URL&#8217;s of our REST api</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>All static resources (favicon.ico, css, images, &#8230;&#8203;) can be accessed without authentication</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Actuator endpoints for <em>health</em> and <em>info</em> can be accessed without authentication</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>All other actuator endpoints require authentication</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Modifying access to books require authenticated user having the 'CURATOR' role</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Access to users require authenticated user having the 'ADMIN' role</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>All other web endpoints require authentication</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Authentication can be performed using basic authentication or form based login</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>After logging out it redirects to URL configured in the logout success handler</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="11"></i><b>11</b></td>
+<td>The configured login success handler redirects to <a href="https://localhost:8080/books">/books</a> resource</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">BookService class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.business;
+
+...
+import org.springframework.security.access.prepost.PreAuthorize;
+...
+
+@Service
+@PreAuthorize("hasAnyRole('USER', 'CURATOR', 'ADMIN')") <i class="conum" data-value="1"></i><b>(1)</b>
+public class BookService {
+
+    ...
+
+    @PreAuthorize("hasRole('CURATOR')") <i class="conum" data-value="2"></i><b>(2)</b>
+    public Mono&lt;Void&gt; create(Mono&lt;BookResource&gt; bookResource) {
+        return bookRepository.insert(bookResource.map(this::convert)).then();
+    }
+
+    ...
+
+    @PreAuthorize("hasRole('CURATOR')") <i class="conum" data-value="3"></i><b>(3)</b>
+    public Mono&lt;Void&gt; deleteById(UUID uuid) {
+        return bookRepository.deleteById(uuid).then();
+    }
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In general all users (having either of these 3 roles) can access RESTful services for books</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Only users having role 'CURATOR' can access this RESTful service to create books</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Only users having role 'CURATOR' can access this RESTful service to delete books</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">UserService class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.business;
+...
+import org.springframework.security.access.prepost.PreAuthorize;
+...
+@Service
+@PreAuthorize("hasRole('ADMIN')") <i class="conum" data-value="1"></i><b>(1)</b>
+public class UserService {
+
+    ...
+
+    @PreAuthorize("isAnonymous() or isAuthenticated()") <i class="conum" data-value="2"></i><b>(2)</b>
+    public Mono&lt;UserResource&gt; findOneByEmail(String email) {
+        return userRepository.findOneByEmail(email).map(this::convert);
+    }
+
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In general only users having role 'ADMIN' can access RESTful services for users</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>As this operation is used by the <em>LibraryUserDetailsService</em> to perform authentication this
+has to be accessible for anonymous users (unless authentication is finished successfully anonymous
+users are unauthenticated users)</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">BookRestController class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.api;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+@RestController
+public class BookRestController {
+
+    ...
+
+    @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
+    public Mono&lt;Void&gt; borrowBookById(
+            @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { <i class="conum" data-value="1"></i><b>(1)</b>
+        return bookService.borrowById(bookId, user.getUserResource().getId());
+    }
+
+    @PostMapping("/books/" + PATH_BOOK_ID + "/return")
+    public Mono&lt;Void&gt; returnBookById(@PathVariable(
+            PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { <i class="conum" data-value="2"></i><b>(2)</b>
+        return bookService.returnById(bookId, user.getUserResource().getId());
+    }
+
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Now that we have an authenticated user context we can add the current user as the one to borrow a book</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Now that we have an authenticated user context we can add the current user as the one to return his borrowed a book</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_4_security_testing"><a class="link" href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></h3>
+<div class="listingblock">
+<div class="title">BookServiceTest class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.business;
+
+...
+
+@DisplayName("Verify that book service")
+@SpringJUnitConfig(LibraryServerApplication.class) <i class="conum" data-value="1"></i><b>(1)</b>
+class BookServiceTest {
+
+  @Autowired
+  private BookService bookService;
+
+  @MockBean <i class="conum" data-value="2"></i><b>(2)</b>
+  private BookRepository bookRepository;
+
+  @MockBean
+  private UserRepository userRepository;
+
+  @MockBean
+  private IdGenerator idGenerator;
+
+  @DisplayName("grants access to create a book for role 'CURATOR'")
+  @Test
+  @WithMockUser(roles = "CURATOR")
+  void verifyCreateAccessIsGrantedForCurator() { <i class="conum" data-value="3"></i><b>(3)</b>
+    when(bookRepository.insert(Mockito.&lt;Mono&lt;Book&gt;&gt;any())).thenReturn(Flux.just(new Book()));
+    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
+                    "123456789", "title", "description", Collections.singletonList("author"),
+                    false, null)
+            ))).verifyComplete();
+  }
+
+  @DisplayName("denies access to create a book for roles 'USER' and 'ADMIN'")
+  @Test
+  @WithMockUser(roles = {"USER", "ADMIN"})
+  void verifyCreateAccessIsDeniedForUserAndAdmin() { <i class="conum" data-value="4"></i><b>(4)</b>
+    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
+            "123456789", "title", "description", Collections.singletonList("author"),
+            false, null)
+    ))).verifyError(AccessDeniedException.class);
+  }
+
+  @DisplayName("denies access to create a book for anonymous user")
+  @Test
+  void verifyCreateAccessIsDeniedForUnauthenticated() { <i class="conum" data-value="5"></i><b>(5)</b>
+    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
+            "123456789", "title", "description", Collections.singletonList("author"),
+            false, null)
+    ))).verifyError(AccessDeniedException.class);
+  }
+
+  ...
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>As this is a JUnit 5 based integration test we use <em>@SpringJUnitConfig</em> to add spring JUnit 5 extension and configure the application context</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>All data access (the repositories) is mocked</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Positive test case of access control for creating books with role 'CURATOR'</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Negative test case of access control for creating books with roles 'USER' or 'ADMIN'</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Negative test case of access control for creating books with anonymous user</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">UserServiceTest class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.business;
+
+...
+
+@DisplayName("Verify that user service")
+@SpringJUnitConfig(LibraryServerApplication.class) <i class="conum" data-value="1"></i><b>(1)</b>
+class UserServiceTest {
+
+  @Autowired
+  private UserService userService;
+
+  @MockBean
+  private UserRepository userRepository;
+
+  @SuppressWarnings("unused")
+  @MockBean
+  private IdGenerator idGenerator;
+
+  @DisplayName("grants access to find one user by email for anonymous user")
+  @Test
+  void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() { <i class="conum" data-value="2"></i><b>(2)</b>
+    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
+            "test@example.com", "secret", "Max", "Maier",
+            Collections.singletonList(Role.USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+  }
+
+  @DisplayName("grants access to find one user by email for roles 'USER', 'CURATOR' and 'ADMIN'")
+  @Test
+  @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
+  void verifyFindOneByEmailAccessIsGrantedForAllRoles() { <i class="conum" data-value="3"></i><b>(3)</b>
+    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
+            "test@example.com", "secret", "Max", "Maier",
+            Collections.singletonList(Role.USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+  }
+
+  @DisplayName("denies access to create a user for roles 'USER' and 'CURATOR'")
+  @Test
+  @WithMockUser(roles = {"USER", "CURATOR"})
+  void verifyCreateAccessIsDeniedForUserAndCurator() { <i class="conum" data-value="4"></i><b>(4)</b>
+    StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
+            "test@example.com", "secret", "Max", "Maier",
+            Collections.singletonList(Role.USER))))).verifyError(AccessDeniedException.class);
+  }
+  ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>As this is a JUnit 5 based integration test we use <em>@SpringJUnitConfig</em> to add spring JUnit 5 extension and configure the application context</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Positive test case of access control for finding a user by email for anonymous user</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Positive test case of access control for finding a user by email with all possible roles</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Negative test case of access control for creating user with roles 'USER' or 'CURATOR'</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_5_add_oauth2_client"><a class="link" href="#_step_5_add_oauth2_client">5.5. Step 5: Add OAuth2 Client</a></h3>
 <div class="sect3">
-<h4 id="_what_we_will_build"><a class="link" href="#_what_we_will_build">4.5.1. What we will build</a></h4>
+<h4 id="_what_we_will_build"><a class="link" href="#_what_we_will_build">5.5.1. What we will build</a></h4>
 <div class="ulist">
 <div class="title">We will extend the existing two microservices to use single sign authentication based on OAuth2.</div>
 <ul>
@@ -780,7 +1556,7 @@ via properties in <em>application.properties</em>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="authorization-server"><a class="link" href="#authorization-server">4.5.2. Authorization Server</a></h4>
+<h4 id="authorization-server"><a class="link" href="#authorization-server">5.5.2. Authorization Server</a></h4>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1007,7 +1783,7 @@ security.oauth2.authorization.check-token-access=isAuthenticated() <i class="con
 </div>
 </div>
 <div class="sect3">
-<h4 id="resource-server"><a class="link" href="#resource-server">4.5.3. Resource Server (Library-Server)</a></h4>
+<h4 id="resource-server"><a class="link" href="#resource-server">5.5.3. Resource Server (Library-Server)</a></h4>
 <div class="sect4">
 <h5 id="resource-server-maven-dependencies"><a class="link" href="#resource-server-maven-dependencies">Maven dependencies</a></h5>
 <div class="paragraph">
@@ -1093,7 +1869,7 @@ security.oauth2.client.client-secret=secretkey <i class="conum" data-value="4"><
 </div>
 </div>
 <div class="sect3">
-<h4 id="client"><a class="link" href="#client">4.5.4. OAuth2 Client (UI)</a></h4>
+<h4 id="client"><a class="link" href="#client">5.5.4. OAuth2 Client (UI)</a></h4>
 <div class="sect4">
 <h5 id="client-maven-dependencies"><a class="link" href="#client-maven-dependencies">Maven dependencies</a></h5>
 <div class="paragraph">
@@ -1273,7 +2049,7 @@ security.oauth2.resource.token-info-uri=http://localhost:9999/users/oauth/check_
 </div>
 </div>
 <div class="sect3">
-<h4 id="_provide_form_based_login"><a class="link" href="#_provide_form_based_login">4.5.5. Provide form based login</a></h4>
+<h4 id="_provide_form_based_login"><a class="link" href="#_provide_form_based_login">5.5.5. Provide form based login</a></h4>
 <div class="paragraph">
 <p>A form based login is more user friendly authentication and should always be preferred over
 basic authentication popups.
@@ -1288,7 +2064,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_persistent_store"><a class="link" href="#_use_persistent_store">4.5.6. Use persistent store</a></h4>
+<h4 id="_use_persistent_store"><a class="link" href="#_use_persistent_store">5.5.6. Use persistent store</a></h4>
 <div class="paragraph">
 <p>Until now we have authenticated ourselves using credentials that are defined via application properties
 which is ok for demo purposes but definitely not for production use.</p>
@@ -1376,7 +2152,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_encrypt_the_passwords"><a class="link" href="#_encrypt_the_passwords">4.5.7. Encrypt the passwords</a></h4>
+<h4 id="_encrypt_the_passwords"><a class="link" href="#_encrypt_the_passwords">5.5.7. Encrypt the passwords</a></h4>
 <div class="paragraph">
 <p>In the last step we want to change the storage of cleartext passwords for the users in the database.
 If any attacker gets hold of our database then all passwords are leaked.
@@ -1472,7 +2248,7 @@ how to use and configure this.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-17 22:47:30 CEST
+Last updated 2018-05-21 01:25:29 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

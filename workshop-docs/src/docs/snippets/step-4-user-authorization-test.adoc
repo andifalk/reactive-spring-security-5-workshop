@@ -1,0 +1,55 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.business;
+
+...
+
+@DisplayName("Verify that user service")
+@SpringJUnitConfig(LibraryServerApplication.class) # <1>
+class UserServiceTest {
+
+  @Autowired
+  private UserService userService;
+
+  @MockBean
+  private UserRepository userRepository;
+
+  @SuppressWarnings("unused")
+  @MockBean
+  private IdGenerator idGenerator;
+
+  @DisplayName("grants access to find one user by email for anonymous user")
+  @Test
+  void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() { # <2>
+    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
+            "test@example.com", "secret", "Max", "Maier",
+            Collections.singletonList(Role.USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+  }
+
+  @DisplayName("grants access to find one user by email for roles 'USER', 'CURATOR' and 'ADMIN'")
+  @Test
+  @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
+  void verifyFindOneByEmailAccessIsGrantedForAllRoles() { # <3>
+    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
+            "test@example.com", "secret", "Max", "Maier",
+            Collections.singletonList(Role.USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+  }
+
+  @DisplayName("denies access to create a user for roles 'USER' and 'CURATOR'")
+  @Test
+  @WithMockUser(roles = {"USER", "CURATOR"})
+  void verifyCreateAccessIsDeniedForUserAndCurator() { # <4>
+    StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
+            "test@example.com", "secret", "Max", "Maier",
+            Collections.singletonList(Role.USER))))).verifyError(AccessDeniedException.class);
+  }
+  ...
+}
+----
+<1> As this is a JUnit 5 based integration test we use _@SpringJUnitConfig_ to add spring JUnit 5 extension and configure the application context
+<2> Positive test case of access control for finding a user by email for anonymous user
+<4> Positive test case of access control for finding a user by email with all possible roles
+<5> Negative test case of access control for creating user with roles 'USER' or 'CURATOR'
+

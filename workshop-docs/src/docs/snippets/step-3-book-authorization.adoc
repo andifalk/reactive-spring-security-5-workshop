@@ -1,0 +1,31 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.business;
+
+...
+import org.springframework.security.access.prepost.PreAuthorize;
+...
+
+@Service
+@PreAuthorize("hasAnyRole('USER', 'CURATOR', 'ADMIN')") # <1>
+public class BookService {
+
+    ...
+
+    @PreAuthorize("hasRole('CURATOR')") # <2>
+    public Mono<Void> create(Mono<BookResource> bookResource) {
+        return bookRepository.insert(bookResource.map(this::convert)).then();
+    }
+
+    ...
+
+    @PreAuthorize("hasRole('CURATOR')") # <3>
+    public Mono<Void> deleteById(UUID uuid) {
+        return bookRepository.deleteById(uuid).then();
+    }
+    ...
+}
+----
+<1> In general all users (having either of these 3 roles) can access RESTful services for books
+<2> Only users having role 'CURATOR' can access this RESTful service to create books
+<3> Only users having role 'CURATOR' can access this RESTful service to delete books

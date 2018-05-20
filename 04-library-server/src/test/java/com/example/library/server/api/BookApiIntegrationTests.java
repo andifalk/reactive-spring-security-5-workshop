@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -30,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 @ExtendWith(SpringExtension.class)
-@WebFluxTest(controllers = BookRestController.class)
+@WebFluxTest(BookRestController.class)
 @AutoConfigureRestDocs
 @DisplayName("Verify book api")
 class BookApiIntegrationTests {
