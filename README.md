@@ -7,8 +7,8 @@ In this workshop an initial application (providing a unsecured rest interface) w
 * Add spring security auto configuration (spring boot starter for spring security)
 * Customize authentication by adding own user storage
 * Add authorization to web and method layer
-* Add automated tests for security (authentication and authorization)
-* Add a web frontend to initial app using oauth2 login client
+* Add automated tests for security (authorization)
+* Add an OAuth2 login client
 
 To start the workshop you need
 
