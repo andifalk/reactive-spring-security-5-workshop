@@ -1,0 +1,38 @@
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+spring:
+  data:
+    mongodb:
+      port: 40496
+
+security:
+  oauth2:
+    resource:
+      jwt.key-value: |
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyU1Lg1OjNLV7eqTdeBVZbr
+        suA4q+HoDjGnMKsp6SOQ3HcXIrB8ZFG4aaifLb5ji43OKHrZZzgDla+bvw0RHTFx6B
+        7XmfREXIjqoPJl85AQWI5s80SQoQxWNsp2je9yYAz6PAYSP6CdTbUExH/leibmNImf
+        i4xYshvVMHjRsA1IA7dWYt4wIUsJb0pUmx8qORjbG2IgwpZSudlzNjp6PGxNUxGK7b
+        EfrBO/RD0sDXKgXRGAGtd0p9+ZOfQUo1esQJD07Dz8pXQ2QtnXvvNk6Glptc0OjYzA
+        auSSSetvWVkn6XMRE+5OS37Za7AP6N/J6kiFP3j2OpWh4L9CrkQ+sK0QIDAQAB
+        -----END PUBLIC KEY-----
+
+idp:
+  issuer: https://localhost:9999/users
+
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
+
+
+
