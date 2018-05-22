@@ -461,6 +461,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
+<li><a href="#_online_references">Appendix A: Online References</a></li>
+<li><a href="#_book_references">Appendix B: Book References</a></li>
 </ul>
 </div>
 </div>
@@ -1168,6 +1170,39 @@ adding this user to the security context</td>
 replaced the default user with our own users from our MongoDB persistent storage.</p>
 </div>
 <div class="paragraph">
+<p>If you restart the application now you have to use the following user credentials to log in:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. User credentials</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Roles</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">curator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
 <p>In the next workshop part we also adapt the <em>SecurityWebFilterChain</em> to our needs and add authorization rules (in web and method layer)
 for our application.</p>
 </div>
@@ -1192,7 +1227,7 @@ by playing around with manipulated URL&#8217;s.</p>
 <p>Our required authorization rule matrix looks like this:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Authorization rules for library-server</caption>
+<caption class="title">Table 2. Authorization rules for library-server</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1697,7 +1732,7 @@ for reactive clients as well (already available in <a href="https://spring.io/bl
 </div>
 <div class="paragraph">
 <p>Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
-[Spring Security OAuth2].</p>
+<a href="https://projects.spring.io/spring-security-oauth">Spring Security OAuth2</a>.</p>
 </div>
 <div class="paragraph">
 <p>Now things have changed much, so it heavily depends now on the combination of Spring Security and Spring Boot versions
@@ -1705,7 +1740,61 @@ that are used how to implement OAuth2/OIDC.</p>
 </div>
 <div class="paragraph">
 <p>Therefore you have to be aware of different approaches for Spring Security 4.x/Spring Boot 1.5.x
-and Spring Security 5/Spring Boot 2.0.</p>
+and Spring Security 5.x/Spring Boot 2.x.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 3. OAuth2 support in Spring Security + Spring Boot</caption>
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Security</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Boot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authorization server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reactive (WebFlux)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.5.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>1</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>1</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>1</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.0.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>3</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>3</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.1.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>4</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>3</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>5</sup></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><sup>1</sup> Spring Boot auto-config and separate <a href="https://projects.spring.io/spring-security-oauth">Spring Security OAuth project</a><br>
+<sup>2</sup> New rewritten OAuth2 login client included in Spring Security 5.0<br>
+<sup>3</sup> No direct support in Spring Security 5.0/Spring Boot 2.0. For auto-configuration with Spring Boot 2.0
+you still have to use the separate <a href="https://projects.spring.io/spring-security-oauth">Spring Security OAuth project</a>
+together with <a href="https://github.com/spring-projects/spring-security-oauth2-boot">Spring Security OAuth2 Boot compatibilty project</a><br>
+<sup>4</sup> New refactored support for resource server will be part of Spring Security 5.1<br>
+<sup>5</sup> OAuth2 login client with reactive support will be part of Spring Security 5.1.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1714,6 +1803,14 @@ and Spring Security 5/Spring Boot 2.0.</p>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
+<div class="paragraph">
+<p>There is a <a href="https://github.com/spring-projects/spring-security/tree/5.1.0.M1/samples/boot/oauth2login-webflux">new sample</a> using Spring Security 5.1 Milestone 1 showing how the
+OAuth2 Login Client works in the reactive way.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>You can find more information on building OAuth2 secured microservices with Spring Boot <strong>1.5.x</strong> in</p>
 </div>
@@ -1746,12 +1843,8 @@ and Spring Security 5/Spring Boot 2.0.</p>
 </li>
 </ul>
 </div>
-</td>
-</tr>
-</table>
-</div>
 <div class="paragraph">
-<p>In this workshop we will now look at what Spring Security 5 provides as new OAuth2 Login Client.</p>
+<p>In this workshop we will now look at what Spring Security 5.0 provides as new OAuth2 Login Client - Unfortunately still in a non-reactive way.</p>
 </div>
 <div class="sect3">
 <h4 id="_what_we_will_build"><a class="link" href="#_what_we_will_build">5.5.1. What we will build</a></h4>
@@ -1786,7 +1879,7 @@ This is the sub-project you will now use in the workshop.</p>
 <p>These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. Microservice URL Adresses</caption>
+<caption class="title">Table 4. Microservice URL Adresses</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1844,7 +1937,7 @@ on how to implement an authorization server.</p>
 of the authorization server must be as follows:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 3. Authorization Server Endpoints</caption>
+<caption class="title">Table 5. Authorization Server Endpoints</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -1901,6 +1994,11 @@ project <em>05-oauth2-client/authorizationserver</em>.</p>
 web application that also acts now as a OAuth2 resource server. This was required as there is no support yet in Spring
 for a reactive resource server.</p>
 </div>
+<div class="paragraph">
+<p>As the library-server is already build using Spring Boot 2.0 the compatibility module
+<a href="https://github.com/spring-projects/spring-security-oauth2-boot">spring security oauth2 boot</a> was used for
+auto configuration using Spring Boot 2.0 with the <a href="https://projects.spring.io/spring-security-oauth/">old Spring Security OAuth project</a>.</p>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1909,8 +2007,8 @@ for a reactive resource server.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You may look into the spring boot reference documentation <a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2-resource-server">Spring Boot 1.5 Reference Documentation</a>
-on how to implement an authorization server.</p>
+<p>You may look into the spring security oauth2 boot reference documentation <a href="https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-resource-server">Spring OAuth2 Autoconfig Reference Documentation</a>
+on how to implement a resource server.</p>
 </div>
 </td>
 </tr>
@@ -1934,6 +2032,7 @@ The OAuth2 login client.</p>
 following required dependencies to the existing gradle build file.</p>
 </div>
 <div class="paragraph">
+<div class="title">gradle.build file</div>
 <p>Unresolved directive in index.adoc - include::/home/afa/development/localgit/spring-security-5-workshop/workshop-docs/src/docs/snippets/step-05-oauth2-client-gradle-build.adoc[]</p>
 </div>
 </div>
@@ -2039,6 +2138,15 @@ To achieve this we add the following sections to the <em>application.yml</em> fi
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>As the library-server is now configured as an OAuth2 resource server it requires
+a valid JWT token to successfully call the <em>/books</em> endpoint now.</p>
+</div>
+<div class="paragraph">
+<p>From client side we use the <em>RestTemplate</em> for calls to the RESTful service.
+To support JWT tokens in calls we have to add a client interceptor to the <em>RestTemplate</em>.
+The following code snippet shows how this is done:</p>
+</div>
 <div class="listingblock">
 <div class="title">RestTemplateConfiguration class</div>
 <div class="content">
@@ -2095,14 +2203,175 @@ public class RestTemplateConfiguration {
 </table>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_run_all_the_components"><a class="link" href="#_run_all_the_components">Run all the components</a></h5>
+<div class="paragraph">
+<p>Finally start all three components:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Run <em>AuthorizationServerApplication</em> class in project <em>05-oauth2-client/authorizationserver</em></p>
+</li>
+<li>
+<p>Run <em>LibraryServerApplication</em> class in project <em>05-oauth2-client/library-server</em></p>
+</li>
+<li>
+<p>Run <em>OAuth2LoginClientApplication</em> class in project <em>05-oauth2-client/initial-oauth2-login-client</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Now when you access <a href="http://localhost:8081">localhost:8081</a> you should be redirected to the authorization server.
+After logging in you should get the current authenticated user infos back from authorization server.</p>
+</div>
+<div class="paragraph">
+<p>Here you can log in using one of these predefined users:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 6. User credentials</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Roles</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">curator</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>You can now access <a href="http://localhost:8081/books">localhost:8081/books</a> as well.
+This returns the book list from the library-server (resource server).</p>
+</div>
+<div class="paragraph">
+<p>This concludes our Spring Security 5.0 hands-on workshop.
+I hope you learned a lot regarding security and especially Spring Security 5.0.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you have feedback for this workshop, suggestions for improvements or you want me to
+conduct this workshop somewhere else please do not hesitate to contact me via</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Mail: <a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a></p>
+</li>
+<li>
+<p>Twitter: <a href="https://twitter.com/andifalk">@andifalk</a></p>
+</li>
+<li>
+<p>LinkedIn: <a href="https://www.linkedin.com/in/andifalk">andifalk</a></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>THANK YOU VERY MUCH :-)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_online_references"><a class="link" href="#_online_references">Appendix A: Online References</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">OWASP Top 10 2017</a></p>
+</li>
+<li>
+<p><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#tab=Main">OWASP ProActive Controls 2018</a></p>
+</li>
+<li>
+<p><a href="https://www.owasp.org/index.php/OWASP_Testing_Project">OWASP Testing Guide</a></p>
+</li>
+<li>
+<p><a href="https://oauth.net/2/">OAuth2 Specifications</a></p>
+</li>
+<li>
+<p><a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect 1.0 Specification</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/">Spring Boot 1.5 Reference Guide</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-boot/docs/2.0.x/reference/htmlsingle/">Spring Boot 2.0 Reference Guide</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/4.2.x/reference/htmlsingle/">Spring Security 4.x Reference Guide</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/5.0.x/reference/htmlsingle/">Spring Security 5.x Reference Guide</a></p>
+</li>
+<li>
+<p><a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html"><em>Legacy</em> Spring Security OAuth Reference Guide</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/"><em>Legacy</em> Spring Security OAuth2 Boot Reference Guide</a></p>
+</li>
+<li>
+<p><a href="https://github.com/spring-projects/spring-security/tree/5.1.0.M1/samples/boot/oauth2login-webflux">Spring Security OAuth2 Client for WebFlux Sample</a></p>
+</li>
+<li>
+<p><a href="https://github.com/andifalk/spring-security-5-workshop">Spring Security 5 Workshop Code</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_book_references"><a class="link" href="#_book_references">Appendix B: Book References</a></h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.amazon.com/Iron-Clad-Java-Building-Secure-Applications/dp/0071835881/ref=sr_1_1?ie=UTF8&amp;qid=1526999159&amp;sr=8-1&amp;keywords=ironclad+java">Iron-Clad Java: Building Secure Web Applications (Oracle Press, ISBN: 978-0071835886)</a></p>
+</li>
+<li>
+<p><a href="https://www.manning.com/books/oauth-2-in-action">OAuth 2 in Action (Manning Publications, ISBN: 978-1617293276)</a></p>
+</li>
+<li>
+<p><a href="https://www.manning.com/books/spring-in-action-fifth-edition">Spring in Action 5th Edition (Manning Publications, ISBN: 978-1617294945</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-22 14:57:06 CEST
+Last updated 2018-05-22 16:51:21 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
