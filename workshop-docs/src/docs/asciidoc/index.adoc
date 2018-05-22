@@ -113,8 +113,9 @@ just continue using _02-library-server_.
 
 === Step 1: Auto Configuration
 
-In the first step we start quite easy by just adding the spring boot starter dependency for spring security
-to the _build.gradle_ file of the initial application (_00-library-server_).
+.In the first step we start quite easy by just adding the spring boot starter dependency for spring security.
+
+We just need to add the following two dependencies to the _build.gradle_ file of the initial application (_00-library-server_).
 
 .build.gradle
 
@@ -174,8 +175,9 @@ the authentication part.
 
 === Step 2: Customize Authentication
 
-Now it is time to start customizing the auto-configuration. The spring boot auto-configuration will back-off a bit in
-this step and will back-off completely in next step.
+.Now it is time to start customizing the auto-configuration.
+
+The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.
 
 We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
@@ -185,11 +187,13 @@ contents.
 
 include::{snippets}/step-2-password-encoder-config.adoc[]
 
-This does two things:
+The _WebSecurityConfiguration_ implementation does two important things:
 
 . This adds the _SecurityWebFilterChain_. If you already have secured servlet based spring mvc web applications
-  then you might know what's called the _spring security filter chain_. In spring webflux the _SecurityWebFilterChain_ is the similar approach
-  based on WebFilter.
+  then you might know what's called the
+  https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#security-filter-chain[_spring security filter chain_].
+  In spring webflux the _SecurityWebFilterChain_ is the similar approach
+  based on matching a request with one or more WebFilter.
 . Configures a _PasswordEncoder_. A password encoder is used by spring security to encrypt passwords and to check
   if a given password matches the encrypted one.
 
@@ -197,71 +201,201 @@ This does two things:
 
 include::{snippets}/step-2-password-encoder.adoc[]
 
-Now that we already have configured the encrypting part for passwords of our user storage
-we need to connect our own user store (the users already stored in the MongoDB) with spring security's
-authentication manager.
+In spring security 5 creating an instance of the _DelegatingPasswordEncoder_ is much easier by using the class _PasswordEncoderFactories_.
 
+.DelegatingPasswordEncoder class
 
-.LibraryUser class
+include::{snippets}/step-2-delegating-password-encoder.adoc[]
 
-include::{snippets}/step-2-library-user.adoc[]
-
-
-.LibraryReactiveUserDetailsService class
-
-include::{snippets}/step-2-library-user-details-service.adoc[]
-
+To have encrypted passwords in our MongoDB store we need to tweak our existing _DataInitializer_ a bit with the
+_PasswordEncoder_ we just have configured.
 
 .DataInitializer class
 
 include::{snippets}/step-2-data-initializer.adoc[]
 
+Now that we already have configured the encrypting part for passwords of our user storage
+we need to connect our own user store (the users already stored in the MongoDB) with spring security's
+authentication manager.
 
+This is done in two steps:
+
+In the first step we need to implement spring security's definition of a user called _UserDetails_.
+
+.LibraryUser class
+
+include::{snippets}/step-2-library-user.adoc[]
+
+In the second step we need to implement spring security's interface _ReactiveUserDetailsService_ to integrate our user store with the authentication manager.
+
+.LibraryReactiveUserDetailsService class
+
+include::{snippets}/step-2-library-user-details-service.adoc[]
+
+After completing this part of the workshop we now still have the auto-configured _SecurityWebFilterChain_ but we have
+replaced the default user with our own users from our MongoDB persistent storage.
+
+In the next workshop part we also adapt the _SecurityWebFilterChain_ to our needs and add authorization rules (in web and method layer)
+for our application.
 
 === Step 3: Add Authorization
 
+.In this part of the workshop we want to add our customized authorization rules for our application.
+
+As a result of the previous workshop steps we now have authentication for all our web endpoints
+(including the actuator endpoints) and we can log in using our own users. But here security does not stop.
+
+We know who is using our application (*authentication*) but we do not have control over what this user is
+allowed to do in our application (*authorization*).
+
+As a best practice the authorization should always be implemented on different layers like the web and method layer.
+This way the authorization still prohibits access even if a user manages to bypass the web url based authorization filter
+by playing around with manipulated URL's.
+
+Our required authorization rule matrix looks like this:
+
+.Authorization rules for library-server
+|===
+|URL | Http method|Restricted|Roles with access
+|/*.css,/*.jpg,/*.ico,...
+|All
+|No
+|--
+|/books
+|POST
+|Yes
+|CURATOR
+|/books
+|DELETE
+|Yes
+|CURATOR
+|/users
+|All
+|Yes
+|ADMIN
+|/actuator/health
+|GET
+|No
+|--
+|/actuator/info
+|GET
+|No
+|--
+|/actuator/*
+|GET
+|Yes
+|ADMIN
+|/*
+|All
+|Yes
+|All authenticated ones
+|===
+
+All the web layer authorization rules are configured in the _WebSecurityConfiguration_ class by adding
+a new bean for _SecurityWebFilterChain_. Here we also already switch on the support for method layer authorization
+by adding the annotation _@EnableReactiveMethodSecurity_.
 
 .WebSecurityConfiguration class
 
 include::{snippets}/step-3-spring-security-filter-chain.adoc[]
 
+We also add a a _ServerLogoutSuccessHandler_ bean to redirect back to the _/books_ endpoint after a logout
+to omit the error message we got so far by redirecting to a non-existing page.
+
+We continue with authorization on the method layer by adding the rules to our business service classes
+_BookService_ and _UserService_. To achieve this we use the _@PreAuthorize_ annotations provided by spring security.
+Same as other spring annotations (e.g. @Transactional) you can put _@PreAuthorize_ annotations on global class level
+or on method level.
+
+Here it is done for the all operations of the book service.
 
 .BookService class
 
 include::{snippets}/step-3-book-authorization.adoc[]
 
+And now we add it the same way for the all operations of the user service.
 
 .UserService class
 
 include::{snippets}/step-3-user-authorization.adoc[]
 
+Now that we have the current user context available in our application we can use this to automatically
+set this user as the one who has borrowed a book or returns his borrowed book. The current user can always be evaluated
+using the _ReactiveSecurityContextHolder_ class. But a more elegant way is to just let the framework put the current user
+directly into our operation via _@AuthenticationPrincipal_ annotation.
 
 .BookRestController class
 
 include::{snippets}/step-3-authentication-principal.adoc[]
 
+In this workshop step we added the authorization to web and method layers. So now for particular RESTful endpoints access is only
+permitted to users with special roles.
+
+But how do you know that you have implemented all the authorization rules and did not leave a big security leak
+for your RESTful API? Or you may change some authorizations later by accident?
+
+To be on a safer side here you need automatic testing. Yes, this can also be done for security!
+We will see how this works in the next workshop part.
 
 === Step 4: Security Testing
 
+.Now it is time to prove that we have implemented these authorization rules correctly with automatic testing.
+
+We start testing the rules on method layer for all operations regarding books.
+In _BookServiceTest_ class we also use the new convenience annotation _@SpringJUnitConfig_ which is a shortcut of
+_@ExtendWith(value=SpringExtension.class)_ and _@ContextConfiguration_.
+
+As you can see in the following code only a small part is shown as a sample here to test the _BookService.create()_ operation.
+Authorization should always be tested for positive *AND* negative test cases. Otherwise you probably miss an authorization
+constraint. Depending on the time left in the workshop you can add some more test cases as you like or just look into the
+completed application _04-library-server_.
 
 .BookServiceTest class
 
 include::{snippets}/step-4-book-authorization-test.adoc[]
 
+For sure you have to add similar tests as well for the user part.
 
 .UserServiceTest class
 
 include::{snippets}/step-4-user-authorization-test.adoc[]
 
-=== Step 5: Add OAuth2 Client
+=== Step 5: OAuth2 Login Client
+
+.Spring security 5 introduced new support for OAuth2/OpenID Connect directly in spring security.
+
+In short spring security 5 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
+on a third party library [Nimbus] instead of implementing all these functionality directly in Spring itself.
+
+So far Spring Security 5.0 only provides the client side for servlet-based clients.
+The resource server support is in the roadmap for Spring Security 5.1. There will also be client side support
+for reactive clients as well (already available in Spring Security 5.1 milestone M1).
+
+Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
+[Spring Security OAuth2].
+
+Now things have changed much, so it heavily depends now on the combination of Spring Security and Spring Boot versions
+that are used how to implement OAuth2/OIDC.
+
+Therefore you have to be aware of different approaches for Spring Security 4.x/Spring Boot 1.5.x
+and Spring Security 5/Spring Boot 2.0:
+
+In this workshop we will now look at what Spring Security 5 provides as new OAuth2 Login Client.
 
 ==== What we will build
 
-.We will extend the existing two microservices to use single sign authentication based on OAuth2.
+In the _05-oauth2-client_ project you will be provided the following sub-projects:
 
-* OAuth2 Authorization Server: This is the new microservice for single sign on which holds all users with their credentials
-* OAuth2 Resource Server (Product Backend): The microservice providing product data maps to a resource server
-* OAuth2 Client (UI Microservice): The thymeleaf UI microservice consuming the products maps to an OAuth2 client
+* *authorizationserver*: This is the OAuth2 authorization server which holds all users with their credentials.
+This is still based on Spring Boot 1.5.x.
+
+* *library-server*: A non-reactive (servlet-based) version of the library server from previous workshop steps
+(Spring Security 5.0 does not yet support reactive resource servers)
+
+* initial-oauth2-login-client: Initial code for this workshop part to implement the new OAuth2 Login Client
+This is the sub-project you will now use in the workshop.
+
+* oauth2-login-client: Complete code of the new OAuth2 Login Client (for reference)
 
 image::images/oauth2_spring_roles.png[scaledwidth="75%",alt="OAuth2 roles"]
 

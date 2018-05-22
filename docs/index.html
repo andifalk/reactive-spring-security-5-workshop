@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></li>
 <li><a href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></li>
 <li><a href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></li>
-<li><a href="#_step_5_add_oauth2_client">5.5. Step 5: Add OAuth2 Client</a>
+<li><a href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a>
 <ul class="sectlevel3">
 <li><a href="#_what_we_will_build">5.5.1. What we will build</a></li>
 <li><a href="#authorization-server">5.5.2. Authorization Server</a></li>
@@ -708,8 +708,8 @@ just continue using <em>02-library-server</em>.</p>
 <div class="sect2">
 <h3 id="_step_1_auto_configuration"><a class="link" href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></h3>
 <div class="paragraph">
-<p>In the first step we start quite easy by just adding the spring boot starter dependency for spring security
-to the <em>build.gradle</em> file of the initial application (<em>00-library-server</em>).</p>
+<div class="title">In the first step we start quite easy by just adding the spring boot starter dependency for spring security.</div>
+<p>We just need to add the following two dependencies to the <em>build.gradle</em> file of the initial application (<em>00-library-server</em>).</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -846,8 +846,8 @@ the authentication part.</p>
 <div class="sect2">
 <h3 id="_step_2_customize_authentication"><a class="link" href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></h3>
 <div class="paragraph">
-<p>Now it is time to start customizing the auto-configuration. The spring boot auto-configuration will back-off a bit in
-this step and will back-off completely in next step.</p>
+<div class="title">Now it is time to start customizing the auto-configuration.</div>
+<p>The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.</p>
 </div>
 <div class="paragraph">
 <p>We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
@@ -888,14 +888,16 @@ public class WebSecurityConfiguration {
 </table>
 </div>
 <div class="paragraph">
-<p>This does two things:</p>
+<p>The <em>WebSecurityConfiguration</em> implementation does two important things:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
 <p>This adds the <em>SecurityWebFilterChain</em>. If you already have secured servlet based spring mvc web applications
-then you might know what&#8217;s called the <em>spring security filter chain</em>. In spring webflux the <em>SecurityWebFilterChain</em> is the similar approach
-based on WebFilter.</p>
+then you might know what&#8217;s called the
+<a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#security-filter-chain"><em>spring security filter chain</em></a>.
+In spring webflux the <em>SecurityWebFilterChain</em> is the similar approach
+based on matching a request with one or more WebFilter.</p>
 </li>
 <li>
 <p>Configures a <em>PasswordEncoder</em>. A password encoder is used by spring security to encrypt passwords and to check
@@ -929,9 +931,114 @@ public interface PasswordEncoder {
 </table>
 </div>
 <div class="paragraph">
+<p>In spring security 5 creating an instance of the <em>DelegatingPasswordEncoder</em> is much easier by using the class <em>PasswordEncoderFactories</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">DelegatingPasswordEncoder class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package org.springframework.security.crypto.factory;
+
+public class PasswordEncoderFactories {
+    ...
+	public static PasswordEncoder createDelegatingPasswordEncoder() {
+		String encodingId = "bcrypt"; <i class="conum" data-value="1"></i><b>(1)</b>
+		Map&lt;String, PasswordEncoder&gt; encoders = new HashMap&lt;&gt;();
+		encoders.put(encodingId, new BCryptPasswordEncoder()); <i class="conum" data-value="2"></i><b>(2)</b>
+		encoders.put("ldap", new LdapShaPasswordEncoder());
+		encoders.put("MD4", new Md4PasswordEncoder());
+		encoders.put("MD5", new MessageDigestPasswordEncoder("MD5"));
+		encoders.put("noop", NoOpPasswordEncoder.getInstance());
+		encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
+		encoders.put("scrypt", new SCryptPasswordEncoder());
+		encoders.put("SHA-1", new MessageDigestPasswordEncoder("SHA-1"));
+		encoders.put("SHA-256", new MessageDigestPasswordEncoder("SHA-256"));
+		encoders.put("sha256", new StandardPasswordEncoder());
+
+		return new DelegatingPasswordEncoder(encodingId, encoders);
+	}
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>BCrypt is the default for encrypting passwords</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Suitable encoders for decrypting are selected based on prefix in encrypted value</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To have encrypted passwords in our MongoDB store we need to tweak our existing <em>DataInitializer</em> a bit with the
+<em>PasswordEncoder</em> we just have configured.</p>
+</div>
+<div class="listingblock">
+<div class="title">DataInitializer class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server;
+...
+import org.springframework.security.crypto.password.PasswordEncoder;
+...
+
+@Component
+public class DataInitializer implements CommandLineRunner {
+
+    ...
+    private final PasswordEncoder passwordEncoder; <i class="conum" data-value="1"></i><b>(1)</b>
+
+    @Autowired
+    public DataInitializer(BookRepository bookRepository, UserRepository userRepository,
+                            IdGenerator idGenerator, PasswordEncoder passwordEncoder) {
+        ...
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    ...
+
+    private void createUsers() {
+        ...
+        userRepository
+                .save(
+                        new User(
+                                USER_IDENTIFIER,
+                                "user@example.com",
+                                passwordEncoder.encode("user"), <i class="conum" data-value="2"></i><b>(2)</b>
+                                "Library",
+                                "User",
+                                Collections.singletonList(Role.USER)))
+                .subscribe();
+        ...
+    }
+    ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Inject <em>PasswordEncoder</em> to encrypt user passwords</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Change cleartext passwords into encrypted ones (using BCrypt as default)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>Now that we already have configured the encrypting part for passwords of our user storage
 we need to connect our own user store (the users already stored in the MongoDB) with spring security&#8217;s
 authentication manager.</p>
+</div>
+<div class="paragraph">
+<p>This is done in two steps:</p>
+</div>
+<div class="paragraph">
+<p>In the first step we need to implement spring security&#8217;s definition of a user called <em>UserDetails</em>.</p>
 </div>
 <div class="listingblock">
 <div class="title">LibraryUser class</div>
@@ -1011,6 +1118,9 @@ public class LibraryUser implements UserDetails { <i class="conum" data-value="1
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>In the second step we need to implement spring security&#8217;s interface <em>ReactiveUserDetailsService</em> to integrate our user store with the authentication manager.</p>
+</div>
 <div class="listingblock">
 <div class="title">LibraryReactiveUserDetailsService class</div>
 <div class="content">
@@ -1056,62 +1166,104 @@ adding this user to the security context</td>
 </tr>
 </table>
 </div>
-<div class="listingblock">
-<div class="title">DataInitializer class</div>
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>package com.example.library.server;
-...
-import org.springframework.security.crypto.password.PasswordEncoder;
-...
-
-@Component
-public class DataInitializer implements CommandLineRunner {
-
-    ...
-    private final PasswordEncoder passwordEncoder; <i class="conum" data-value="1"></i><b>(1)</b>
-
-    @Autowired
-    public DataInitializer(BookRepository bookRepository, UserRepository userRepository,
-                            IdGenerator idGenerator, PasswordEncoder passwordEncoder) {
-        ...
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    ...
-
-    private void createUsers() {
-        ...
-        userRepository
-                .save(
-                        new User(
-                                USER_IDENTIFIER,
-                                "user@example.com",
-                                passwordEncoder.encode("user"), <i class="conum" data-value="2"></i><b>(2)</b>
-                                "Library",
-                                "User",
-                                Collections.singletonList(Role.USER)))
-                .subscribe();
-        ...
-    }
-    ...
-}</code></pre>
+<div class="paragraph">
+<p>After completing this part of the workshop we now still have the auto-configured <em>SecurityWebFilterChain</em> but we have
+replaced the default user with our own users from our MongoDB persistent storage.</p>
 </div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Inject <em>PasswordEncoder</em> to encrypt user passwords</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Change cleartext passwords into encrypted ones (using BCrypt as default)</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>In the next workshop part we also adapt the <em>SecurityWebFilterChain</em> to our needs and add authorization rules (in web and method layer)
+for our application.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_step_3_add_authorization"><a class="link" href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></h3>
+<div class="paragraph">
+<div class="title">In this part of the workshop we want to add our customized authorization rules for our application.</div>
+<p>As a result of the previous workshop steps we now have authentication for all our web endpoints
+(including the actuator endpoints) and we can log in using our own users. But here security does not stop.</p>
+</div>
+<div class="paragraph">
+<p>We know who is using our application (<strong>authentication</strong>) but we do not have control over what this user is
+allowed to do in our application (<strong>authorization</strong>).</p>
+</div>
+<div class="paragraph">
+<p>As a best practice the authorization should always be implemented on different layers like the web and method layer.
+This way the authorization still prohibits access even if a user manages to bypass the web url based authorization filter
+by playing around with manipulated URL&#8217;s.</p>
+</div>
+<div class="paragraph">
+<p>Our required authorization rule matrix looks like this:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Authorization rules for library-server</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">URL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Http method</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Restricted</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Roles with access</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/<strong>.css,/</strong>.jpg,/*.ico,&#8230;&#8203;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/books</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/books</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DELETE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ADMIN</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/actuator/health</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/actuator/info</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/actuator/*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ADMIN</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/*</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All authenticated ones</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>All the web layer authorization rules are configured in the <em>WebSecurityConfiguration</em> class by adding
+a new bean for <em>SecurityWebFilterChain</em>. Here we also already switch on the support for method layer authorization
+by adding the annotation <em>@EnableReactiveMethodSecurity</em>.</p>
+</div>
 <div class="listingblock">
 <div class="title">WebSecurityConfiguration class</div>
 <div class="content">
@@ -1205,6 +1357,19 @@ public class WebSecurityConfiguration {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>We also add a a <em>ServerLogoutSuccessHandler</em> bean to redirect back to the <em>/books</em> endpoint after a logout
+to omit the error message we got so far by redirecting to a non-existing page.</p>
+</div>
+<div class="paragraph">
+<p>We continue with authorization on the method layer by adding the rules to our business service classes
+<em>BookService</em> and <em>UserService</em>. To achieve this we use the <em>@PreAuthorize</em> annotations provided by spring security.
+Same as other spring annotations (e.g. @Transactional) you can put <em>@PreAuthorize</em> annotations on global class level
+or on method level.</p>
+</div>
+<div class="paragraph">
+<p>Here it is done for the all operations of the book service.</p>
+</div>
 <div class="listingblock">
 <div class="title">BookService class</div>
 <div class="content">
@@ -1251,6 +1416,9 @@ public class BookService {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>And now we add it the same way for the all operations of the user service.</p>
+</div>
 <div class="listingblock">
 <div class="title">UserService class</div>
 <div class="content">
@@ -1286,6 +1454,12 @@ has to be accessible for anonymous users (unless authentication is finished succ
 users are unauthenticated users)</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Now that we have the current user context available in our application we can use this to automatically
+set this user as the one who has borrowed a book or returns his borrowed book. The current user can always be evaluated
+using the <em>ReactiveSecurityContextHolder</em> class. But a more elegant way is to just let the framework put the current user
+directly into our operation via <em>@AuthenticationPrincipal</em> annotation.</p>
 </div>
 <div class="listingblock">
 <div class="title">BookRestController class</div>
@@ -1327,9 +1501,33 @@ public class BookRestController {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>In this workshop step we added the authorization to web and method layers. So now for particular RESTful endpoints access is only
+permitted to users with special roles.</p>
+</div>
+<div class="paragraph">
+<p>But how do you know that you have implemented all the authorization rules and did not leave a big security leak
+for your RESTful API? Or you may change some authorizations later by accident?</p>
+</div>
+<div class="paragraph">
+<p>To be on a safer side here you need automatic testing. Yes, this can also be done for security!
+We will see how this works in the next workshop part.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_step_4_security_testing"><a class="link" href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></h3>
+<div class="paragraph">
+<div class="title">Now it is time to prove that we have implemented these authorization rules correctly with automatic testing.</div>
+<p>We start testing the rules on method layer for all operations regarding books.
+In <em>BookServiceTest</em> class we also use the new convenience annotation <em>@SpringJUnitConfig</em> which is a shortcut of
+<em>@ExtendWith(value=SpringExtension.class)</em> and <em>@ContextConfiguration</em>.</p>
+</div>
+<div class="paragraph">
+<p>As you can see in the following code only a small part is shown as a sample here to test the <em>BookService.create()</em> operation.
+Authorization should always be tested for positive <strong>AND</strong> negative test cases. Otherwise you probably miss an authorization
+constraint. Depending on the time left in the workshop you can add some more test cases as you like or just look into the
+completed application <em>04-library-server</em>.</p>
+</div>
 <div class="listingblock">
 <div class="title">BookServiceTest class</div>
 <div class="content">
@@ -1412,6 +1610,9 @@ class BookServiceTest {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>For sure you have to add similar tests as well for the user part.</p>
+</div>
 <div class="listingblock">
 <div class="title">UserServiceTest class</div>
 <div class="content">
@@ -1486,20 +1687,53 @@ class UserServiceTest {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_5_add_oauth2_client"><a class="link" href="#_step_5_add_oauth2_client">5.5. Step 5: Add OAuth2 Client</a></h3>
+<h3 id="_step_5_oauth2_login_client"><a class="link" href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a></h3>
+<div class="paragraph">
+<div class="title">Spring security 5 introduced new support for OAuth2/OpenID Connect directly in spring security.</div>
+<p>In short spring security 5 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
+on a third party library [Nimbus] instead of implementing all these functionality directly in Spring itself.</p>
+</div>
+<div class="paragraph">
+<p>So far Spring Security 5.0 only provides the client side for servlet-based clients.
+The resource server support is in the roadmap for Spring Security 5.1. There will also be client side support
+for reactive clients as well (already available in Spring Security 5.1 milestone M1).</p>
+</div>
+<div class="paragraph">
+<p>Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
+[Spring Security OAuth2].</p>
+</div>
+<div class="paragraph">
+<p>Now things have changed much, so it heavily depends now on the combination of Spring Security and Spring Boot versions
+that are used how to implement OAuth2/OIDC.</p>
+</div>
+<div class="paragraph">
+<p>Therefore you have to be aware of different approaches for Spring Security 4.x/Spring Boot 1.5.x
+and Spring Security 5/Spring Boot 2.0:</p>
+</div>
+<div class="paragraph">
+<p>In this workshop we will now look at what Spring Security 5 provides as new OAuth2 Login Client.</p>
+</div>
 <div class="sect3">
 <h4 id="_what_we_will_build"><a class="link" href="#_what_we_will_build">5.5.1. What we will build</a></h4>
+<div class="paragraph">
+<p>In the <em>05-oauth2-client</em> project you will be provided the following sub-projects:</p>
+</div>
 <div class="ulist">
-<div class="title">We will extend the existing two microservices to use single sign authentication based on OAuth2.</div>
 <ul>
 <li>
-<p>OAuth2 Authorization Server: This is the new microservice for single sign on which holds all users with their credentials</p>
+<p><strong>authorizationserver</strong>: This is the OAuth2 authorization server which holds all users with their credentials.
+This is still based on Spring Boot 1.5.x.</p>
 </li>
 <li>
-<p>OAuth2 Resource Server (Product Backend): The microservice providing product data maps to a resource server</p>
+<p><strong>library-server</strong>: A non-reactive (servlet-based) version of the library server from previous workshop steps
+(Spring Security 5.0 does not yet support reactive resource servers)</p>
 </li>
 <li>
-<p>OAuth2 Client (UI Microservice): The thymeleaf UI microservice consuming the products maps to an OAuth2 client</p>
+<p>initial-oauth2-login-client: Initial code for this workshop part to implement the new OAuth2 Login Client
+This is the sub-project you will now use in the workshop.</p>
+</li>
+<li>
+<p>oauth2-login-client: Complete code of the new OAuth2 Login Client (for reference)</p>
 </li>
 </ul>
 </div>
@@ -1512,7 +1746,7 @@ class UserServiceTest {
 <p>These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. Microservice URL Adresses</caption>
+<caption class="title">Table 2. Microservice URL Adresses</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1589,7 +1823,7 @@ this can be achieved by the <em>server.context</em> property
 of the authorization server must be as follows:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. Authorization Server Endpoints</caption>
+<caption class="title">Table 3. Authorization Server Endpoints</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -2248,7 +2482,7 @@ how to use and configure this.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-21 01:48:46 CEST
+Last updated 2018-05-22 11:43:36 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
