@@ -2,21 +2,16 @@
 
 ## Initial application
 
-Please start into the workshop with this initial application
+This is the initial absolutely unsecured reactive web application.
 
-In this workshop an initial application (providing a unsecured rest interface) will be made secure in following steps:
+This application deals with books and users.
 
-* Add spring security auto configuration (spring boot starter for spring security)
-* Customize authentication by adding own user storage
-* Add authorization to web and method layer
-* Add automated tests for security (authentication and authorization)
-* Add a web frontend to initial app using oauth2 login client
+A standard user can borrow or return borrowed books, a curator user can add or remove books
+and an admin user can show, add or remove users.
 
-To start the workshop you need
+Please start into the workshop with this initial application.
 
-[the workshop tutorial documentation](https://andifalk.github.io/spring-security-5-workshop/)
+You find the accompanying workshop tutorial [here](https://andifalk.github.io/spring-security-5-workshop/)
 
-and 
-
-[the initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/00-library-server)
-
+If you have already read all introductory sections of the tutorial you can directly
+start with the [first step in the tutorial](https://andifalk.github.io/spring-security-5-workshop/#_step_1_auto_configuration)

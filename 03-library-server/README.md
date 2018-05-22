@@ -1,22 +1,9 @@
 # Spring Security 5 Workshop
 
-## Initial application
+## 03 - Library-Server
 
-Please start into the workshop with this initial application
+This is the completed code of the reactive web application for step 3 of the workshop.
 
-In this workshop an initial application (providing a unsecured rest interface) will be made secure in following steps:
+This includes all finished parts of [step 3](https://andifalk.github.io/spring-security-5-workshop/#_step_3_add_authorization)
 
-* Add spring security auto configuration (spring boot starter for spring security)
-* Customize authentication by adding own user storage
-* Add authorization to web and method layer
-* Add automated tests for security (authentication and authorization)
-* Add a web frontend to initial app using oauth2 login client
-
-To start the workshop you need
-
-[the workshop tutorial documentation](https://andifalk.github.io/spring-security-5-workshop/)
-
-and 
-
-[the initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/00-library-server)
-
+You may continue from here with the [next step](https://andifalk.github.io/spring-security-5-workshop/#_step_4_security_testing) of the workshop.

@@ -1,14 +1,6 @@
 # Spring Security 5 Workshop
 
-Workshop on securing a reactive spring boot 2 application in multiple steps.
-
-In this workshop an initial application (providing a unsecured rest interface) will be made secure in following steps:
-
-* Add spring security auto configuration (spring boot starter for spring security)
-* Customize authentication by adding own user storage
-* Add authorization to web and method layer
-* Add automated tests for security (authorization)
-* Add an OAuth2 login client
+This is a hands-on workshop on securing a reactive Spring Boot 2.0 based web application using Spring Security 5.0.
 
 To start the workshop you need
 
@@ -17,4 +9,12 @@ To start the workshop you need
 and 
 
 [the initial application to be made secure](https://github.com/andifalk/spring-security-5-workshop/tree/master/00-library-server)
+
+The workshop is split up into the following parts:
+
+* [Step 1: Auto Configuration](https://andifalk.github.io/spring-security-5-workshop/#_step_1_auto_configuration)
+* [Step 2: Customize Authentication](https://andifalk.github.io/spring-security-5-workshop/#_step_2_customize_authentication)
+* [Step 3: Add Authorization](https://andifalk.github.io/spring-security-5-workshop/#_step_3_add_authorization)
+* [Step 4: Security Testing](https://andifalk.github.io/spring-security-5-workshop/#_step_4_security_testing)
+* [Step 5: OAuth2 Login Client](https://andifalk.github.io/spring-security-5-workshop/#_step_5_oauth2_login_client)
 
