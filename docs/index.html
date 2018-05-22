@@ -456,10 +456,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_what_we_will_build">5.5.1. What we will build</a></li>
 <li><a href="#authorization-server">5.5.2. Authorization Server</a></li>
 <li><a href="#resource-server">5.5.3. Resource Server (Library-Server)</a></li>
-<li><a href="#client">5.5.4. OAuth2 Client (UI)</a></li>
-<li><a href="#_provide_form_based_login">5.5.5. Provide form based login</a></li>
-<li><a href="#_use_persistent_store">5.5.6. Use persistent store</a></li>
-<li><a href="#_encrypt_the_passwords">5.5.7. Encrypt the passwords</a></li>
+<li><a href="#oauth2-login-client">5.5.4. OAuth2 Login Client</a></li>
 </ul>
 </li>
 </ul>
@@ -1689,14 +1686,14 @@ class UserServiceTest {
 <div class="sect2">
 <h3 id="_step_5_oauth2_login_client"><a class="link" href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a></h3>
 <div class="paragraph">
-<div class="title">Spring security 5 introduced new support for OAuth2/OpenID Connect directly in spring security.</div>
-<p>In short spring security 5 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
-on a third party library [Nimbus] instead of implementing all these functionality directly in Spring itself.</p>
+<div class="title">Spring Security 5.0 introduced new support for OAuth2/OpenID Connect directly in spring security.</div>
+<p>In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
+on a third party library <a href="https://connect2id.com/products/nimbus-oauth-openid-connect-sdk">Nimbus OAuth 2.0 SDK</a> instead of implementing all these functionality directly in Spring itself.</p>
 </div>
 <div class="paragraph">
 <p>So far Spring Security 5.0 only provides the client side for servlet-based clients.
-The resource server support is in the roadmap for Spring Security 5.1. There will also be client side support
-for reactive clients as well (already available in Spring Security 5.1 milestone M1).</p>
+The resource server support is in the <a href="https://github.com/spring-projects/spring-security/milestone/106">roadmap for Spring Security 5.1</a>. There will also be client side support
+for reactive clients as well (already available in <a href="https://spring.io/blog/2018/05/15/spring-security-5-1-0-m1-released">Spring Security 5.1 Milestone 1</a>).</p>
 </div>
 <div class="paragraph">
 <p>Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
@@ -1708,7 +1705,50 @@ that are used how to implement OAuth2/OIDC.</p>
 </div>
 <div class="paragraph">
 <p>Therefore you have to be aware of different approaches for Spring Security 4.x/Spring Boot 1.5.x
-and Spring Security 5/Spring Boot 2.0:</p>
+and Spring Security 5/Spring Boot 2.0.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can find more information on building OAuth2 secured microservices with Spring Boot <strong>1.5.x</strong> in</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2">Spring Boot 1.5 Reference Documentation</a></p>
+</li>
+<li>
+<p><a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html">Spring Security OAuth2 Developers Guide</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can find more information on building OAuth2 secured microservices with Spring Boot <strong>2.0</strong> in</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2">Spring Boot 2.0 Reference Documentation</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-oauth2login">Spring Security Reference Documentation</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle">Spring Security OAuth Boot 2 Auto-config Documentation</a></p>
+</li>
+<li>
+<p><a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html">Spring Security OAuth2 Developers Guide</a></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In this workshop we will now look at what Spring Security 5 provides as new OAuth2 Login Client.</p>
@@ -1729,11 +1769,11 @@ This is still based on Spring Boot 1.5.x.</p>
 (Spring Security 5.0 does not yet support reactive resource servers)</p>
 </li>
 <li>
-<p>initial-oauth2-login-client: Initial code for this workshop part to implement the new OAuth2 Login Client
+<p><strong>initial-oauth2-login-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client
 This is the sub-project you will now use in the workshop.</p>
 </li>
 <li>
-<p>oauth2-login-client: Complete code of the new OAuth2 Login Client (for reference)</p>
+<p><strong>oauth2-login-client</strong>: Complete code of the new OAuth2 Login Client (for reference)</p>
 </li>
 </ul>
 </div>
@@ -1758,39 +1798,32 @@ This is the sub-project you will now use in the workshop.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Authorization Server</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9999/auth" class="bare">http://localhost:9999/auth</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9999/users" class="bare">http://localhost:9999/users</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client (Library-UI)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Login Client</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081" class="bare">http://localhost:8081</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Resource Server (Library-Server)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library-Server (Resource Server)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080" class="bare">http://localhost:8080</a></p></td>
 </tr>
 </tbody>
 </table>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-You can find more information on building OAuth2 secured microservices with spring in
-<a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2">Spring Boot Reference Documentation</a>
-and in <a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html">Spring Security OAuth2 Developers Guide</a>
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>So now let&#8217;s start. Again, you will just use the provided <em>AuthorizationServer</em> and <em>Library-Server</em> and start
+to implement a OAuth2 login client based on the <em>initial-oauth2-login-client</em> project.</p>
 </div>
 <div class="paragraph">
-<p>In step 1 we will build a basic OAuth2 secured microservices infrastructure using simple user credentials provided
-via properties in <em>application.properties</em>.</p>
+<p>First some information about how to start the required other components <em>AuthorizationServer</em> and <em>Library-Server</em>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="authorization-server"><a class="link" href="#authorization-server">5.5.2. Authorization Server</a></h4>
+<div class="paragraph">
+<p>For this workshop a simple authorization server issuing JWT OAuth2 tokens is provided. As there is no support for an
+authorization server in Spring Boot 2.0 this component has been implemented using Spring Boot 1.5.x.</p>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1798,22 +1831,10 @@ via properties in <em>application.properties</em>.</p>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You may look into the spring boot reference documentation <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-authorization-server">Spring Boot Reference Documentation</a>
-on how to implement an authorization server.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>You may look into the spring boot reference documentation <a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2-authorization-server">Spring Boot 1.5 Reference Documentation</a>
+on how to implement an authorization server.</p>
 </div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-To prevent conflicts with different JSESSION cookies the authorization server must run
-on a separate context path (not '/'). In our example please use '/auth' as context path. In spring boot
-this can be achieved by the <em>server.context</em> property
 </td>
 </tr>
 </table>
@@ -1852,613 +1873,33 @@ of the authorization server must be as follows:</p>
 </tr>
 </tbody>
 </table>
-<div class="sect4">
-<h5 id="authorization-server-maven-dependencies"><a class="link" href="#authorization-server-maven-dependencies">Gradle dependencies</a></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-
-	&lt;groupId&gt;com.example&lt;/groupId&gt;
-	&lt;artifactId&gt;authorizationserver&lt;/artifactId&gt;
-	&lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
-	&lt;packaging&gt;jar&lt;/packaging&gt;
-
-	&lt;name&gt;authorizationserver&lt;/name&gt;
-	&lt;description&gt;OAuth2 Authorization Server&lt;/description&gt;
-
-	&lt;parent&gt;
-		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-		&lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
-		&lt;version&gt;1.5.3.RELEASE&lt;/version&gt;
-		&lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
-	&lt;/parent&gt;
-
-	&lt;properties&gt;
-		&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-		&lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;
-		&lt;java.version&gt;1.8&lt;/java.version&gt;
-		&lt;spring-cloud.version&gt;Dalston.SR1&lt;/spring-cloud.version&gt;
-	&lt;/properties&gt;
-
-	&lt;dependencies&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-			&lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
-		&lt;/dependency&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt; <i class="conum" data-value="1"></i><b>(1)</b>
-			&lt;artifactId&gt;spring-cloud-starter-oauth2&lt;/artifactId&gt;
-		&lt;/dependency&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-			&lt;artifactId&gt;spring-boot-starter-hateoas&lt;/artifactId&gt;
-		&lt;/dependency&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-			&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-		&lt;/dependency&gt;
-
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-			&lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
-			&lt;scope&gt;runtime&lt;/scope&gt;
-		&lt;/dependency&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-			&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
-			&lt;scope&gt;test&lt;/scope&gt;
-		&lt;/dependency&gt;
-	&lt;/dependencies&gt;
-
-	&lt;dependencyManagement&gt;
-		&lt;dependencies&gt;
-			&lt;dependency&gt;
-				&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-				&lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;
-				&lt;version&gt;${spring-cloud.version}&lt;/version&gt;
-				&lt;type&gt;pom&lt;/type&gt;
-				&lt;scope&gt;import&lt;/scope&gt;
-			&lt;/dependency&gt;
-		&lt;/dependencies&gt;
-	&lt;/dependencyManagement&gt;
-
-	&lt;build&gt;
-		&lt;plugins&gt;
-			&lt;plugin&gt;
-				&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-				&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-			&lt;/plugin&gt;
-		&lt;/plugins&gt;
-	&lt;/build&gt;
-
-&lt;/project&gt;</code></pre>
-</div>
-</div>
-<div class="colist arabic">
+<div class="admonitionblock important">
 <table>
 <tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Dependency for OAuth2 security support</td>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>To prevent conflicts with different JSESSION cookies the authorization server must run
+on a separate context path (not '/'). In our example please use '/users' as context path. In spring boot
+this can be achieved by the <em>server.context</em> property</p>
+</div>
+</td>
 </tr>
 </table>
 </div>
-</div>
-<div class="sect4">
-<h5 id="_java_implementation"><a class="link" href="#_java_implementation">Java Implementation</a></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@EnableAuthorizationServer <i class="conum" data-value="1"></i><b>(1)</b>
-@SpringBootApplication
-public class AuthorizationServerApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(AuthorizationServerApplication.class, args);
-	}
-
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Annotation to enable auto configuration of an Authorization Server</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="authorization-server-configuration"><a class="link" href="#authorization-server-configuration">Configuration</a></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>server.port=9999
-server.context-path=/users
-
-security.user.name=user <i class="conum" data-value="1"></i><b>(1)</b>
-security.user.password=secret <i class="conum" data-value="2"></i><b>(2)</b>
-
-security.oauth2.client.client-id=productclient <i class="conum" data-value="3"></i><b>(3)</b>
-security.oauth2.client.client-secret=secretkey <i class="conum" data-value="4"></i><b>(4)</b>
-security.oauth2.client.scope=read-products <i class="conum" data-value="5"></i><b>(5)</b>
-security.oauth2.authorization.check-token-access=isAuthenticated() <i class="conum" data-value="6"></i><b>(6)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Definition of username for authentication</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Definition of user password for authentication</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Client id for OAuth2 authorization code grant</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Client secret for OAuth2 authorization code grant</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Scopes to authorize for OAuth2</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Open endpoint for getting token details for authenticated users</td>
-</tr>
-</table>
-</div>
+<div class="paragraph">
+<p>To start the authorization server simply run the class <em>AuthorizationServerApplication</em> in
+project <em>05-oauth2-client/authorizationserver</em>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="resource-server"><a class="link" href="#resource-server">5.5.3. Resource Server (Library-Server)</a></h4>
-<div class="sect4">
-<h5 id="resource-server-maven-dependencies"><a class="link" href="#resource-server-maven-dependencies">Maven dependencies</a></h5>
 <div class="paragraph">
-<p>Add the following required dependencies to the existing maven pom file.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>    &lt;dependency&gt;
-	    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-		&lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;org.springframework.security.oauth&lt;/groupId&gt;
-		&lt;artifactId&gt;spring-security-oauth2&lt;/artifactId&gt;
-	&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_java_implementation_2"><a class="link" href="#_java_implementation_2">Java Implementation</a></h5>
-<div class="paragraph">
-<p>The existing products service now should act as an OAuth2 resource server.
-Therefore it has to be marked as such.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@EnableResourceServer <i class="conum" data-value="1"></i><b>(1)</b>
-@SpringBootApplication
-public class ProductApplication {
-
-	...
-
-	public static void main(String[] args) {
-		SpringApplication.run(ProductApplication.class, args);
-	}
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Annotation to enable this as a OAuth2 resource server.</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="resource-server-configuration"><a class="link" href="#resource-server-configuration">Configuration</a></h5>
-<div class="paragraph">
-<p>The following additional properties are required to make the resource server work with our new
-authorization server.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>security.user.password=none <i class="conum" data-value="1"></i><b>(1)</b>
-
-security.oauth2.resource.token-info-uri=http://localhost:9999/users/oauth/check_token <i class="conum" data-value="2"></i><b>(2)</b>
-security.oauth2.client.client-id=productclient <i class="conum" data-value="3"></i><b>(3)</b>
-security.oauth2.client.client-secret=secretkey <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This password won&#8217;t be used as this microservice is protected by OAuth2 now</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Endpoint for getting token details required for products resource server</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Client id for OAuth2 authorization code grant</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Client secret for OAuth2 authorization code grant</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="client"><a class="link" href="#client">5.5.4. OAuth2 Client (UI)</a></h4>
-<div class="sect4">
-<h5 id="client-maven-dependencies"><a class="link" href="#client-maven-dependencies">Maven dependencies</a></h5>
-<div class="paragraph">
-<p>Add the following required dependencies to the existing maven pom file.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>    &lt;dependency&gt;
-    	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-    	&lt;artifactId&gt;spring-cloud-starter-oauth2&lt;/artifactId&gt;
-    &lt;/dependency&gt;</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="client-java-implementation"><a class="link" href="#client-java-implementation">Java Implementation</a></h5>
-<div class="paragraph">
-<p>The UI client now acts as OAuth2 client and must be marked as such.
-Additionally to automatically use the OAuth2 tokens with all calls to REST services
-the currently used <em>RestTemplate</em> has to be replaced with new <em>OAuth2RestTemplate</em></p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-In more advanced cloud scenarios you may also
-use <a href="http://cloud.spring.io/spring-cloud-static/Dalston.RELEASE/#spring-cloud-feign">Feign Client</a>
-instead of <em>OAuth2RestTemplate</em> to call the REST Api. In that case you have to add an interceptor
-for OAuth2.
-</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@EnableOAuth2Sso <i class="conum" data-value="1"></i><b>(1)</b>
-@SpringBootApplication
-public class UiApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(UiApplication.class, args);
-	}
-
-    @Bean
-    public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext oauth2ClientContext, <i class="conum" data-value="2"></i><b>(2)</b>
-                                                 OAuth2ProtectedResourceDetails details) {
-        return new OAuth2RestTemplate(details, oauth2ClientContext);
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Add <em>@EnableOAuth2Sso</em> annotation to secure complete UI using OAuth2</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Add new <em>@Bean</em> configuration for OAuth2RestTemplate (will replace the standard <em>RestTemplate</em>)</td>
-</tr>
-</table>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@Service
-public class ProductService {
-
-    //private RestTemplate template = new RestTemplate();
-    private final OAuth2RestTemplate template; <i class="conum" data-value="1"></i><b>(1)</b>
-
-    @Autowired
-    public ProductService(OAuth2RestTemplate template) {
-        this.template = template;
-    }
-
-    @HystrixCommand(fallbackMethod = "fallbackProducts",
-            commandProperties = {  <i class="conum" data-value="2"></i><b>(2)</b>
-                    @HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE")
-            })
-    public Collection&lt;Product&gt; getAllProducts() {
-
-        ResponseEntity&lt;Product[]&gt; response = template.getForEntity(
-                "http://localhost:8080/products", Product[].class);
-
-        return Arrays.asList(response.getBody());
-    }
-
-    public Collection&lt;Product&gt; fallbackProducts() {
-        return Collections.emptyList();
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Replace standard <em>RestTemplate</em> with <em>OAuth2RestTemplate</em></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Reconfigure HystrixCommand to use Semaphore to propagate the security context</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect4">
-<h5 id="client-configuration"><a class="link" href="#client-configuration">Configuration</a></h5>
-<div class="paragraph">
-<p>The following additional properties are required to make the UI client work with our new
-authorization server.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>server.port=8081
-
-security.user.password=none <i class="conum" data-value="1"></i><b>(1)</b>
-
-security.oauth2.client.client-id=productclient <i class="conum" data-value="2"></i><b>(2)</b>
-security.oauth2.client.client-secret=secretkey <i class="conum" data-value="3"></i><b>(3)</b>
-security.oauth2.client.access-token-uri=http://localhost:9999/users/oauth/token <i class="conum" data-value="4"></i><b>(4)</b>
-security.oauth2.client.user-authorization-uri=http://localhost:9999/users/oauth/authorize <i class="conum" data-value="5"></i><b>(5)</b>
-security.oauth2.client.scope=read-products <i class="conum" data-value="6"></i><b>(6)</b>
-security.oauth2.resource.token-info-uri=http://localhost:9999/users/oauth/check_token <i class="conum" data-value="7"></i><b>(7)</b></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This password won&#8217;t be used as this microservice is protected by OAuth2 now</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Client id for OAuth2 authorization code grant</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Client secret for OAuth2 authorization code grant</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Endpoint for exchanging authorization code for access token</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Endpoint for redirecting to authorization server for authentication</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Scope for the request</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Endpoint for validating token details</td>
-</tr>
-</table>
-</div>
-<div class="ulist">
-<div class="title">To make the sample application even more secure we will enhance the authorization server to&#8230;&#8203;</div>
-<ul>
-<li>
-<p>&#8230;&#8203;enable login using a form login page</p>
-</li>
-<li>
-<p>&#8230;&#8203;use a persistent store for users</p>
-</li>
-<li>
-<p>&#8230;&#8203;encrypt the passwords</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_provide_form_based_login"><a class="link" href="#_provide_form_based_login">5.5.5. Provide form based login</a></h4>
-<div class="paragraph">
-<p>A form based login is more user friendly authentication and should always be preferred over
-basic authentication popups.
-To provide an automatically generated form based login just extend the predefined class <em>WebSecurityConfigurerAdapter</em>.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@Configuration
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_use_persistent_store"><a class="link" href="#_use_persistent_store">5.5.6. Use persistent store</a></h4>
-<div class="paragraph">
-<p>Until now we have authenticated ourselves using credentials that are defined via application properties
-which is ok for demo purposes but definitely not for production use.</p>
-</div>
-<div class="ulist">
-<div class="title">Therefore we introduce a new persistent <em>User</em> entity which has the following attributes:</div>
-<ul>
-<li>
-<p>firstname</p>
-</li>
-<li>
-<p>lastname</p>
-</li>
-<li>
-<p>email</p>
-</li>
-<li>
-<p>password</p>
-</li>
-</ul>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-To actually use the new <em>User</em> entity with spring security this entity class has to implement the predefined
-interface <em>UserDetails</em> as well. Please use the attribute <em>email</em> as <em>username</em>.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>A corresponding repository interface and a data initializer component (just like the one for products)
-have to be implemented as well.</p>
-</div>
-<div class="paragraph">
-<p>Finally spring security must be aware to use the persistent users now instead of the one
-defined in the properties. To achieve this you have to implement the interface
-<em>UserDetailsService</em> as well to provide an operation loading a user for authentication.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@Service
-public class StandardUserDetailsService implements UserDetailsService {
-
-    private final UserRepository userRepository;
-
-    public StandardUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userRepository.findOneByEmail(userName);
-        if (user == null) {
-            throw new UsernameNotFoundException("No user found for " + userName);
-        } else {
-            return user;
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@Configuration
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private final UserDetailsService userDetailsService;
-
-    @Autowired
-    public WebSecurityConfiguration(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_encrypt_the_passwords"><a class="link" href="#_encrypt_the_passwords">5.5.7. Encrypt the passwords</a></h4>
-<div class="paragraph">
-<p>In the last step we want to change the storage of cleartext passwords for the users in the database.
-If any attacker gets hold of our database then all passwords are leaked.
-Therefore a production system must <strong>ALWAYS</strong> store any sensible data like passwords, credit card numbers etc.
-encrypted using a proven cryptographic algorithm.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>public interface PasswordEncoder {
-
-	String encode(CharSequence rawPassword);
-
-	boolean matches(CharSequence rawPassword, String encodedPassword);
-
-}</code></pre>
-</div>
-</div>
-<div class="ulist">
-<div class="title">Lucklily spring security already provides safe implementations of a <em>PasswordEncoder</em>:</div>
-<ul>
-<li>
-<p>Pbkdf2PasswordEncoder</p>
-</li>
-<li>
-<p>BCryptPasswordEncoder</p>
-</li>
-<li>
-<p>SCryptPasswordEncoder</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>To support authentication using encrypted passwords the current web security configuration has to be extended
-by the <em>PasswordEncoder</em> to be used.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code>@Configuration
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private final UserDetailsService userDetailsService;
-
-    @Autowired
-    public WebSecurityConfiguration(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-The passwords have to be stored in encrypted form as well,
-so don&#8217;t forget to inject and use a <em>PasswordEncoder</em> instance in
-your user data initializer.
-</td>
-</tr>
-</table>
+<p>For this workshop part the well-known library-server application has been changed again into a blocking servlet-based
+web application that also acts now as a OAuth2 resource server. This was required as there is no support yet in Spring
+for a reactive resource server.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2467,11 +1908,189 @@ your user data initializer.
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-You may use the h2 console to have a look into the in-memory database to see that the user passwords
-are really stored as encrypted values now.
-See <a href="http://docs.spring.io/spring-boot/docs/1.5.3.RELEASE/reference/htmlsingle/#boot-features-sql-h2-console">Spring Boot Reference Docs</a> on
-how to use and configure this.
+<div class="paragraph">
+<p>You may look into the spring boot reference documentation <a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2-resource-server">Spring Boot 1.5 Reference Documentation</a>
+on how to implement an authorization server.</p>
+</div>
 </td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To start the resource server simply run the class <em>LibraryServerApplication</em> in
+project <em>05-oauth2-client/library-server</em>.</p>
+</div>
+<div class="paragraph">
+<p>In the following paragraphs we now proceed to the workshop part where your interaction is required again:
+The OAuth2 login client.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="oauth2-login-client"><a class="link" href="#oauth2-login-client">5.5.4. OAuth2 Login Client</a></h4>
+<div class="sect4">
+<h5 id="client-gradle-dependencies"><a class="link" href="#client-gradle-dependencies">Gradle dependencies</a></h5>
+<div class="paragraph">
+<p>To use the new OAuth2 client support of Spring Security 5.0 you have to add the
+following required dependencies to the existing gradle build file.</p>
+</div>
+<div class="paragraph">
+<p>Unresolved directive in index.adoc - include::/home/afa/development/localgit/spring-security-5-workshop/workshop-docs/src/docs/snippets/step-05-oauth2-client-gradle-build.adoc[]</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_implementation_steps"><a class="link" href="#_implementation_steps">Implementation steps</a></h5>
+<div class="paragraph">
+<p>First step is to configure an OAuth2 login client. For this you have to register the corresponding
+identity server/authorization server to use.
+Here you have two possibilities:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>You can just use one of the predefined ones (Facebook, Google, etc.)</p>
+</li>
+<li>
+<p>You register your own custom server</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We will focus on the second possibility and use our own local authorization server.
+To achieve this we add the following sections to the <em>application.yml</em> file.</p>
+</div>
+<div class="listingblock">
+<div class="title">application.yml client configuration</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          login-client:
+            provider: local-authserver <i class="conum" data-value="1"></i><b>(1)</b>
+            client-id: library-client <i class="conum" data-value="2"></i><b>(2)</b>
+            client-secret: secret <i class="conum" data-value="3"></i><b>(3)</b>
+            client-authentication-method: basic <i class="conum" data-value="4"></i><b>(4)</b>
+            authorization-grant-type: authorization_code <i class="conum" data-value="5"></i><b>(5)</b>
+            scope: profile <i class="conum" data-value="6"></i><b>(6)</b>
+            client-name: Login Client <i class="conum" data-value="7"></i><b>(7)</b>
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" <i class="conum" data-value="8"></i><b>(8)</b>
+        provider:
+          local-authserver: <i class="conum" data-value="9"></i><b>(9)</b>
+            authorization-uri: http://localhost:9999/users/oauth/authorize <i class="conum" data-value="10"></i><b>(10)</b>
+            token-uri: http://localhost:9999/users/oauth/token <i class="conum" data-value="11"></i><b>(11)</b>
+            user-info-uri: http://localhost:9999/users/resources/userinfo <i class="conum" data-value="12"></i><b>(12)</b>
+            user-name-attribute: id <i class="conum" data-value="13"></i><b>(13)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>References the registered identity provider/authorization server to use for this OAuth2 client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The client id to use at the authorization server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The client secret to use at the authorization server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The authentication mode to use at the authorization server (may be basic or post)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The required OAuth2 flow, here the most commonly used flow <em>authorization_code</em> is used</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The required OAuth2 scope to use at the authorization server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>A human readable name for this OAuth2 login client configuration</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>The pattern to build the required redirect URL back from authorization server to this client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Name of the identity provider (in this case the local OAuth2 authorization server)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>The URI for authorizing the user at the authorization server (getting the authorization code)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="11"></i><b>11</b></td>
+<td>The URI for getting a JWT token from the authorization server (exchanging the authorization code)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="12"></i><b>12</b></td>
+<td>The URI to access the claims/attributes of the authenticated end-user using the JWT access token from the authorization server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="13"></i><b>13</b></td>
+<td>The name of the attribute returned in the user info that references the name or identifier of the end-user. (retrieved from the user-info-uri endpoint)</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">RestTemplateConfiguration class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.config;
+
+...
+
+@Configuration
+public class RestTemplateConfiguration {
+
+  @Bean
+  RestTemplate restTemplate(OAuth2AuthorizedClientService clientService) {
+    return new RestTemplateBuilder()
+        .interceptors( <i class="conum" data-value="1"></i><b>(1)</b>
+            (ClientHttpRequestInterceptor)
+                (httpRequest, bytes, execution) -&gt; {
+                  Authentication authentication =
+                      SecurityContextHolder.getContext().getAuthentication(); <i class="conum" data-value="2"></i><b>(2)</b>
+                  if (authentication instanceof OAuth2AuthenticationToken) {
+                    OAuth2AuthenticationToken token =
+                            (OAuth2AuthenticationToken) authentication;
+
+                    OAuth2AuthorizedClient client =
+                        clientService.loadAuthorizedClient(
+                            token.getAuthorizedClientRegistrationId(), token.getName());
+
+                    httpRequest
+                        .getHeaders()
+                        .add(
+                            HttpHeaders.AUTHORIZATION, <i class="conum" data-value="3"></i><b>(3)</b>
+                            String.format("Bearer %s", client.getAccessToken().getTokenValue()));
+                  }
+                  return execution.execute(httpRequest, bytes);
+                })
+        .build();
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Adds an client side interceptor to the rest template for adding the OAuth2 access token as header</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Gets the authentication object with OAuth2 credentials from the security context</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Adds the OAuth2 access token (base64 encoded JWT) as <em>Authorization</em> header to all requests</td>
 </tr>
 </table>
 </div>
@@ -2480,9 +2099,10 @@ how to use and configure this.
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-22 11:43:36 CEST
+Last updated 2018-05-22 14:57:06 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

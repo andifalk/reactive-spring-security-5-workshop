@@ -1,0 +1,37 @@
+[source,options="nowrap"]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          login-client:
+            provider: local-authserver # <1>
+            client-id: library-client # <2>
+            client-secret: secret # <3>
+            client-authentication-method: basic # <4>
+            authorization-grant-type: authorization_code # <5>
+            scope: profile # <6>
+            client-name: Login Client # <7>
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" # <8>
+        provider:
+          local-authserver: # <9>
+            authorization-uri: http://localhost:9999/users/oauth/authorize # <10>
+            token-uri: http://localhost:9999/users/oauth/token # <11>
+            user-info-uri: http://localhost:9999/users/resources/userinfo # <12>
+            user-name-attribute: id # <13>
+----
+<1> References the registered identity provider/authorization server to use for this OAuth2 client
+<2> The client id to use at the authorization server
+<3> The client secret to use at the authorization server
+<4> The authentication mode to use at the authorization server (may be basic or post)
+<5> The required OAuth2 flow, here the most commonly used flow _authorization_code_ is used
+<6> The required OAuth2 scope to use at the authorization server
+<7> A human readable name for this OAuth2 login client configuration
+<8> The pattern to build the required redirect URL back from authorization server to this client
+<9> Name of the identity provider (in this case the local OAuth2 authorization server)
+<10> The URI for authorizing the user at the authorization server (getting the authorization code)
+<11> The URI for getting a JWT token from the authorization server (exchanging the authorization code)
+<12> The URI to access the claims/attributes of the authenticated end-user using the JWT access token from the authorization server
+<13> The name of the attribute returned in the user info that references the name or identifier of the end-user. (retrieved from the user-info-uri endpoint)
+

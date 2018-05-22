@@ -1,0 +1,12 @@
+[source,options="nowrap"]
+----
+dependencies {
+    ...
+	compile('org.springframework.security:spring-security-oauth2-client') # <1>
+	compile('org.springframework.security:spring-security-oauth2-jose') # <2>
+	...
+}
+----
+<1> This adds the core OAuth2 client support
+<2> This adds all the JWT support including signing and encrypting
+
