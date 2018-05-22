@@ -2031,9 +2031,42 @@ The OAuth2 login client.</p>
 <p>To use the new OAuth2 client support of Spring Security 5.0 you have to add the
 following required dependencies to the existing gradle build file.</p>
 </div>
-<div class="paragraph">
+<div class="listingblock">
 <div class="title">gradle.build file</div>
-<p>Unresolved directive in index.adoc - include::/home/afa/development/localgit/spring-security-5-workshop/workshop-docs/src/docs/snippets/step-05-oauth2-client-gradle-build.adoc[]</p>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>dependencies {
+    ...
+	compile('org.springframework.security:spring-security-oauth2-client') <i class="conum" data-value="1"></i><b>(1)</b>
+	compile('org.springframework.security:spring-security-oauth2-jose') <i class="conum" data-value="2"></i><b>(2)</b>
+	...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This adds the core OAuth2 client support</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This adds all the JWT support including signing and encrypting</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>These dependencies already have been added to the initial project.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect4">
@@ -2371,7 +2404,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-22 16:51:21 CEST
+Last updated 2018-05-22 16:54:12 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

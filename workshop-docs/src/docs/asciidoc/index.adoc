@@ -556,7 +556,12 @@ following required dependencies to the existing gradle build file.
 
 .gradle.build file
 
-include::{snippets}/step-05-oauth2-client-gradle-build.adoc[]
+include::{snippets}/step-5-oauth2-client-gradle-build.adoc[]
+
+[NOTE]
+====
+These dependencies already have been added to the initial project.
+====
 
 ===== Implementation steps
 
