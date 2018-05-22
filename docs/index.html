@@ -2046,11 +2046,12 @@ following required dependencies to the existing gradle build file.</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This adds the core OAuth2 client support</td>
+<td>This contains core classes and interfaces that provide support for the OAuth 2.0 Authorization Framework and for OpenID Connect Core 1.0</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>This adds all the JWT support including signing and encrypting</td>
+<td>This contains Spring Security’s support for the JOSE (Javascript Object Signing and Encryption) framework. This is needed
+to support for example JSON Web Token (JWT)</td>
 </tr>
 </table>
 </div>
@@ -2087,7 +2088,83 @@ Here you have two possibilities:</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>We will focus on the second possibility and use our own local authorization server.
+<p>Spring security provides the enumeration <em>CommonOAuth2Provider</em> which defines registration details
+for a lot of well known identity providers.</p>
+</div>
+<div class="listingblock">
+<div class="title">CommonOAuth2Provider class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package org.springframework.security.config.oauth2.client;
+...
+public enum CommonOAuth2Provider {
+
+	GOOGLE {
+
+		@Override
+		public Builder getBuilder(String registrationId) {
+			ClientRegistration.Builder builder = getBuilder(registrationId,
+					ClientAuthenticationMethod.BASIC, DEFAULT_LOGIN_REDIRECT_URL);
+			builder.scope("openid", "profile", "email");
+			builder.authorizationUri("https://accounts.google.com/o/oauth2/v2/auth");
+			builder.tokenUri("https://www.googleapis.com/oauth2/v4/token");
+			builder.jwkSetUri("https://www.googleapis.com/oauth2/v3/certs");
+			builder.userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo");
+			builder.userNameAttributeName(IdTokenClaimNames.SUB);
+			builder.clientName("Google");
+			return builder;
+		}
+	},
+
+	GITHUB {
+
+		@Override
+		public Builder getBuilder(String registrationId) {
+            ...
+		}
+	},
+
+	FACEBOOK {
+
+		@Override
+		public Builder getBuilder(String registrationId) {
+		    ...
+		}
+	},
+	...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To use one of these providers is quite easy. Just reference the enumeration constant as the provider.</p>
+</div>
+<div class="listingblock">
+<div class="title">Google provider properties class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google-login:	<i class="conum" data-value="1"></i><b>(1)</b>
+            provider: google <i class="conum" data-value="2"></i><b>(2)</b>
+            client-id: google-client-id
+            client-secret: google-client-secret</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The registration id is set to <em>google-login</em></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The provider is set to the predefined <em>google</em> client which points to <em>CommonOAuth2Provider.GOOGLE</em></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>But in this workshop we will focus on the second possibility and use our own local authorization server.<br>
 To achieve this we add the following sections to the <em>application.yml</em> file.</p>
 </div>
 <div class="listingblock">
@@ -2404,7 +2481,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-22 16:54:12 CEST
+Last updated 2018-05-22 17:16:50 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

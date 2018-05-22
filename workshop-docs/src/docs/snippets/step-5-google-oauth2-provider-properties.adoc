@@ -1,0 +1,15 @@
+[source,options="nowrap"]
+----
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google-login:	# <1>
+            provider: google # <2>
+            client-id: google-client-id
+            client-secret: google-client-secret
+----
+<1> The registration id is set to _google-login_
+<2> The provider is set to the predefined _google_ client which points to _CommonOAuth2Provider.GOOGLE_
+

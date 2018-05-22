@@ -572,7 +572,20 @@ Here you have two possibilities:
 . You can just use one of the predefined ones (Facebook, Google, etc.)
 . You register your own custom server
 
-We will focus on the second possibility and use our own local authorization server.
+Spring security provides the enumeration _CommonOAuth2Provider_ which defines registration details
+for a lot of well known identity providers.
+
+.CommonOAuth2Provider class
+
+include::{snippets}/step-5-common-oauth2-provider.adoc[]
+
+To use one of these providers is quite easy. Just reference the enumeration constant as the provider.
+
+.Google provider properties class
+
+include::{snippets}/step-5-google-oauth2-provider-properties.adoc[]
+
+But in this workshop we will focus on the second possibility and use our own local authorization server. +
 To achieve this we add the following sections to the _application.yml_ file.
 
 .application.yml client configuration
