@@ -437,14 +437,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">1. Introduction</a></li>
-<li><a href="#_common_web_security_risks">2. Common Web Security Risks</a></li>
-<li><a href="#_the_workshop_application">3. The workshop application</a></li>
-<li><a href="#_workshop_organization">4. Workshop Organization</a>
+<li><a href="#_introduction">1. Introduction</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements_for_this_workshop">4.1. Requirements for this workshop</a></li>
+<li><a href="#_requirements_for_this_workshop">1.1. Requirements for this workshop</a></li>
 </ul>
 </li>
+<li><a href="#_common_web_security_risks">2. Common Web Security Risks</a></li>
+<li><a href="#_the_workshop_application">3. The workshop application</a>
+<ul class="sectlevel2">
+<li><a href="#_reactive_systems_streams">3.1. Reactive Systems &amp; Streams</a>
+<ul class="sectlevel3">
+<li><a href="#_project_reactor">3.1.1. Project Reactor</a></li>
+<li><a href="#_spring_webflux">3.1.2. Spring WebFlux</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_workshop_organization">4. Workshop Organization</a></li>
 <li><a href="#_workshop_steps">5. Workshop Steps</a>
 <ul class="sectlevel2">
 <li><a href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></li>
@@ -477,10 +486,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction"><a class="link" href="#_introduction">1. Introduction</a></h2>
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a><a class="link" href="#_introduction">1. Introduction</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Target of this workshop is to learn how to make an initially unsecured web application
+<p>Target of this workshop is to learn how to make an initially unsecured (reactive) web application
 more and more secure step-by-step.</p>
 </div>
 <div class="paragraph">
@@ -492,23 +501,42 @@ more and more secure step-by-step.</p>
 <p>Add spring boot security starter dependency for simple auto configuration of security</p>
 </li>
 <li>
-<p>Customize authentication configuration (provide our own user store and adapted authentication rules)</p>
+<p>Customize authentication configuration (provide our own user store)</p>
 </li>
 <li>
 <p>Add authorization (access controls) to web and method layers</p>
 </li>
 <li>
-<p>Implement security integration tests</p>
+<p>Implement automated security integration tests</p>
 </li>
 <li>
-<p>Experiment with new reactive OAuth2 Login Client</p>
+<p>Experiment with new OAuth2 Login Client of Spring Security 5.0</p>
 </li>
 </ol>
+</div>
+<div class="sect2">
+<h3 id="_requirements_for_this_workshop"><a class="anchor" href="#_requirements_for_this_workshop"></a><a class="link" href="#_requirements_for_this_workshop">1.1. Requirements for this workshop</a></h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Git</p>
+</li>
+<li>
+<p>A Java 8 or 9 JDK</p>
+</li>
+<li>
+<p>Any Java IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
+</li>
+<li>
+<p>Basic knowledge of <a href="https://www.reactivemanifesto.org">Reactive Systems</a> and reactive programming using <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux">Spring WebFlux</a> &amp; <a href="https://projectreactor.io">Reactor</a></p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_common_web_security_risks"><a class="link" href="#_common_web_security_risks">2. Common Web Security Risks</a></h2>
+<h2 id="_common_web_security_risks"><a class="anchor" href="#_common_web_security_risks"></a><a class="link" href="#_common_web_security_risks">2. Common Web Security Risks</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In this workshop you will strive various parts of securing a web application that
@@ -545,10 +573,24 @@ fit into the <a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">OWASP 
 <p>You may also have a look into the <a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls">OWASP ProActive Controls</a> document which describes how to develop
 your applications using good security patterns.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You will find more sources of information about security referenced in the appendix section.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_the_workshop_application"><a class="link" href="#_the_workshop_application">3. The workshop application</a></h2>
+<h2 id="_the_workshop_application"><a class="anchor" href="#_the_workshop_application"></a><a class="link" href="#_the_workshop_application">3. The workshop application</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In this workshop you will be provided a finished but completely unsecured reactive
@@ -630,10 +672,120 @@ of all projects.</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>The following subsections give a very condensed introduction to the basics of Reactive Systems,
+the Project Reactor and Spring WebFlux.<br>
+This might help to better understand the sample application for beginners of Reactive.</p>
+</div>
+<div class="sect2">
+<h3 id="_reactive_systems_streams"><a class="anchor" href="#_reactive_systems_streams"></a><a class="link" href="#_reactive_systems_streams">3.1. Reactive Systems &amp; Streams</a></h3>
+<div class="quoteblock">
+<blockquote>
+Reactive Systems are Responsive, Resilient, Elastic and Message Driven (Asynchronous).
+</blockquote>
+<div class="attribution">
+&#8212; https://www.reactivemanifesto.org
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Responsiveness</strong> means the system responds in a timely manner and is the cornerstone of usability</p>
+</li>
+<li>
+<p><strong>Resilience</strong> means the system stays responsive in the face of failure</p>
+</li>
+<li>
+<p><strong>Elasticity</strong> means that the throughput of a system scales up or down automatically to
+meet varying demand as resource is proportionally added or removed</p>
+</li>
+<li>
+<p><strong>Message Driven</strong> systems rely on asynchronous message-passing to establish a boundary between components
+that ensures loose coupling</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure..
+</blockquote>
+<div class="attribution">
+&#8212; http://www.reactive-streams.org/
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Back-Pressure</strong>: When one component is struggling to keep-up, the system as a whole needs to respond in a sensible way.
+Back-pressure is an important feedback mechanism that allows systems to gracefully respond to load rather than
+collapse under it.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_project_reactor"><a class="anchor" href="#_project_reactor"></a><a class="link" href="#_project_reactor">3.1.1. Project Reactor</a></h4>
+<div class="paragraph">
+<p>The project <a href="https://projectreactor.io">Reactor</a> is a Reactive library for building non-blocking applications on
+the JVM based on the <a href="http://www.reactive-streams.org">Reactive Streams Specification</a> and can help to build
+Reactive Systems.</p>
+</div>
+<div class="paragraph">
+<p>Reactor is a fully non-blocking foundation and offers backpressure-ready
+network engines for HTTP (including Websockets), TCP and UDP.</p>
+</div>
+<div class="paragraph">
+<p>Reactor introduces composable reactive types that implement Publisher but also provide a rich vocabulary of operators,
+most notably <em>Flux</em> and <em>Mono</em>.</p>
+</div>
+<div class="paragraph">
+<p>A <em>Mono&lt;T&gt;</em> is a specialized <em>Publisher&lt;T&gt;</em> that emits at most one item and then optionally terminates with
+an onComplete signal or an onError signal.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/mono.png" alt="reactor_mono">
+</div>
+<div class="title">Figure 1. Mono, an Asynchronous 0-1 Result (source: projectreactor.io)</div>
+</div>
+<div class="paragraph">
+<p>A <em>Flux&lt;T&gt;</em> is a standard <em>Publisher&lt;T&gt;</em> representing an asynchronous sequence of 0 to N emitted items,
+optionally terminated by either a completion signal or an error.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/flux.png" alt="reactor_flux">
+</div>
+<div class="title">Figure 2. Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_spring_webflux"><a class="anchor" href="#_spring_webflux"></a><a class="link" href="#_spring_webflux">3.1.2. Spring WebFlux</a></h4>
+<div class="paragraph">
+<p><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux">Spring WebFlux</a>
+was added in Spring Framework 5.0. It is fully non-blocking, supports Reactive Streams back pressure, and runs
+on servers such as Netty, Undertow, and Servlet 3.1+ containers.</p>
+</div>
+<div class="paragraph">
+<p>Spring Webflux depends on Reactor and uses it internally to compose asynchronous logic
+and to provide Reactive Streams support.<br>
+It provides two programming models:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Annotated Controllers: This is uses the same annotations as in the Spring MVC part</p>
+</li>
+<li>
+<p>Functional Endpoints:  This provides a lambda-based, lightweight, functional programming model</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_workshop_organization"><a class="link" href="#_workshop_organization">4. Workshop Organization</a></h2>
+<h2 id="_workshop_organization"><a class="anchor" href="#_workshop_organization"></a><a class="link" href="#_workshop_organization">4. Workshop Organization</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This interactive hands-on workshop is organized into several step with one step building upon each other.
@@ -656,31 +808,15 @@ There is a separate project for each step:</p>
 <li>
 <p>04-library-server: This adds automatic integration tests for authorization</p>
 </li>
-</ul>
-</div>
-<div class="sect2">
-<h3 id="_requirements_for_this_workshop"><a class="link" href="#_requirements_for_this_workshop">4.1. Requirements for this workshop</a></h3>
-<div class="ulist">
-<ul>
 <li>
-<p>Some free disk space</p>
-</li>
-<li>
-<p>Git</p>
-</li>
-<li>
-<p>A Java 8 or 9 JDK</p>
-</li>
-<li>
-<p>Any IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
+<p>05-oauth2-client: This adds an OAuth2 login client for interacting with an authorization server for login</p>
 </li>
 </ul>
-</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_workshop_steps"><a class="link" href="#_workshop_steps">5. Workshop Steps</a></h2>
+<h2 id="_workshop_steps"><a class="anchor" href="#_workshop_steps"></a><a class="link" href="#_workshop_steps">5. Workshop Steps</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>To start the workshop please begin by adapting the <em>00-library-server</em> application.</p>
@@ -705,7 +841,7 @@ just continue using <em>02-library-server</em>.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_step_1_auto_configuration"><a class="link" href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></h3>
+<h3 id="_step_1_auto_configuration"><a class="anchor" href="#_step_1_auto_configuration"></a><a class="link" href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></h3>
 <div class="paragraph">
 <div class="title">In the first step we start quite easy by just adding the spring boot starter dependency for spring security.</div>
 <p>We just need to add the following two dependencies to the <em>build.gradle</em> file of the initial application (<em>00-library-server</em>).</p>
@@ -838,12 +974,28 @@ dialog on the screen.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This concludes the first step. Now let&#8217;s proceed to next step and start with customizing
-the authentication part.</p>
+<p>This concludes the first step.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You find the completed code in project <em>01-library-server</em>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s proceed to next step and start with customizing the authentication part.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_2_customize_authentication"><a class="link" href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></h3>
+<h3 id="_step_2_customize_authentication"><a class="anchor" href="#_step_2_customize_authentication"></a><a class="link" href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></h3>
 <div class="paragraph">
 <div class="title">Now it is time to start customizing the auto-configuration.</div>
 <p>The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.</p>
@@ -1203,12 +1355,29 @@ replaced the default user with our own users from our MongoDB persistent storage
 </tbody>
 </table>
 <div class="paragraph">
+<p>This is the end of step 2 of the workshop.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You find the completed code in project <em>02-library-server</em>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>In the next workshop part we also adapt the <em>SecurityWebFilterChain</em> to our needs and add authorization rules (in web and method layer)
 for our application.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_3_add_authorization"><a class="link" href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></h3>
+<h3 id="_step_3_add_authorization"><a class="anchor" href="#_step_3_add_authorization"></a><a class="link" href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></h3>
 <div class="paragraph">
 <div class="title">In this part of the workshop we want to add our customized authorization rules for our application.</div>
 <p>As a result of the previous workshop steps we now have authentication for all our web endpoints
@@ -1537,6 +1706,20 @@ public class BookRestController {
 <p>In this workshop step we added the authorization to web and method layers. So now for particular RESTful endpoints access is only
 permitted to users with special roles.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You find the completed code in project <em>03-library-server</em>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>But how do you know that you have implemented all the authorization rules and did not leave a big security leak
 for your RESTful API? Or you may change some authorizations later by accident?</p>
@@ -1547,10 +1730,13 @@ We will see how this works in the next workshop part.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_4_security_testing"><a class="link" href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></h3>
+<h3 id="_step_4_security_testing"><a class="anchor" href="#_step_4_security_testing"></a><a class="link" href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></h3>
 <div class="paragraph">
 <div class="title">Now it is time to prove that we have implemented these authorization rules correctly with automatic testing.</div>
-<p>We start testing the rules on method layer for all operations regarding books.
+<p>We start testing the rules on method layer for all operations regarding books.</p>
+</div>
+<div class="paragraph">
+<p>The tests will be implemented using the new JUnit 5 version as Spring 5.0 now supports this as well.<br>
 In <em>BookServiceTest</em> class we also use the new convenience annotation <em>@SpringJUnitConfig</em> which is a shortcut of
 <em>@ExtendWith(value=SpringExtension.class)</em> and <em>@ContextConfiguration</em>.</p>
 </div>
@@ -1717,9 +1903,32 @@ class UserServiceTest {
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>The testing part is the last part of adding security to the reactive style of the <em>library-server</em>
+project.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You find the completed code in project <em>04-library-server</em>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the last workshop part we will look at the new OAuth2 login client introduced in Spring Security 5.0.
+Unfortunately Spring does not support OAuth2 for reactive applications so far. That&#8217;s why we
+will continue now with a "traditional" servlet based blocking alternative of the library-server.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_step_5_oauth2_login_client"><a class="link" href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a></h3>
+<h3 id="_step_5_oauth2_login_client"><a class="anchor" href="#_step_5_oauth2_login_client"></a><a class="link" href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a></h3>
 <div class="paragraph">
 <div class="title">Spring Security 5.0 introduced new support for OAuth2/OpenID Connect directly in spring security.</div>
 <p>In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
@@ -1847,7 +2056,7 @@ OAuth2 Login Client works in the reactive way.</p>
 <p>In this workshop we will now look at what Spring Security 5.0 provides as new OAuth2 Login Client - Unfortunately still in a non-reactive way.</p>
 </div>
 <div class="sect3">
-<h4 id="_what_we_will_build"><a class="link" href="#_what_we_will_build">5.5.1. What we will build</a></h4>
+<h4 id="_what_we_will_build"><a class="anchor" href="#_what_we_will_build"></a><a class="link" href="#_what_we_will_build">5.5.1. What we will build</a></h4>
 <div class="paragraph">
 <p>In the <em>05-oauth2-client</em> project you will be provided the following sub-projects:</p>
 </div>
@@ -1912,7 +2121,7 @@ to implement a OAuth2 login client based on the <em>initial-oauth2-login-client<
 </div>
 </div>
 <div class="sect3">
-<h4 id="authorization-server"><a class="link" href="#authorization-server">5.5.2. Authorization Server</a></h4>
+<h4 id="authorization-server"><a class="anchor" href="#authorization-server"></a><a class="link" href="#authorization-server">5.5.2. Authorization Server</a></h4>
 <div class="paragraph">
 <p>For this workshop a simple authorization server issuing JWT OAuth2 tokens is provided. As there is no support for an
 authorization server in Spring Boot 2.0 this component has been implemented using Spring Boot 1.5.x.</p>
@@ -1988,7 +2197,7 @@ project <em>05-oauth2-client/authorizationserver</em>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="resource-server"><a class="link" href="#resource-server">5.5.3. Resource Server (Library-Server)</a></h4>
+<h4 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">5.5.3. Resource Server (Library-Server)</a></h4>
 <div class="paragraph">
 <p>For this workshop part the well-known library-server application has been changed again into a blocking servlet-based
 web application that also acts now as a OAuth2 resource server. This was required as there is no support yet in Spring
@@ -2024,9 +2233,9 @@ The OAuth2 login client.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="oauth2-login-client"><a class="link" href="#oauth2-login-client">5.5.4. OAuth2 Login Client</a></h4>
+<h4 id="oauth2-login-client"><a class="anchor" href="#oauth2-login-client"></a><a class="link" href="#oauth2-login-client">5.5.4. OAuth2 Login Client</a></h4>
 <div class="sect4">
-<h5 id="client-gradle-dependencies"><a class="link" href="#client-gradle-dependencies">Gradle dependencies</a></h5>
+<h5 id="client-gradle-dependencies"><a class="anchor" href="#client-gradle-dependencies"></a><a class="link" href="#client-gradle-dependencies">Gradle dependencies</a></h5>
 <div class="paragraph">
 <p>To use the new OAuth2 client support of Spring Security 5.0 you have to add the
 following required dependencies to the existing gradle build file.</p>
@@ -2071,7 +2280,7 @@ to support for example JSON Web Token (JWT)</td>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_implementation_steps"><a class="link" href="#_implementation_steps">Implementation steps</a></h5>
+<h5 id="_implementation_steps"><a class="anchor" href="#_implementation_steps"></a><a class="link" href="#_implementation_steps">Implementation steps</a></h5>
 <div class="paragraph">
 <p>First step is to configure an OAuth2 login client. For this you have to register the corresponding
 identity server/authorization server to use.
@@ -2314,7 +2523,7 @@ public class RestTemplateConfiguration {
 </div>
 </div>
 <div class="sect4">
-<h5 id="_run_all_the_components"><a class="link" href="#_run_all_the_components">Run all the components</a></h5>
+<h5 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">Run all the components</a></h5>
 <div class="paragraph">
 <p>Finally start all three components:</p>
 </div>
@@ -2372,15 +2581,29 @@ After logging in you should get the current authenticated user infos back from a
 <p>You can now access <a href="http://localhost:8081/books">localhost:8081/books</a> as well.
 This returns the book list from the library-server (resource server).</p>
 </div>
-<div class="paragraph">
-<p>This concludes our Spring Security 5.0 hands-on workshop.
-I hope you learned a lot regarding security and especially Spring Security 5.0.</p>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
 <i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You find the completed code in project <em>05-oauth2-client/oauth2-login-client</em>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This concludes our Spring Security 5.0 hands-on workshop.
+I hope you learned a lot regarding security and especially Spring Security 5.0.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
 <div class="paragraph">
@@ -2405,7 +2628,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </table>
 </div>
 <div class="paragraph">
-<p>THANK YOU VERY MUCH :-)</p>
+<p>Thank YOU very much for being part of this workshop :-)</p>
 </div>
 </div>
 </div>
@@ -2413,7 +2636,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 </div>
 <div class="sect1">
-<h2 id="_online_references"><a class="link" href="#_online_references">Appendix A: Online References</a></h2>
+<h2 id="_online_references"><a class="anchor" href="#_online_references"></a><a class="link" href="#_online_references">Appendix A: Online References</a></h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -2461,7 +2684,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 </div>
 <div class="sect1">
-<h2 id="_book_references"><a class="link" href="#_book_references">Appendix B: Book References</a></h2>
+<h2 id="_book_references"><a class="anchor" href="#_book_references"></a><a class="link" href="#_book_references">Appendix B: Book References</a></h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -2481,7 +2704,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-22 17:16:50 CEST
+Last updated 2018-05-22 21:42:28 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
