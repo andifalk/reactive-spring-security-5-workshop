@@ -33,6 +33,7 @@ public class WebSecurityConfiguration {
                 .pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
                 .pathMatchers("/users/**").hasRole(Role.ADMIN.name())
                 .anyExchange().authenticated()
+                //.anyExchange().permitAll()
                 .and()
                 .httpBasic().and().formLogin().and()
                 .logout().logoutSuccessHandler(logoutSuccessHandler())

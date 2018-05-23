@@ -1,0 +1,13 @@
+[source,options="nowrap"]
+----
+...
+@Bean
+public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    return http
+        .csrf().disable() # <1>
+        .authorizeExchange()
+        .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+    ...
+----
+
+<1> Add this line to disable CSRF.

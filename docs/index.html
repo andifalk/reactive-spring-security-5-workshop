@@ -934,21 +934,19 @@ for details.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation">Session Fixation</a></p>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation">Session Fixation</a>:
+Session Fixation is an attack that permits an attacker to hijack a valid user session.<br>
+If you want to learn more about this please read the <a href="https://www.owasp.org/index.php/Session_fixation">Session Fixation page at OWASP</a></p>
 </li>
 <li>
-<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf">Cross Site Request Forgery (CSRF)</a></p>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf">Cross Site Request Forgery (CSRF)</a>:
+Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they&#8217;re currently authenticated.<br>
+If you want to know what CSRF really is and how to mitigate this attack please consult <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)">CSRF attack description at OWASP</a></p>
 </li>
 <li>
-<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#default-security-headers">Default Security Headers</a></p>
-<div class="ulist">
-<ul>
-<li>
-<p>This automatically adds all recommended security response headers to all http responses. You can find more information about this topic
-in the <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#tab=Main">OWASP Secure Headers Project</a></p>
-</li>
-</ul>
-</div>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#default-security-headers">Default Security Headers</a>:
+This automatically adds all recommended security response headers to all http responses. You can find more information about this topic
+   in the <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#tab=Main">OWASP Secure Headers Project</a></p>
 </li>
 </ul>
 </div>
@@ -1699,6 +1697,82 @@ public class BookRestController {
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Now that we have an authenticated user context we can add the current user as the one to return his borrowed a book</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>So please go ahead and re-start the application and try to borrow a book with an authenticated user.
+If you are an IntelliJ user you can use the provided <em>book.http</em> file in subdirectory <em>http</em>.</p>
+</div>
+<div class="paragraph">
+<p>At first you will notice that even with the correct basic authentication header you get an error message like this one:</p>
+</div>
+<div class="listingblock">
+<div class="title">CSRF error output</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>POST http://localhost:8080/books
+
+HTTP/1.1 403 Forbidden
+transfer-encoding: chunked
+Content-Type: text/plain
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1 ; mode=block
+
+CSRF Token has been associated to this client
+
+Response code: 403 (Forbidden)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The library-server expects a CSRF token in the request but did not find one. If you use common UI frameworks like
+Thymeleaf or JSF (on the serverside) or a clientside one like Angular then these already handle this CSRF processing.</p>
+</div>
+<div class="paragraph">
+<p>In our case we do not have such handler. To successfully tra the borrow book request you have to switch off
+CSRF in the library server.<br>
+This is done like this in the <em>WebSecurityConfiguration</em> class.</p>
+</div>
+<div class="listingblock">
+<div class="title">Disable CSRF</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>...
+@Bean
+public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    return http
+        .csrf().disable() <i class="conum" data-value="1"></i><b>(1)</b>
+        .authorizeExchange()
+        .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+    ...</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Add this line to disable CSRF.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Restart the application and retry to borrow a book. This time the request should be successful.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Do not disable CSRF on productive servers if you use session cookies, otherwise you are vulnerable to CSRF attacks.
+You may safely disable CSRF for servers that use a stateless authentication approach with bearer tokens like
+for OAuth2 or OpenID Connect.</p>
+</div>
+</td>
 </tr>
 </table>
 </div>
@@ -2704,7 +2778,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-22 21:42:28 CEST
+Last updated 2018-05-23 16:29:41 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">

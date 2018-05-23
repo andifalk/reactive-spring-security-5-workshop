@@ -1,0 +1,18 @@
+[source,options="nowrap"]
+----
+POST http://localhost:8080/books
+
+HTTP/1.1 403 Forbidden
+transfer-encoding: chunked
+Content-Type: text/plain
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1 ; mode=block
+
+CSRF Token has been associated to this client
+
+Response code: 403 (Forbidden)
+----

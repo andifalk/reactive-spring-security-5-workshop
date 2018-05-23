@@ -223,10 +223,15 @@ for details.
 
 Additionally spring security improved the security of the web application automatically for:
 
-* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation[Session Fixation]
-* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf[Cross Site Request Forgery (CSRF)]
-* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#default-security-headers[Default Security Headers]
-** This automatically adds all recommended security response headers to all http responses. You can find more information about this topic
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation[Session Fixation]:
+Session Fixation is an attack that permits an attacker to hijack a valid user session. +
+If you want to learn more about this please read the https://www.owasp.org/index.php/Session_fixation[Session Fixation page at OWASP]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#csrf[Cross Site Request Forgery (CSRF)]:
+Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated. +
+If you want to know what CSRF really is and how to mitigate this attack please consult https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)[CSRF attack description at OWASP]
+
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#default-security-headers[Default Security Headers]:
+This automatically adds all recommended security response headers to all http responses. You can find more information about this topic
    in the https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#tab=Main[OWASP Secure Headers Project]
 
 .default security response headers
@@ -425,6 +430,35 @@ directly into our operation via _@AuthenticationPrincipal_ annotation.
 .BookRestController class
 
 include::{snippets}/step-3-authentication-principal.adoc[]
+
+So please go ahead and re-start the application and try to borrow a book with an authenticated user.
+If you are an IntelliJ user you can use the provided _book.http_ file in subdirectory _http_.
+
+At first you will notice that even with the correct basic authentication header you get an error message like this one:
+
+.CSRF error output
+
+include::{snippets}/step-3-csrf-error.adoc[]
+
+The library-server expects a CSRF token in the request but did not find one. If you use common UI frameworks like
+Thymeleaf or JSF (on the serverside) or a clientside one like Angular then these already handle this CSRF processing.
+
+In our case we do not have such handler. To successfully tra the borrow book request you have to switch off
+CSRF in the library server. +
+This is done like this in the _WebSecurityConfiguration_ class.
+
+.Disable CSRF
+
+include::{snippets}/step-3-csrf-disable.adoc[]
+
+Restart the application and retry to borrow a book. This time the request should be successful.
+
+[CAUTION]
+====
+Do not disable CSRF on productive servers if you use session cookies, otherwise you are vulnerable to CSRF attacks.
+You may safely disable CSRF for servers that use a stateless authentication approach with bearer tokens like
+for OAuth2 or OpenID Connect.
+====
 
 In this workshop step we added the authorization to web and method layers. So now for particular RESTful endpoints access is only
 permitted to users with special roles.

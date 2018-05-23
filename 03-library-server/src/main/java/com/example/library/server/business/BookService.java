@@ -44,17 +44,20 @@ public class BookService {
             return Mono.empty();
         }
 
-        return bookRepository.findById(uuid)
-                .flatMap(b -> {
-                    userRepository.findById(userId).subscribe(
+        return bookRepository
+            .findById(uuid)
+            .log()
+            .flatMap(
+                b ->
+                    userRepository
+                        .findById(userId)
+                        .flatMap(
                             u -> {
-                                b.doBorrow(u);
-                                bookRepository.save(b);
-                            }
-                    );
-                    return Mono.<Void>empty();
-                })
-                .switchIfEmpty(Mono.empty());
+                              b.doBorrow(u);
+                              return bookRepository.save(b).then();
+                            })
+                        .switchIfEmpty(Mono.empty()))
+            .switchIfEmpty(Mono.empty());
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -64,17 +67,20 @@ public class BookService {
             return Mono.empty();
         }
 
-        return bookRepository.findById(uuid)
-                .flatMap(b -> {
-                    userRepository.findById(userId).subscribe(
+        return bookRepository
+            .findById(uuid)
+            .log()
+            .flatMap(
+                b ->
+                    userRepository
+                        .findById(userId)
+                        .flatMap(
                             u -> {
-                                b.doReturn(u);
-                                bookRepository.save(b);
-                            }
-                    );
-                    return Mono.<Void>empty();
-                })
-                .switchIfEmpty(Mono.empty());
+                              b.doReturn(u);
+                              return bookRepository.save(b).then();
+                            })
+                        .switchIfEmpty(Mono.empty()))
+            .switchIfEmpty(Mono.empty());
     }
 
     public Flux<BookResource> findAll() {
