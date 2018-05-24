@@ -4,7 +4,11 @@ This is a hands-on workshop on securing a reactive Spring Boot 2.0 based web app
 
 To start the workshop you need
 
-[the workshop tutorial documentation](https://andifalk.github.io/spring-security-5-workshop/)
+[the workshop tutorial documentation (html)](https://andifalk.github.io/spring-security-5-workshop/)
+
+or
+
+[the workshop tutorial documentation (pdf)](https://github.com/andifalk/spring-security-5-workshop/blob/master/docs/index.pdf)
 
 and 
 
