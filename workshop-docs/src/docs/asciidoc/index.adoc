@@ -435,6 +435,28 @@ _BookService_ and _UserService_. To achieve this we use the _@PreAuthorize_ anno
 Same as other spring annotations (e.g. @Transactional) you can put _@PreAuthorize_ annotations on global class level
 or on method level.
 
+Depending on your authorization model you may use _@PreAuthorize_ to authorize using static roles or
+to authorize using dynamic expressions (usually if you have roles with permissions).
+
+.Roles and Permissions
+
+image::images/roles_permissions.png[scaledwidth="50%", scaledheight="50%",alt="roles_permissions"]
+
+If you want to have a permission based authorization you can use the predefined interface _PermissionEvaluator_ inside the
+_@PreAuthorize_ annotations like this:
+
+```
+class MyService {
+    @PreAuthorize("hasPermission(#uuid, 'user', 'write')")
+    void myOperation(UUID uuid) {...}
+}
+```
+
+.PermissionEvaluator class
+
+include::{snippets}/step-3-permission-evaluator.adoc[]
+
+In the workshop due to time constraints we have to keep things simple so we just use static roles. +
 Here it is done for the all operations of the book service.
 
 .BookService class
