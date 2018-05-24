@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -107,7 +108,9 @@ class BookServiceTest {
   @Test
   @WithMockUser
   void verifyBorrowByIdAccessIsGrantedForUser() {
-    when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(new Book()));
+    Book book = new Book(UUID.randomUUID(), "123456", "title", "description", Arrays.asList("author1", "author2"), false, null);
+    when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
+    when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(book));
     when(userRepository.findById(any(UUID.class))).thenReturn(
             Mono.just(new User(UUID.randomUUID(),"test@example.com", "secret", "Max",
                     "Maier", Collections.singletonList(Role.USER))));
@@ -133,7 +136,9 @@ class BookServiceTest {
   @Test
   @WithMockUser
   void verifyReturnByIdAccessIsGrantedForUser() {
-    when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(new Book()));
+    Book book = new Book(UUID.randomUUID(), "123456", "title", "description", Arrays.asList("author1", "author2"), false, null);
+    when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
+    when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(book));
     when(userRepository.findById(any(UUID.class))).thenReturn(
             Mono.just(new User(UUID.randomUUID(),"test@example.com", "secret", "Max",
                     "Maier", Collections.singletonList(Role.USER))));
