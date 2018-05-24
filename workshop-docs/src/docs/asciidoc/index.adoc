@@ -32,6 +32,31 @@ This will be done in following steps:
 * Any Java IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
 * Basic knowledge of https://www.reactivemanifesto.org[Reactive Systems] and reactive programming using https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux] & https://projectreactor.io[Reactor]
 
+As we are building the samples using https://gradle.org[Gradle] your Java IDE should be capable use this.
+As IntelliJ user support for Gradle is included by default.
+As an Eclipse user you have to install a plugin via the marketplace
+
+image::images/eclipse_gradle.png[scaledwidth="50%", scaledheight="50%",alt="eclipse_gradle"]
+
+To get the workshop project you either can just clone the repository using
+
+```
+https://github.com/andifalk/spring-security-5-workshop.git
+```
+
+or
+
+```
+ git@github.com:andifalk/spring-security-5-workshop.git
+```
+
+or simply download it as a https://github.com/andifalk/spring-security-5-workshop/archive/master.zip[zip archive].
+
+After that you can import the workshop project into your IDE
+
+* IntelliJ: "New project from existing sources..."
+* Eclipse: "Import/Gradle/Existing gradle project"
+
 == Common Web Security Risks
 
 In this workshop you will strive various parts of securing a web application that
