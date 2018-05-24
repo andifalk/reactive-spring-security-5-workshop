@@ -8,7 +8,7 @@ To start the workshop you need
 
 or
 
-[the workshop tutorial documentation (pdf)](https://github.com/andifalk/spring-security-5-workshop/blob/master/docs/index.pdf)
+[the workshop tutorial documentation (pdf)](https://github.com/andifalk/spring-security-5-workshop/raw/master/docs/index.pdf)
 
 and 
 
