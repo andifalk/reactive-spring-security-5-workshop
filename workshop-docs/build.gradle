@@ -8,8 +8,9 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'org.jruby:jruby-complete:9.1.17.0'
         classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.7'
-        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.11'
+        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16'
     }
 }
 
@@ -37,6 +38,4 @@ repositories {
     jcenter()
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-}
+
