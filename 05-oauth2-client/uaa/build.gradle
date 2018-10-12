@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        maven { url 'https://repo.spring.io/libs-milestone' }
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.1.RELEASE'
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.2.3'
+    }
+}
+
+group = 'org.springframework.security.samples'
+version = '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.bmuschko.cargo'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext.springSecurityOAuth2Version = '5.1.0.BUILD-SNAPSHOT'
+
+repositories {
+    maven { url "https://repo.spring.io/libs-snapshot" }
+    maven { url "https://repo.spring.io/libs-milestone" }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web",
+            "org.springframework.boot:spring-boot-starter-thymeleaf",
+            "org.springframework.boot:spring-boot-starter-security",
+            "org.springframework.security:spring-security-oauth2-core:${springSecurityOAuth2Version}",
+            "org.springframework.security:spring-security-oauth2-client:${springSecurityOAuth2Version}",
+            "org.springframework.security:spring-security-oauth2-jose:${springSecurityOAuth2Version}",
+            "org.thymeleaf.extras:thymeleaf-extras-springsecurity4",
+            "org.springframework:spring-webflux",
+            "io.projectreactor.ipc:reactor-netty"
+
+    testCompile "org.springframework.boot:spring-boot-starter-test",
+                "org.springframework.security:spring-security-test",
+                "junit:junit",
+                "org.assertj:assertj-core"
+}
+
+ext {
+    tomcatHomeDir = '/home/afa/development/apache-tomcat-8.5.33'
+}
+
+cargo {
+    containerId = 'tomcat8x'
+    port = 8090
+
+    deployable {
+        file = file('cloudfoundry-identity-uaa-3.16.0.war')
+        context = 'uaa'
+    }
+
+    local {
+        homeDir = file("$tomcatHomeDir")
+        outputFile = file('uaa/uaa-server.log')
+
+        systemProperties {
+            property "UAA_CONFIG_PATH", "$projectDir"
+        }
+    }
+}
