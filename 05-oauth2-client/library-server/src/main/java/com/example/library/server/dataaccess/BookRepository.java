@@ -1,9 +1,8 @@
 package com.example.library.server.dataaccess;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 import java.util.UUID;
 
-public interface BookRepository extends MongoRepository<Book, UUID> {
+public interface BookRepository extends ReactiveMongoRepository<Book, UUID> {
 }

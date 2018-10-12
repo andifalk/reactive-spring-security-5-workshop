@@ -4,42 +4,42 @@ import com.example.library.server.business.BookService;
 import com.example.library.server.business.UserResource;
 import com.example.library.server.business.UserService;
 import com.example.library.server.common.Role;
+import com.example.library.server.config.UserRouter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(UserRestController.class)
+@WebFluxTest
+@Import({UserHandler.class, UserRouter.class})
 @AutoConfigureRestDocs
 @DisplayName("Verify user api")
 class UserApiIntegrationTests {
 
   @Autowired
-  private MockMvc webClient;
+  private WebTestClient webClient;
 
   @MockBean
   private UserService userService;
@@ -49,79 +49,74 @@ class UserApiIntegrationTests {
 
   @Test
   @DisplayName("to get list of users")
-  @WithMockUser(roles = "ADMIN")
-  void verifyAndDocumentGetUsers() throws Exception {
+  void verifyAndDocumentGetUsers() {
 
     UUID userId = UUID.randomUUID();
     given(userService.findAll())
         .willReturn(
-            Collections.singletonList(
+            Flux.just(
                 new UserResource(
                     userId,
                     "test@example.com",
+                    "test",
                     "first",
                     "last",
                     Collections.singletonList(Role.USER))));
 
     webClient
-            .perform(
-                    get("/users")
-                            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8)
-                            .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andDo(
-                    document(
-                            "get-users",
-                            preprocessResponse(prettyPrint())));
+        .get()
+        .uri("/users")
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .json(
+            "[{\"id\":\"" + userId + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}]")
+        .consumeWith(document("get-users"));
   }
 
   @Test
   @DisplayName("to get single user")
-  @WithMockUser(roles = "ADMIN")
-  void verifyAndDocumentGetUser() throws Exception {
+  void verifyAndDocumentGetUser() {
 
     UUID userId = UUID.randomUUID();
 
     given(userService.findById(userId))
         .willReturn(
+            Mono.just(
                 new UserResource(
                     userId,
                     "test@example.com",
+                    "test",
                     "first",
                     "last",
-                    Collections.singletonList(Role.USER)));
+                    Collections.singletonList(Role.USER))));
 
     webClient
-            .perform(
-                    get("/users/{userId}", userId)
-                            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8)
-                            .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andDo(
-                    document(
-                            "get-user",
-                            preprocessResponse(prettyPrint())));
+            .get().uri("/users/{userId}", userId).accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody()
+            .json("{\"id\":\"" + userId + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}")
+            .consumeWith(document("get-user"));
   }
 
   @Test
   @DisplayName("to delete a user")
-  @WithMockUser(roles = "ADMIN")
-  void verifyAndDocumentDeleteUser() throws Exception {
+  void verifyAndDocumentDeleteUser() {
 
     UUID userId = UUID.randomUUID();
+    given(userService.deleteById(userId)).willReturn(Mono.empty());
 
     webClient
-            .perform(
-                    delete("/users/{userId}", userId).with(csrf())
-                            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8)
-                            .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
-            .andExpect(status().isNoContent())
-            .andDo(
-                    document(
-                            "delete-user",
-                            preprocessResponse(prettyPrint())));
+            .delete().uri("/users/{userId}", userId).accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody()
+            .consumeWith(document("delete-user"));
 
     verify(userService).deleteById(eq(userId));
   }
@@ -129,29 +124,31 @@ class UserApiIntegrationTests {
   @SuppressWarnings("unchecked")
   @Test
   @DisplayName("to create a new user")
-  @WithMockUser(roles = "ADMIN")
-  void verifyAndDocumentCreateUser() throws Exception {
+  void verifyAndDocumentCreateUser() throws JsonProcessingException {
 
     UserResource userResource =
         new UserResource(
             null,
             "test@example.com",
+            "test",
             "first",
             "last",
             Collections.singletonList(Role.USER));
 
-    webClient
-            .perform(
-                    post("/users").with(csrf())
-                            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                            .content(new ObjectMapper().writeValueAsString(userResource))
-                            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_UTF8)
-                            .accept(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE)))
-            .andExpect(status().isOk())
-            .andDo(
-                    document(
-                            "create-user",
-                            preprocessResponse(prettyPrint())));
+    given(userService.create(any())).willAnswer(
+            i -> {
+              ((Mono<UserResource>) i.getArgument(0)).subscribe();
+              return Mono.empty();
+            }
+    );
 
+    webClient
+            .post().uri("/users").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromObject(
+                    new ObjectMapper().writeValueAsString(userResource)))
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody().consumeWith(document("create-user"));
   }
 }

@@ -1,12 +1,12 @@
 package com.example.library.server.dataaccess;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Mono;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends MongoRepository<User, UUID> {
+public interface UserRepository extends ReactiveMongoRepository<User, UUID> {
 
-    Optional<User> findOneByEmail(String email);
+    Mono<User> findOneByEmail(String email);
 
 }

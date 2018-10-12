@@ -4,17 +4,14 @@ import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
 import com.example.library.server.security.LibraryUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.ResponseEntity.notFound;
-import static org.springframework.http.ResponseEntity.ok;
 
 /**
  * REST api for books.
@@ -34,43 +31,36 @@ public class BookRestController {
     }
 
     @GetMapping("/books")
-    public List<BookResource> getAllBooks() {
+    public Flux<BookResource> getAllBooks() {
         return bookService.findAll();
     }
 
     @GetMapping("/books/" + PATH_BOOK_ID)
-    public ResponseEntity<BookResource> getBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
-        BookResource bookResource = bookService.findById(bookId);
-        if (bookResource != null) {
-            return ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(bookResource);
-        } else {
-            return notFound().build();
-        }
+    public Mono<ResponseEntity<BookResource>> getBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
+        return bookService.findById(bookId)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
-    public ResponseEntity<Void> borrowBookById(
+    public Mono<Void> borrowBookById(
             @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) {
-        bookService.borrowById(bookId, user.getUserResource().getId());
-        return ok().build();
+        return bookService.borrowById(bookId, user != null && user.getUserResource() != null ? user.getUserResource().getId() : null);
     }
 
     @PostMapping("/books/" + PATH_BOOK_ID + "/return")
-    public ResponseEntity<Void> returnBookById(
-            @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) {
-        bookService.returnById(bookId, user.getUserResource().getId());
-        return ok().build();
+    public Mono<Void> returnBookById(@PathVariable(
+            PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) {
+        return bookService.returnById(bookId, user != null && user.getUserResource() != null ? user.getUserResource().getId() : null);
     }
 
     @PostMapping("/books")
-    public ResponseEntity<Void> createBook(@Validated @RequestBody BookResource bookResource) {
-        bookService.create(bookResource);
-        return ok().build();
+    public Mono<Void> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
+        return bookService.create(bookResource);
     }
 
     @DeleteMapping("/books/" + PATH_BOOK_ID)
-    public ResponseEntity<Void> deleteBook(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
-        bookService.deleteById(bookId);
-        return ok().build();
+    public Mono<Void> deleteBook(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
+        return bookService.deleteById(bookId);
     }
 }

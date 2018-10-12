@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.IdGenerator;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @PreAuthorize("hasRole('ADMIN')")
@@ -25,32 +25,32 @@ public class UserService {
     }
 
     @PreAuthorize("isAnonymous() or isAuthenticated()")
-    public UserResource findOneByEmail(String email) {
-        return userRepository.findOneByEmail(email).map(this::convert).orElse(null);
+    public Mono<UserResource> findOneByEmail(String email) {
+        return userRepository.findOneByEmail(email).map(this::convert);
     }
 
-    public void create(UserResource userResource) {
-        userRepository.insert(convert(userResource));
+    public Mono<Void> create(Mono<UserResource> userResource) {
+        return userRepository.insert(userResource.map(this::convert)).then();
     }
 
-    public UserResource findById(UUID uuid) {
-        return userRepository.findById(uuid).map(this::convert).orElse(null);
+    public Mono<UserResource> findById(UUID uuid) {
+        return userRepository.findById(uuid).map(this::convert);
     }
 
-    public List<UserResource> findAll() {
-    return userRepository.findAll().stream().map(this::convert).collect(Collectors.toList());
+    public Flux<UserResource> findAll() {
+        return userRepository.findAll().map(this::convert);
     }
 
-    public void deleteById(UUID uuid) {
-        userRepository.deleteById(uuid);
+    public Mono<Void> deleteById(UUID uuid) {
+        return userRepository.deleteById(uuid);
     }
 
     private UserResource convert(User u) {
-        return new UserResource(u.getId(), u.getEmail(), u.getFirstName(), u.getLastName(), u.getRoles());
+        return new UserResource(u.getId(), u.getEmail(), u.getPassword(), u.getFirstName(), u.getLastName(), u.getRoles());
     }
 
     private User convert(UserResource ur) {
-        return new User(ur.getId() == null ? idGenerator.generateId() : ur.getId(), ur.getEmail(),
+        return new User(ur.getId() == null ? idGenerator.generateId() : ur.getId(), ur.getEmail(), ur.getPassword(),
                 ur.getFirstName(), ur.getLastName(), ur.getRoles());
     }
 }

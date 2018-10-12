@@ -13,6 +13,9 @@ public class UserResource {
 
     private String email;
 
+    @JsonIgnore
+    private String password;
+
     private String firstName;
 
     private String lastName;
@@ -23,9 +26,10 @@ public class UserResource {
     public UserResource() {
     }
 
-    public UserResource(UUID id, String email, String firstName, String lastName, List<Role> roles) {
+    public UserResource(UUID id, String email, String password, String firstName, String lastName, List<Role> roles) {
         this.id = id;
         this.email = email;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
@@ -51,6 +55,10 @@ public class UserResource {
         return roles;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public void setId(UUID id) {
         this.id = id;
     }
@@ -69,6 +77,10 @@ public class UserResource {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

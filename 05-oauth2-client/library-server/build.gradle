@@ -1,12 +1,14 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.3.RELEASE'
+        springBootVersion = '2.1.0.M3'
         asciidoctorVersion = '1.5.6'
         snippetsDir = file('build/generated-snippets')
     }
     repositories {
         mavenCentral()
         jcenter()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -26,6 +28,8 @@ sourceCompatibility = 8
 
 repositories {
     mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
 }
 
 test {
@@ -56,19 +60,18 @@ bootJar {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
-    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-security')
-    compile("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.0.RELEASE")
     compile('org.apache.commons:commons-lang3')
-    compile('org.apache.commons:commons-collections4:4.1')
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
     testCompile('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit', module: 'junit'
     }
     testCompile('org.springframework.security:spring-security-test')
-    testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+    testCompile('io.projectreactor:reactor-test')
+    testCompile('org.springframework.restdocs:spring-restdocs-webtestclient')
     testCompile('org.junit.jupiter:junit-jupiter-api')
     testRuntime('org.junit.jupiter:junit-jupiter-engine')
     testRuntime('org.junit.platform:junit-platform-engine')

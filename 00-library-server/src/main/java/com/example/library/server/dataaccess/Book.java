@@ -1,5 +1,6 @@
 package com.example.library.server.dataaccess;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -85,4 +86,17 @@ public class Book {
             this.borrowedBy = null;
         }
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("title", title)
+                .append("isbn", isbn)
+                .append("description", description)
+                .append("borrowed", borrowed)
+                .append("borrowedBy", borrowedBy)
+                .toString();
+    }
+
 }
