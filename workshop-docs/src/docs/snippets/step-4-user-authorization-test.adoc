@@ -50,6 +50,6 @@ class UserServiceTest {
 ----
 <1> As this is a JUnit 5 based integration test we use _@SpringJUnitConfig_ to add spring JUnit 5 extension and configure the application context
 <2> Positive test case of access control for finding a user by email for anonymous user
-<4> Positive test case of access control for finding a user by email with all possible roles
-<5> Negative test case of access control for creating user with roles 'USER' or 'CURATOR'
+<3> Positive test case of access control for finding a user by email with all possible roles
+<4> Negative test case of access control for creating user with roles 'USER' or 'CURATOR'
 

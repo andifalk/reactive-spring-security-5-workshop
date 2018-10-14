@@ -3,6 +3,7 @@ package com.example.library.server.api;
 import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +51,7 @@ public class BookRestController {
         return bookService.returnById(bookId, null);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/books")
     public Mono<Void> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
         return bookService.create(bookResource);

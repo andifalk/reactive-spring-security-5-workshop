@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
 <meta name="author" content="Andreas Falk">
-<title>Spring Security 5 Hands-On Workshop</title>
+<title>Reactive Spring Security 5 Hands-On Workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,7 +422,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Spring Security 5 Hands-On Workshop</h1>
+<h1>Reactive Spring Security 5 Hands-On Workshop</h1>
 <div class="details">
 <span id="author" class="author">Andreas Falk</span><br>
 <span id="email" class="email"><a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a></span><br>
@@ -453,7 +453,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></li>
 <li><a href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></li>
 <li><a href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></li>
-<li><a href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a>
+<li><a href="#_step_5_oauth2">5.5. Step 5: OAuth2</a>
 <ul class="sectlevel3">
 <li><a href="#_what_we_will_build">5.5.1. What we will build</a></li>
 <li><a href="#authorization-server">5.5.2. Authorization Server</a></li>
@@ -473,7 +473,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="imageblock">
 <div class="content">
-<img src="images/spring_io_workshop.jpg" alt="springio_workshop">
+<img src="images/novatec_logo_big.png" alt="novatec">
 </div>
 </div>
 </div>
@@ -503,7 +503,7 @@ more and more secure step-by-step.</p>
 <p>Implement automated security integration tests</p>
 </li>
 <li>
-<p>Experiment with new OAuth2 Login Client of Spring Security 5.0</p>
+<p>Experiment with new OAuth2 Login Client and Resource Server of Spring Security 5.1</p>
 </li>
 </ol>
 </div>
@@ -540,7 +540,7 @@ As an Eclipse user you have to install a plugin via the marketplace</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>https://github.com/andifalk/spring-security-5-workshop.git</code></pre>
+<pre class="highlightjs highlight"><code>https://github.com/andifalk/reactive-spring-security-5-workshop.git</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -548,11 +548,11 @@ As an Eclipse user you have to install a plugin via the marketplace</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code> git@github.com:andifalk/spring-security-5-workshop.git</code></pre>
+<pre class="highlightjs highlight"><code> git@github.com:andifalk/reactive-spring-security-5-workshop.git</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or simply download it as a <a href="https://github.com/andifalk/spring-security-5-workshop/archive/master.zip">zip archive</a>.</p>
+<p>or simply download it as a <a href="https://github.com/andifalk/reactive-spring-security-5-workshop/archive/master.zip">zip archive</a>.</p>
 </div>
 <div class="paragraph">
 <p>After that you can import the workshop project into your IDE</p>
@@ -564,6 +564,9 @@ As an Eclipse user you have to install a plugin via the marketplace</p>
 </li>
 <li>
 <p>Eclipse: "Import/Gradle/Existing gradle project"</p>
+</li>
+<li>
+<p>Visual Studio Code: Just open the corresponding project directory</p>
 </li>
 </ul>
 </div>
@@ -844,7 +847,7 @@ There is a separate project for each step:</p>
 <p>04-library-server: This adds automatic integration tests for authorization</p>
 </li>
 <li>
-<p>05-oauth2-client: This adds an OAuth2 login client for interacting with an authorization server for login</p>
+<p>05-oauth2: This adds an OAuth2 login clientand resource server for interacting with an authorization server for login</p>
 </li>
 </ul>
 </div>
@@ -2076,9 +2079,9 @@ will continue now with a "traditional" servlet based blocking alternative of the
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_5_oauth2_login_client"><a class="anchor" href="#_step_5_oauth2_login_client"></a><a class="link" href="#_step_5_oauth2_login_client">5.5. Step 5: OAuth2 Login Client</a></h3>
+<h3 id="_step_5_oauth2"><a class="anchor" href="#_step_5_oauth2"></a><a class="link" href="#_step_5_oauth2">5.5. Step 5: OAuth2</a></h3>
 <div class="paragraph">
-<div class="title">Spring Security 5.0 introduced new support for OAuth2/OpenID Connect directly in spring security.</div>
+<div class="title">Spring Security 5.0 introduced new support for OAuth2/OpenID Connect (OIDC) directly in spring security.</div>
 <p>In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
 on a third party library <a href="https://connect2id.com/products/nimbus-oauth-openid-connect-sdk">Nimbus OAuth 2.0 SDK</a> instead of implementing all these functionality directly in Spring itself.</p>
 </div>
@@ -2140,7 +2143,15 @@ and Spring Security 5.x/Spring Boot 2.x.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>4</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>3</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>5</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>5</sup></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>4</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>6</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>5</sup></p></td>
 </tr>
 </tbody>
 </table>
@@ -2150,8 +2161,9 @@ and Spring Security 5.x/Spring Boot 2.x.</p>
 <sup>3</sup> No direct support in Spring Security 5.0/Spring Boot 2.0. For auto-configuration with Spring Boot 2.0
 you still have to use the separate <a href="https://projects.spring.io/spring-security-oauth">Spring Security OAuth project</a>
 together with <a href="https://github.com/spring-projects/spring-security-oauth2-boot">Spring Security OAuth2 Boot compatibilty project</a><br>
-<sup>4</sup> New refactored support for resource server will be part of Spring Security 5.1<br>
-<sup>5</sup> OAuth2 login client with reactive support will be part of Spring Security 5.1.</p>
+<sup>4</sup> New refactored support for resource server as part of Spring Security 5.1<br>
+<sup>5</sup> OAuth2 login client and resource server with reactive support as part of Spring Security 5.1.<br>
+<sup>6</sup> New OAuth2 authorization server is planned as part of Spring Security 5.2</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2161,8 +2173,9 @@ together with <a href="https://github.com/spring-projects/spring-security-oauth2
 </td>
 <td class="content">
 <div class="paragraph">
-<p>There is a <a href="https://github.com/spring-projects/spring-security/tree/5.1.0.M1/samples/boot/oauth2login-webflux">new sample</a> using Spring Security 5.1 Milestone 1 showing how the
-OAuth2 Login Client works in the reactive way.</p>
+<p>The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.2 will mainly suit for fast prototyping and demo
+purposes. For production please use one of the <a href="https://openid.net/developers/certified/">officially certified</a> products like for example
+<a href="https://www.keycloak.org/">KeyCloak</a>, <a href="https://github.com/cloudfoundry/uaa">UAA</a> or <a href="https://www.okta.com/products/single-sign-on/">Okta</a>.</p>
 </div>
 </td>
 </tr>
@@ -2187,10 +2200,13 @@ OAuth2 Login Client works in the reactive way.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2">Spring Boot 2.0 Reference Documentation</a></p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2">Spring Boot 2.1 Reference Documentation</a></p>
 </li>
 <li>
-<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-oauth2login">Spring Security Reference Documentation</a></p>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-oauth2login">Spring Security OAuth2/OIDC Login Client Reference Documentation</a></p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#webflux-oauth2-resource-server">Spring Security OAuth2/OIDC Resource Server Reference Documentation</a></p>
 </li>
 <li>
 <p><a href="https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle">Spring Security OAuth Boot 2 Auto-config Documentation</a></p>
@@ -2201,12 +2217,13 @@ OAuth2 Login Client works in the reactive way.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>In this workshop we will now look at what Spring Security 5.0 provides as new OAuth2 Login Client - Unfortunately still in a non-reactive way.</p>
+<p>In this workshop we will now look at what Spring Security 5.1 provides as new
+OAuth2/OIDC Login Client and Resource Server - In a reactive way.</p>
 </div>
 <div class="sect3">
 <h4 id="_what_we_will_build"><a class="anchor" href="#_what_we_will_build"></a><a class="link" href="#_what_we_will_build">5.5.1. What we will build</a></h4>
 <div class="paragraph">
-<p>In the <em>05-oauth2-client</em> project you will be provided the following sub-projects:</p>
+<p>In the <em>05-oauth2</em> project you will be provided the following sub-projects:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2215,15 +2232,16 @@ OAuth2 Login Client works in the reactive way.</p>
 This is still based on Spring Boot 1.5.x.</p>
 </li>
 <li>
-<p><strong>library-server</strong>: A non-reactive (servlet-based) version of the library server from previous workshop steps
-(Spring Security 5.0 does not yet support reactive resource servers)</p>
+<p><strong>initial-library-server</strong>: The reactive version of the library server (same as previous workshop step <em>04-library-server</em>)</p>
 </li>
 <li>
-<p><strong>initial-oauth2-login-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client
-This is the sub-project you will now use in the workshop.</p>
+<p><strong>initial-oauth2-login-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client</p>
 </li>
 <li>
 <p><strong>oauth2-login-client</strong>: Complete code of the new OAuth2 Login Client (for reference)</p>
+</li>
+<li>
+<p><strong>oauth2-library-server</strong>: Complete code of the reactive library OAuth2 resource server</p>
 </li>
 </ul>
 </div>
@@ -2744,8 +2762,8 @@ This returns the book list from the library-server (resource server).</p>
 </table>
 </div>
 <div class="paragraph">
-<p>This concludes our Spring Security 5.0 hands-on workshop.
-I hope you learned a lot regarding security and especially Spring Security 5.0.</p>
+<p>This concludes our Spring Security 5.1 hands-on workshop.
+I hope you learned a lot regarding security and especially Spring Security 5.1.</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -2825,7 +2843,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 <p><a href="https://github.com/spring-projects/spring-security/tree/5.1.0.M1/samples/boot/oauth2login-webflux">Spring Security OAuth2 Client for WebFlux Sample</a></p>
 </li>
 <li>
-<p><a href="https://github.com/andifalk/spring-security-5-workshop">Spring Security 5 Workshop Code</a></p>
+<p><a href="https://github.com/andifalk/reactive-spring-security-5-workshop">Reactive Spring Security 5 Workshop Code</a></p>
 </li>
 </ul>
 </div>
@@ -2852,7 +2870,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-24 12:29:01 CEST
+Last updated 2018-10-14 22:46:50 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

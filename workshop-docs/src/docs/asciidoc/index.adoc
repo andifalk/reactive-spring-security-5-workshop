@@ -1,4 +1,4 @@
-= Spring Security 5 Hands-On Workshop
+= Reactive Spring Security 5 Hands-On Workshop
 Andreas Falk <andreas.falk@novatec-gmbh.de>
 :doctype: book
 :icons: font
@@ -10,7 +10,7 @@ Andreas Falk <andreas.falk@novatec-gmbh.de>
 :numbered: ''
 :docinfo:
 
-image::images/spring_io_workshop.jpg[scaledwidth="50%", scaledheight="50%",alt="springio_workshop"]
+image::images/novatec_logo_big.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
 
 == Introduction
 
@@ -23,7 +23,7 @@ This will be done in following steps:
 2. Customize authentication configuration (provide our own user store)
 3. Add authorization (access controls) to web and method layers
 4. Implement automated security integration tests
-5. Experiment with new OAuth2 Login Client of Spring Security 5.0
+5. Experiment with new OAuth2 Login Client and Resource Server of Spring Security 5.1
 
 === Requirements for this workshop
 
@@ -41,21 +41,22 @@ image::images/eclipse_gradle.png[scaledwidth="50%", scaledheight="50%",alt="ecli
 To get the workshop project you either can just clone the repository using
 
 ```
-https://github.com/andifalk/spring-security-5-workshop.git
+https://github.com/andifalk/reactive-spring-security-5-workshop.git
 ```
 
 or
 
 ```
- git@github.com:andifalk/spring-security-5-workshop.git
+ git@github.com:andifalk/reactive-spring-security-5-workshop.git
 ```
 
-or simply download it as a https://github.com/andifalk/spring-security-5-workshop/archive/master.zip[zip archive].
+or simply download it as a https://github.com/andifalk/reactive-spring-security-5-workshop/archive/master.zip[zip archive].
 
 After that you can import the workshop project into your IDE
 
 * IntelliJ: "New project from existing sources..."
 * Eclipse: "Import/Gradle/Existing gradle project"
+* Visual Studio Code: Just open the corresponding project directory
 
 == Common Web Security Risks
 
@@ -190,7 +191,7 @@ There is a separate project for each step:
 * 02-library-server: This adds a persistent user store for authentication
 * 03-library-server: This adds custom authentication and authorization rules
 * 04-library-server: This adds automatic integration tests for authorization
-* 05-oauth2-client: This adds an OAuth2 login client for interacting with an authorization server for login
+* 05-oauth2: This adds an OAuth2 login clientand resource server for interacting with an authorization server for login
 
 == Workshop Steps
 
@@ -558,9 +559,9 @@ In the last workshop part we will look at the new OAuth2 login client introduced
 Unfortunately Spring does not support OAuth2 for reactive applications so far. That's why we
 will continue now with a "traditional" servlet based blocking alternative of the library-server.
 
-=== Step 5: OAuth2 Login Client
+=== Step 5: OAuth2
 
-.Spring Security 5.0 introduced new support for OAuth2/OpenID Connect directly in spring security.
+.Spring Security 5.0 introduced new support for OAuth2/OpenID Connect (OIDC) directly in spring security.
 
 In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
 on a third party library https://connect2id.com/products/nimbus-oauth-openid-connect-sdk[Nimbus OAuth 2.0 SDK] instead of implementing all these functionality directly in Spring itself.
@@ -599,7 +600,13 @@ and Spring Security 5.x/Spring Boot 2.x.
 |X^2^
 |X^4^
 |(X)^3^
-|(X)^5^
+|X^5^
+|5.2
+|2.x
+|X^2^
+|X^4^
+|X^6^
+|X^5^
 |===
 
 ^1^ Spring Boot auto-config and separate https://projects.spring.io/spring-security-oauth[Spring Security OAuth project] +
@@ -607,13 +614,15 @@ and Spring Security 5.x/Spring Boot 2.x.
 ^3^ No direct support in Spring Security 5.0/Spring Boot 2.0. For auto-configuration with Spring Boot 2.0
 you still have to use the separate https://projects.spring.io/spring-security-oauth[Spring Security OAuth project]
 together with https://github.com/spring-projects/spring-security-oauth2-boot[Spring Security OAuth2 Boot compatibilty project] +
-^4^ New refactored support for resource server will be part of Spring Security 5.1 +
-^5^ OAuth2 login client with reactive support will be part of Spring Security 5.1.
+^4^ New refactored support for resource server as part of Spring Security 5.1 +
+^5^ OAuth2 login client and resource server with reactive support as part of Spring Security 5.1. +
+^6^ New OAuth2 authorization server is planned as part of Spring Security 5.2
 
 [TIP]
 ====
-There is a https://github.com/spring-projects/spring-security/tree/5.1.0.M1/samples/boot/oauth2login-webflux[new sample] using Spring Security 5.1 Milestone 1 showing how the
-OAuth2 Login Client works in the reactive way.
+The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.2 will mainly suit for fast prototyping and demo
+purposes. For production please use one of the https://openid.net/developers/certified/[officially certified] products like for example
+https://www.keycloak.org/[KeyCloak], https://github.com/cloudfoundry/uaa[UAA] or https://www.okta.com/products/single-sign-on/[Okta].
 ====
 
 You can find more information on building OAuth2 secured microservices with Spring Boot *1.5.x* in
@@ -623,27 +632,29 @@ You can find more information on building OAuth2 secured microservices with Spri
 
 You can find more information on building OAuth2 secured microservices with Spring Boot *2.0* in
 
-* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot 2.0 Reference Documentation]
-* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-oauth2login[Spring Security Reference Documentation]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot 2.1 Reference Documentation]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-oauth2login[Spring Security OAuth2/OIDC Login Client Reference Documentation]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#webflux-oauth2-resource-server[Spring Security OAuth2/OIDC Resource Server Reference Documentation]
 * https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle[Spring Security OAuth Boot 2 Auto-config Documentation]
 * https://projects.spring.io/spring-security-oauth/docs/oauth2.html[Spring Security OAuth2 Developers Guide]
 
-In this workshop we will now look at what Spring Security 5.0 provides as new OAuth2 Login Client - Unfortunately still in a non-reactive way.
+In this workshop we will now look at what Spring Security 5.1 provides as new
+OAuth2/OIDC Login Client and Resource Server - In a reactive way.
 
 ==== What we will build
 
-In the _05-oauth2-client_ project you will be provided the following sub-projects:
+In the _05-oauth2_ project you will be provided the following sub-projects:
 
 * *authorizationserver*: This is the OAuth2 authorization server which holds all users with their credentials.
 This is still based on Spring Boot 1.5.x.
 
-* *library-server*: A non-reactive (servlet-based) version of the library server from previous workshop steps
-(Spring Security 5.0 does not yet support reactive resource servers)
+* *initial-library-server*: The reactive version of the library server (same as previous workshop step _04-library-server_)
 
 * *initial-oauth2-login-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
-This is the sub-project you will now use in the workshop.
 
 * *oauth2-login-client*: Complete code of the new OAuth2 Login Client (for reference)
+
+* *oauth2-library-server*: Complete code of the reactive library OAuth2 resource server
 
 image::images/oauth2_spring_roles.png[scaledwidth="75%",alt="OAuth2 roles"]
 
@@ -820,8 +831,8 @@ This returns the book list from the library-server (resource server).
 You find the completed code in project _05-oauth2-client/oauth2-login-client_.
 ====
 
-This concludes our Spring Security 5.0 hands-on workshop.
-I hope you learned a lot regarding security and especially Spring Security 5.0.
+This concludes our Spring Security 5.1 hands-on workshop.
+I hope you learned a lot regarding security and especially Spring Security 5.1.
 
 [IMPORTANT]
 ====
@@ -850,7 +861,7 @@ Thank YOU very much for being part of this workshop :-)
 * https://projects.spring.io/spring-security-oauth/docs/oauth2.html[_Legacy_ Spring Security OAuth Reference Guide]
 * https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/[_Legacy_ Spring Security OAuth2 Boot Reference Guide]
 * https://github.com/spring-projects/spring-security/tree/5.1.0.M1/samples/boot/oauth2login-webflux[Spring Security OAuth2 Client for WebFlux Sample]
-* https://github.com/andifalk/spring-security-5-workshop[Spring Security 5 Workshop Code]
+* https://github.com/andifalk/reactive-spring-security-5-workshop[Reactive Spring Security 5 Workshop Code]
 
 [appendix]
 == Book References

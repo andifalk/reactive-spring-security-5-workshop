@@ -1,7 +1,0 @@
-rootProject.name = 'oauth2-client'
-include 'oauth2-login-client'
-include 'initial-oauth2-login-client'
-include 'nonreactive-library-server'
-include 'authorizationserver'
-include 'uaa'
-

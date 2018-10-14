@@ -177,7 +177,7 @@ class BookApiIntegrationTests {
                     new ObjectMapper().writeValueAsString(bookResource)))
             .exchange()
             .expectStatus()
-            .isOk()
+            .isCreated()
             .expectBody().consumeWith(document("create-book"));
   }
 }

@@ -11,7 +11,7 @@ and an admin user can show, add or remove users.
 
 Please start into the workshop with this initial application.
 
-You find the accompanying workshop tutorial [here](https://andifalk.github.io/spring-security-5-workshop/)
+You find the accompanying workshop tutorial [here](https://andifalk.github.io/reactive-spring-security-5-workshop/)
 
 If you have already read all introductory sections of the tutorial you can directly
-start with the [first step in the tutorial](https://andifalk.github.io/spring-security-5-workshop/#_step_1_auto_configuration)
+start with the [first step in the tutorial](https://andifalk.github.io/reactive-spring-security-5-workshop/#_step_1_auto_configuration)

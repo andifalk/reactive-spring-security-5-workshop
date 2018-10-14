@@ -4,6 +4,7 @@ import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
 import com.example.library.server.security.LibraryUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -54,6 +55,7 @@ public class BookRestController {
         return bookService.returnById(bookId, user != null && user.getUserResource() != null ? user.getUserResource().getId() : null);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/books")
     public Mono<Void> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
         return bookService.create(bookResource);
