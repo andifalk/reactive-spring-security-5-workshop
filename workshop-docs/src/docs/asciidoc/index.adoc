@@ -813,13 +813,13 @@ Here you can log in using one of these predefined users:
 |===
 |User |Password |Roles
 |user@example.com
-|user
+|user_4workshop
 |USER
 |curator@example.com
-|curator
+|curator_4workshop
 |USER, CURATOR
 |admin@example.com
-|admin
+|admin_4workshop
 |USER, CURATOR, ADMIN
 |===
 

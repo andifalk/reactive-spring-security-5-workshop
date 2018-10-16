@@ -27,7 +27,8 @@ public class BookRestController {
     List<BookResource> books() {
         ResponseEntity<List<BookResource>> responseEntity = this.restTemplate
                 .exchange("http://localhost:8080/books", HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<BookResource>>() {});
+                        new ParameterizedTypeReference<List<BookResource>>() {
+                        });
         return responseEntity.getBody();
     }
 
@@ -35,7 +36,8 @@ public class BookRestController {
     List<UserResource> users() {
         ResponseEntity<List<UserResource>> responseEntity = this.restTemplate
                 .exchange("http://localhost:8080/users", HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<UserResource>>() {});
+                        new ParameterizedTypeReference<List<UserResource>>() {
+                        });
         return responseEntity.getBody();
     }
 

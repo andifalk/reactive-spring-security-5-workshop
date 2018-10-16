@@ -1,0 +1,59 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.15.RELEASE'
+        keycloakVersion = '4.4.0.Final'
+        resteasyVersion = '3.6.1.Final'
+        infinispanVersion = '9.2.5.Final'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    compile {
+        exclude group: 'org.jboss.spec.javax.servlet', module: 'jboss-servlet-api_3.0_spec'
+    }
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework:spring-jdbc')
+    compile('com.fasterxml.jackson.core:jackson-core')
+    compile('com.fasterxml.jackson.core:jackson-annotations')
+    compile('com.fasterxml.jackson.core:jackson-databind')
+    compile("org.jboss.resteasy:resteasy-servlet-initializer:${resteasyVersion}")
+    compile("org.jboss.resteasy:resteasy-jackson2-provider:${resteasyVersion}")
+    compile("org.jboss.resteasy:resteasy-jaxb-provider:${resteasyVersion}")
+    compile("org.infinispan:infinispan-core:${infinispanVersion}")
+    compile("org.keycloak:keycloak-model-infinispan:${keycloakVersion}")
+    compile("org.keycloak:keycloak-services:${keycloakVersion}") {
+        exclude group: 'org.jboss.spec.javax.servlet', module: 'jboss-servlet-api_3.0_spec'
+    }
+    compile("org.keycloak:keycloak-model-jpa:${keycloakVersion}")
+    compile("org.keycloak:keycloak-js-adapter:${keycloakVersion}")
+    compile("org.keycloak:keycloak-themes:${keycloakVersion}")
+    compile("org.keycloak:keycloak-saml-core:${keycloakVersion}")
+    compile("org.keycloak:keycloak-authz-policy-common:${keycloakVersion}")
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile('com.h2database:h2')
+    compile("org.freemarker:freemarker")
+}
+
+

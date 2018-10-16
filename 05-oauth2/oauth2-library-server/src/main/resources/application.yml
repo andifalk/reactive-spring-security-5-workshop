@@ -1,0 +1,18 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+spring:
+  data:
+    mongodb:
+      port: 40495
+
+logging:
+  level:
+    org:
+      springframework:
+        security: trace

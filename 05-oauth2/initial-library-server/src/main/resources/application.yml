@@ -11,5 +11,6 @@ spring:
     mongodb:
       port: 40495
 
-
+logging:
+  level: trace
 

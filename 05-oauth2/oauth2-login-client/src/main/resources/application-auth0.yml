@@ -1,0 +1,22 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          library-client:
+            provider: auth0-authserver
+            client-id: hzjvnFhJlrVgT1JEUQIa8Ere5gW3RVXU
+            client-secret: iTZQ4ltpvFuWrAjDiOaPQmSr8ZdUn4jigCy0S3qoDNyDUNSN1IwbTWUU9AP4AHV7
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            scopes: openid, profile, email
+            client-name: Auth0 Client
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          auth0-authserver:
+            authorization-uri: https://access-me.eu.auth0.com/authorize
+            token-uri: https://access-me.eu.auth0.com/oauth/token
+            user-info-uri: https://access-me.eu.auth0.com/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: https://access-me.eu.auth0.com/.well-known/jwks.json
+

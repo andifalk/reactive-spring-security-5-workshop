@@ -1,27 +1,32 @@
-encryption:
-  active_key_label: test
-
+issuer:
+  uri: http://localhost:8090/uaa
 oauth:
   user:
     authorities:
-      - openid
-      - scim.me
-      - password.write
-      - scim.userids
-      - uaa.user
-      - approvals.me
-      - oauth.approvals
+    - openid
+    - scim.me
+    - password.write
+    - scim.userids
+    - uaa.user
+    - approvals.me
+    - oauth.approvals
   clients:
-    oauth2login-demo:
+    library:
       secret: secret
       authorized-grant-types: authorization_code
-      scope: openid,profile,email
-      authorities: uaa.resource
-      redirect-uri: http://localhost:8080/login/oauth2/code/uaa
+      scope: openid,profile,email,user,curator,admin
+      authorities: uaa.resource,user
+      redirect-uri: http://localhost:8081/login/oauth2/code/uaa
+    cli:
+      secret: secret
+      authorized-grant-types: client_credentials
+      authorities: user
 
 scim:
   users:
-    - springsec5|password|springsec5@pivotal.io|Spring|Security5|uaa.user,profile,email
+  - user@example.com|user|user@example.com|Standard|User|uaa.user,openid,profile,email,user
+  - curator@example.com|curator|curator@example.com|Curator|User|uaa.user,openid,profile,email,user,curator
+  - admin@example.com|admin|admin@example.com|Admin|User|uaa.user,openid,profile,email,user,curator,admin
 
 jwt:
   token:

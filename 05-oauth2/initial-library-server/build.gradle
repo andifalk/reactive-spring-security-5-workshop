@@ -66,13 +66,12 @@ dependencies {
     compile('org.apache.commons:commons-lang3')
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
-    testCompile('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'junit', module: 'junit'
-    }
+    testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
     testCompile('io.projectreactor:reactor-test')
     testCompile('org.springframework.restdocs:spring-restdocs-webtestclient')
+    testCompile('org.mockito:mockito-junit-jupiter')
     testCompile('org.junit.jupiter:junit-jupiter-api')
+    testCompile('org.junit.jupiter:junit-jupiter-params')
     testRuntime('org.junit.jupiter:junit-jupiter-engine')
-    testRuntime('org.junit.platform:junit-platform-engine')
 }

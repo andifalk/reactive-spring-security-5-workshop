@@ -1,39 +1,22 @@
 package com.example.oauth2loginclient.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @RestController
 public class UserInfoRestController {
 
-    private final RestTemplate restTemplate;
-    private final OAuth2AuthorizedClientService clientService;
-
-    @Autowired
-    public UserInfoRestController(RestTemplate restTemplate, OAuth2AuthorizedClientService clientService) {
-        this.restTemplate = restTemplate;
-        this.clientService = clientService;
-    }
-
     @GetMapping("/")
-    UserInfo userInfo(OAuth2AuthenticationToken token) {
-        OAuth2AuthorizedClient client = this.clientService
-                .loadAuthorizedClient(
-                        token.getAuthorizedClientRegistrationId(),
-                        token.getName());
-        String uri = client.getClientRegistration()
-                .getProviderDetails()
-                .getUserInfoEndpoint()
-                .getUri();
-        ResponseEntity<UserInfo> responseEntity = this.restTemplate
-                .exchange(uri, HttpMethod.GET, null, UserInfo.class);
-        return responseEntity.getBody();
+    Mono<Map<String, Object>> userInfo(
+            @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient,
+            @AuthenticationPrincipal OAuth2User oauth2User) {
+        return Mono.just(oauth2User.getAttributes());
     }
 }

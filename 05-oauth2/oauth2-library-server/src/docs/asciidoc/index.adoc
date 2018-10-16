@@ -1,0 +1,169 @@
+= Library Server API Documentation
+
+== HTTP Verbs
+
+This application tries to adhere as closely as possible to standard HTTP and
+REST conventions in its use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve resource(s).
+
+| `POST`
+| Used to create a new resource or execute and action.
+
+| `DELETE`
+| Used to delete a resource.
+|===
+
+== HTTP Status Codes
+
+This application tries to adhere as closely as possible to standard HTTP and
+REST conventions in its use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully.
+
+| `201 Created`
+| A new resource has been created successfully..
+
+| `204 No Content`
+| The request completed successfully, but there is no content included in the
+response.
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing
+further information.
+
+| `404 Not Found`
+| The requested resource did not exist.
+|===
+
+== Resources
+
+=== Books
+
+==== Creating a new Book
+
+In order to create a book, the consumer needs to provide an `isbn` number, a
+a `title` and a `description` for the new book and `POST` them to `/books`:
+
+include::{snippets}/create-book/http-request.adoc[]
+
+This will create a new book in the library's collection.
+
+include::{snippets}/create-book/http-response.adoc[]
+
+==== Listing all existing Books
+
+All existing books of the library's collection can be retrieved with a `GET`
+request on the `/books` resource:
+
+include::{snippets}/get-books/http-request.adoc[]
+
+If there are any books in the library the response would look something like
+this:
+
+include::{snippets}/get-books/http-response.adoc[]
+
+==== Getting a Book
+
+An existing book of the library's collection can be retrieved with a `GET`
+request on the book's `/books/{id}` resource:
+
+include::{snippets}/get-book/http-request.adoc[]
+
+The response contains an available book like this:
+
+include::{snippets}/get-book/http-response.adoc[]
+
+==== Borrowing a Book
+
+In order to borrow a book it has to (1) exist and (2) not already be borrowed
+by someone else. A book can be borrowed by providing a `borrower` as part
+of a `POST` request on the `/books/{id}/borrow` action resource:
+
+include::{snippets}/borrow-book/http-request.adoc[]
+
+If the book was successfully borrowed, the response would be something like
+this:
+
+include::{snippets}/borrow-book/http-response.adoc[]
+
+==== Returning a Book
+
+In order to return a book it has to (1) exist and (2) be borrowed by someone.
+A book can be returned sending an empty `POST` request to the
+`/books/{id}/return` action resource:
+
+include::{snippets}/return-book/http-request.adoc[]
+
+If the book was successfully returned, the response would be something like
+this:
+
+include::{snippets}/return-book/http-response.adoc[]
+
+==== Deleting a Book
+
+An existing book can be deleted with a `DELETE` request on the book's
+`/books/{id}` resource:
+
+include::{snippets}/delete-book/http-request.adoc[]
+
+Successful deletion is indicated with a response like this:
+
+include::{snippets}/delete-book/http-response.adoc[]
+
+
+=== Users
+
+==== Creating a new User
+
+In order to create a user, the consumer needs to provide an `email address`, `first name` and `last name` for the new user
+and `POST` them to `/users`:
+
+include::{snippets}/create-user/http-request.adoc[]
+
+This will create a new user in the user's collection.
+
+include::{snippets}/create-user/http-response.adoc[]
+
+==== Listing all existing Users
+
+All existing users of the user's collection can be retrieved with a `GET`
+request on the `/users` resource:
+
+include::{snippets}/get-users/http-request.adoc[]
+
+If there are any users the response would look something like
+this:
+
+include::{snippets}/get-users/http-response.adoc[]
+
+==== Getting a User
+
+An existing user of the user's collection can be retrieved with a `GET`
+request on the user's `/users/{id}` resource:
+
+include::{snippets}/get-user/http-request.adoc[]
+
+The response contains an available user like this:
+
+include::{snippets}/get-user/http-response.adoc[]
+
+==== Deleting a User
+
+An existing user can be deleted with a `DELETE` request on the user's
+`/users/{id}` resource:
+
+include::{snippets}/delete-user/http-request.adoc[]
+
+Successful deletion is indicated with a response like this:
+
+include::{snippets}/delete-user/http-response.adoc[]
+

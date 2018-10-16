@@ -1,0 +1,22 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          uaa:
+            provider: uaa-authserver
+            client-id: library
+            client-secret: secret
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            scopes: openid,profile,email,user,curator,admin
+            client-name: UAA Client
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          uaa-authserver:
+            authorization-uri: http://localhost:8090/uaa/oauth/authorize
+            token-uri: http://localhost:8090/uaa/oauth/token
+            user-info-uri: http://localhost:8090/uaa/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: http://localhost:8090/uaa/token_keys
+

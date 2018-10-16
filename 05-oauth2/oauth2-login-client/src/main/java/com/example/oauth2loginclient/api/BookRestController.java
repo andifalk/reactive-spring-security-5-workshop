@@ -6,37 +6,39 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
+
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
 
 @RestController
 public class BookRestController {
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @Autowired
-    public BookRestController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public BookRestController(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     @GetMapping("/books")
-    List<BookResource> books() {
-        ResponseEntity<List<BookResource>> responseEntity = this.restTemplate
-                .exchange("http://localhost:8080/books", HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<BookResource>>() {});
-        return responseEntity.getBody();
+    Flux<BookResource> books(@RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient) {
+        return webClient.get().uri("http://localhost:8080/books")
+                .attributes(oauth2AuthorizedClient(authorizedClient)).retrieve().bodyToFlux(BookResource.class);
     }
 
     @GetMapping("/users")
-    List<UserResource> users() {
-        ResponseEntity<List<UserResource>> responseEntity = this.restTemplate
-                .exchange("http://localhost:8080/users", HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<UserResource>>() {});
-        return responseEntity.getBody();
+    Flux<UserResource> users(@RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient) {
+        return webClient.get().uri("http://localhost:8080/users")
+                .attributes(oauth2AuthorizedClient(authorizedClient)).retrieve().bodyToFlux(UserResource.class);
     }
 
 }
