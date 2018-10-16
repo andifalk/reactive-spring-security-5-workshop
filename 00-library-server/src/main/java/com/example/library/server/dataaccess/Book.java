@@ -49,6 +49,10 @@ public class Book {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getIsbn() {
         return isbn;
     }
@@ -85,6 +89,22 @@ public class Book {
             this.borrowed = false;
             this.borrowedBy = null;
         }
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
     }
 
     @Override
