@@ -191,7 +191,7 @@ There is a separate project for each step:
 * 02-library-server: This adds a persistent user store for authentication
 * 03-library-server: This adds custom authentication and authorization rules
 * 04-library-server: This adds automatic integration tests for authorization
-* 05-oauth2: This adds an OAuth2 login clientand resource server for interacting with an authorization server for login
+* 05-oauth2: This adds an OAuth2 login client and resource server for interacting with an identity server for login
 
 == Workshop Steps
 
@@ -555,9 +555,7 @@ project.
 You find the completed code in project _04-library-server_.
 ====
 
-In the last workshop part we will look at the new OAuth2 login client introduced in Spring Security 5.0.
-Unfortunately Spring does not support OAuth2 for reactive applications so far. That's why we
-will continue now with a "traditional" servlet based blocking alternative of the library-server.
+In the last workshop part we will look at the new OAuth2 login client and resource server introduced in Spring Security 5.0 and 5.1.
 
 === Step 5: OAuth2/OpenID Connect
 
@@ -664,10 +662,11 @@ You can find more information on building OAuth2 secured microservices with Spri
 * https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot 1.5 Reference Documentation]
 * https://projects.spring.io/spring-security-oauth/docs/oauth2.html[Spring Security OAuth2 Developers Guide]
 
-You can find more information on building OAuth2 secured microservices with Spring Boot *2.0* in
+You can find more information on building OAuth2 secured microservices with Spring Boot *2.1*
+and Spring Security *5.1* in
 
 * https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot 2.1 Reference Documentation]
-* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-oauth2login[Spring Security OAuth2/OIDC Login Client Reference Documentation]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#webflux-oauth2-login[Spring Security OAuth2/OIDC Login Client Reference Documentation]
 * https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#webflux-oauth2-resource-server[Spring Security OAuth2/OIDC Resource Server Reference Documentation]
 * https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle[Spring Security OAuth Boot 2 Auto-config Documentation]
 * https://projects.spring.io/spring-security-oauth/docs/oauth2.html[Spring Security OAuth2 Developers Guide]
