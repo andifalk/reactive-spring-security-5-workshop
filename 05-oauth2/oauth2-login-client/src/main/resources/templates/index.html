@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title>OAuth2 WebClient</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+<a th:href="@{/logout}">Log Out</a>
+<h1>Examples</h1>
+
+<h2>User</h2>
+<p>
+    Examples on RegisteredOAuth2AuthorizedClientController
+<h3>Authenticated</h3>
+    <a th:href="@{/userinfo}">User Infos</a>
+
+<h3>Library Services</h3>
+<ul>
+    <li><a th:href="@{/books}">Books</a></li>
+    <li>
+        <a th:href="@{/users}">Users</a>
+    </li>
+</ul>
+
+</body>
+</html>

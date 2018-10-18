@@ -11,8 +11,9 @@ spring:
     mongodb:
       port: 40495
 
-logging:
-  level:
-    org:
-      springframework:
-        security: trace
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/uaa/oauth/token
+

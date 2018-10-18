@@ -22,23 +22,33 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 @RestController
 public class BookRestController {
 
-    private final WebClient webClient;
+  private final WebClient webClient;
 
-    @Autowired
-    public BookRestController(WebClient webClient) {
-        this.webClient = webClient;
-    }
+  @Autowired
+  public BookRestController(WebClient webClient) {
+    this.webClient = webClient;
+  }
 
-    @GetMapping("/books")
-    Flux<BookResource> books(@RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient) {
-        return webClient.get().uri("http://localhost:8080/books")
-                .attributes(oauth2AuthorizedClient(authorizedClient)).retrieve().bodyToFlux(BookResource.class);
-    }
+  @GetMapping("/books")
+  Flux<BookResource> books(
+      @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient) {
+    return webClient
+        .get()
+        .uri("http://localhost:8080/books")
+            .attributes(clientRegistrationId("uaa"))
+        //.attributes(oauth2AuthorizedClient(authorizedClient))
+        .retrieve()
+        .bodyToFlux(BookResource.class);
+  }
 
-    @GetMapping("/users")
-    Flux<UserResource> users(@RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient) {
-        return webClient.get().uri("http://localhost:8080/users")
-                .attributes(oauth2AuthorizedClient(authorizedClient)).retrieve().bodyToFlux(UserResource.class);
-    }
-
+  @GetMapping("/users")
+  Flux<UserResource> users(
+      @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient) {
+    return webClient
+        .get()
+        .uri("http://localhost:8080/users")
+        .attributes(oauth2AuthorizedClient(authorizedClient))
+        .retrieve()
+        .bodyToFlux(UserResource.class);
+  }
 }

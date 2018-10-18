@@ -4,6 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
@@ -18,21 +21,24 @@ public class SecurityConfiguration {
     SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
         http
                 .authorizeExchange()
-                .pathMatchers("/", "/users", "/books").permitAll()
+                .pathMatchers("/", "/books/**", "/users/**").permitAll()
                 .anyExchange().authenticated()
-                .and().oauth2Client().and().oauth2Login();
+                .and()
+                .oauth2Login()
+                .and()
+                .formLogin()
+                .and()
+                .oauth2Client();
         return http.build();
     }
 
     @Bean
-    WebClient webClient(ReactiveClientRegistrationRepository clientRegistrations,
-                        ServerOAuth2AuthorizedClientRepository authorizedClients) {
-        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
-                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrations, authorizedClients);
-        //oauth.setDefaultOAuth2AuthorizedClient(true);
-        oauth.setDefaultClientRegistrationId("uaa");
-        return WebClient.builder()
-                .filter(oauth)
+    MapReactiveUserDetailsService userDetailsService() {
+        UserDetails userDetails = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("secret")
+                .roles("USER")
                 .build();
+        return new MapReactiveUserDetailsService(userDetails);
     }
 }

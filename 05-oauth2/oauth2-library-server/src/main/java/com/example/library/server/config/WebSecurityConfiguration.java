@@ -22,10 +22,9 @@ import java.net.URI;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
-@Configuration
 public class WebSecurityConfiguration {
 
-    @Bean
+    /*@Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .csrf().disable()
@@ -39,6 +38,18 @@ public class WebSecurityConfiguration {
                 //.pathMatchers("/users/**").hasRole(Role.ADMIN.name())
                 .anyExchange().hasAuthority("SCOPE_user")
                 //.anyExchange().permitAll()
+                .and()
+                .oauth2ResourceServer()
+                .jwt();
+        return http.build();
+    }*/
+
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        http
+                .authorizeExchange()
+                .pathMatchers("/books/**").hasAuthority("SCOPE_user")
+                .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer()
                 .jwt();

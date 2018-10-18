@@ -30,22 +30,22 @@ Accept: application/json
 
 ###
 
-GET http://localhost:8080/books/bf0dbaea-3718-4bc3-a7cf-115541454e29
+GET http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1
 Accept: application/json
 
 ###
 
-DELETE http://localhost:8080/books/37afebc5-df42-4452-b4a9-68dda1a7778c
+DELETE http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1
 Accept: application/json
 
 ###
 
-POST http://localhost:8080/books/f8dee58f-1f9c-4c63-9d1a-e3247cdc541b/borrow
+POST http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1/borrow
 Accept: application/json
 
 ###
 
-POST http://localhost:8080/books/{id}/return
+POST http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1/return
 Accept: application/json
 
 ###

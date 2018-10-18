@@ -14,7 +14,7 @@ repositories {
 }
 
 ext {
-    uaaVersion = '4.11.0'
+    uaaVersion = '4.12.4'
     tomcatHomeDir = '/home/afa/development/apache-tomcat-8.5.33'
 }
 

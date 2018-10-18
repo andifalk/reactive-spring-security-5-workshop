@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 public class UserInfoRestController {
 
-    @GetMapping("/")
+    @GetMapping("/userinfo")
     Mono<Map<String, Object>> userInfo(
             @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient,
             @AuthenticationPrincipal OAuth2User oauth2User) {

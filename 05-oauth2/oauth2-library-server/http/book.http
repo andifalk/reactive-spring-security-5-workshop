@@ -31,25 +31,25 @@ Authorization: Basic dXNlckBleGFtcGxlLmNvbTp1c2Vy
 
 ###
 
-GET http://localhost:8080/books/bf0dbaea-3718-4bc3-a7cf-115541454e29
+GET http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1
 Accept: application/json
 Authorization: Basic dXNlckBleGFtcGxlLmNvbTp1c2Vy
 
 ###
 
-DELETE http://localhost:8080/books/37afebc5-df42-4452-b4a9-68dda1a7778c
+DELETE http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1
 Accept: application/json
 Authorization: Basic Y3VyYXRvckBleGFtcGxlLmNvbTpjdXJhdG9y
 
 ###
 
-POST http://localhost:8080/books/1c7ad93d-f71d-4a75-912c-928c91a115ec/borrow
+POST http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1/borrow
 Accept: application/json
 Authorization: Basic dXNlckBleGFtcGxlLmNvbTp1c2Vy
 
 ###
 
-POST http://localhost:8080/books/{id}/return
+POST http://localhost:8080/books/3038627d-627e-448d-8422-0a5705c9e8f1/return
 Accept: application/json
 Authorization: Basic dXNlckBleGFtcGxlLmNvbTp1c2Vy
 
