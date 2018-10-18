@@ -559,16 +559,50 @@ In the last workshop part we will look at the new OAuth2 login client introduced
 Unfortunately Spring does not support OAuth2 for reactive applications so far. That's why we
 will continue now with a "traditional" servlet based blocking alternative of the library-server.
 
-=== Step 5: OAuth2
+=== Step 5: OAuth2/OpenID Connect
+
+==== Introduction
+
+OAuth2 is the base protocol for authorizing 3rd party authentication services
+for using business services in the internet like stackoverflow.com.
+
+image::images/oauth_roles.png[scaledwidth="50%", scaledheight="50%",alt="oauth_roles"]
+
+Authorizations are permitted via scopes that the user has to confirm before
+using the requested service.
+
+Depending on the application type OAuth2 provides the following grants (flows):
+
+- Authorization Code Grant
+- Implicit Grant
+- Client Credentials Grant
+- Resource Owner Password Credentials Grant
+
+OpenID Connect (OIDC) is buiuld upon OAuth2 and provides additional identity information
+to the scopes of OAuth2. For common enterprise applications OpenID Connect should be used.
+Nowadays OAuth2 is frequently used together with providing identity in JSON web tokens (JWT).
+But only OIDC specifies the use of JWT, OAuth2 does not.
+
+image::images/openid_roles.png[scaledwidth="50%", scaledheight="50%",alt="openid_roles"]
+
+OIDC adds an additional id token to the access token of OAuth2 and specifies
+a user info endpoint to retrieve further user information.
+With hybrid flow OIDC also adds one more grant (flow) to the existing ones of OAuth2.
+
+==== OAuth2/OIDC in Spring Security 5
 
 .Spring Security 5.0 introduced new support for OAuth2/OpenID Connect (OIDC) directly in spring security.
 
 In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
 on a third party library https://connect2id.com/products/nimbus-oauth-openid-connect-sdk[Nimbus OAuth 2.0 SDK] instead of implementing all these functionality directly in Spring itself.
 
-So far Spring Security 5.0 only provides the client side for servlet-based clients.
-The resource server support is in the https://github.com/spring-projects/spring-security/milestone/106[roadmap for Spring Security 5.1]. There will also be client side support
-for reactive clients as well (already available in https://spring.io/blog/2018/05/15/spring-security-5-1-0-m1-released[Spring Security 5.1 Milestone 1]).
+Spring Security 5.0 only provides the client side for servlet-based clients.
+
+Spring Security 5.1 adds the resource server support and reactive support
+for reactive clients and resource server as well.
+
+Spring Security 5.2 will add a basic OAuth2/OIDC authorization server again (for local dev
+and demos but not for productive use).
 
 Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
 https://projects.spring.io/spring-security-oauth[Spring Security OAuth2].
