@@ -58,7 +58,6 @@ class UserApiIntegrationTests {
                                 new UserResource(
                                         userId,
                                         "test@example.com",
-                                        "test",
                                         "first",
                                         "last",
                                         Collections.singletonList(Role.USER))));
@@ -88,7 +87,6 @@ class UserApiIntegrationTests {
                                 new UserResource(
                                         userId,
                                         "test@example.com",
-                                        "test",
                                         "first",
                                         "last",
                                         Collections.singletonList(Role.USER))));
@@ -130,7 +128,6 @@ class UserApiIntegrationTests {
                 new UserResource(
                         null,
                         "test@example.com",
-                        "test",
                         "first",
                         "last",
                         Collections.singletonList(Role.USER));

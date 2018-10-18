@@ -12,21 +12,21 @@ import reactor.core.publisher.Mono;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler
-    public Mono<ResponseEntity<String>> handle(RuntimeException ex) {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-        logger.error(ex.getMessage());
-        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-    }
-
-    @ExceptionHandler
+    @ExceptionHandler(AccessDeniedException.class)
     public Mono<ResponseEntity<String>> handle(AccessDeniedException ex) {
         Logger logger = LoggerFactory.getLogger(this.getClass());
         logger.error(ex.getMessage());
         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(RuntimeException.class)
+    public Mono<ResponseEntity<String>> handle(RuntimeException ex) {
+        Logger logger = LoggerFactory.getLogger(this.getClass());
+        logger.error(ex.getMessage());
+        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    }
+
+    @ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<String>> handle(Exception ex) {
         Logger logger = LoggerFactory.getLogger(this.getClass());
         logger.error(ex.getMessage());

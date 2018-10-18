@@ -28,14 +28,15 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
+                .csrf().disable()
                 .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .matchers(EndpointRequest.to("health")).permitAll()
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name())
-                .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
-                .pathMatchers("/users/**").hasRole(Role.ADMIN.name())
+                //.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                //.matchers(EndpointRequest.to("health")).permitAll()
+                //.matchers(EndpointRequest.to("info")).permitAll()
+                //.matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name())
+                //.pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
+                //.pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
+                //.pathMatchers("/users/**").hasRole(Role.ADMIN.name())
                 .anyExchange().hasAuthority("SCOPE_user")
                 //.anyExchange().permitAll()
                 .and()

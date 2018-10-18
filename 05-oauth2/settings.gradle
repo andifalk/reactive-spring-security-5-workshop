@@ -2,6 +2,5 @@ rootProject.name = 'oauth2-client'
 include 'oauth2-login-client'
 include 'initial-oauth2-login-client'
 include 'initial-library-server'
-include 'keycloak'
 include 'uaa'
 

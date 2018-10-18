@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -41,8 +42,13 @@ class BookServiceTest {
     @MockBean
     private UserRepository userRepository;
 
+    @SuppressWarnings("unused")
     @MockBean
     private IdGenerator idGenerator;
+
+    @SuppressWarnings("unused")
+    @MockBean
+    private ReactiveJwtDecoder reactiveJwtDecoder;
 
     @DisplayName("grants access to create a book for role 'CURATOR'")
     @Test
@@ -112,7 +118,7 @@ class BookServiceTest {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
         when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(book));
         when(userRepository.findById(any(UUID.class))).thenReturn(
-                Mono.just(new User(UUID.randomUUID(), "test@example.com", "secret", "Max",
+                Mono.just(new User(UUID.randomUUID(), "test@example.com", "Max",
                         "Maier", Collections.singletonList(Role.USER))));
         StepVerifier.create(bookService.borrowById(UUID.randomUUID(), UUID.randomUUID())).verifyComplete();
 
@@ -140,7 +146,7 @@ class BookServiceTest {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
         when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(book));
         when(userRepository.findById(any(UUID.class))).thenReturn(
-                Mono.just(new User(UUID.randomUUID(), "test@example.com", "secret", "Max",
+                Mono.just(new User(UUID.randomUUID(), "test@example.com", "Max",
                         "Maier", Collections.singletonList(Role.USER))));
         StepVerifier.create(bookService.returnById(UUID.randomUUID(), UUID.randomUUID())).verifyComplete();
     }

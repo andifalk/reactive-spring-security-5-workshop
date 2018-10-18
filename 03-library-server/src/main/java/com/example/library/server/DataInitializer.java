@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
@@ -30,16 +29,19 @@ public class DataInitializer implements CommandLineRunner {
     private static final UUID CURATOR_IDENTIFIER = UUID.fromString("40c5ad0d-41f7-494b-8157-33fad16012aa");
     private static final UUID ADMIN_IDENTIFIER = UUID.fromString("0d2c04f1-e25f-41b5-b4cd-3566a081200f");
 
+    private static final UUID BOOK_CLEAN_CODE_IDENTIFIER = UUID.fromString("f9bf70d6-e56d-4cab-be6b-294cd05f599f");
+    private static final UUID BOOK_CLOUD_NATIVE_IDENTIFIER = UUID.fromString("3038627d-627e-448d-8422-0a5705c9e8f1");
+    private static final UUID BOOK_SPRING_ACTION_IDENTIFIER = UUID.fromString("081314cb-4abf-43e5-9b38-7d7261edb10d");
+    private static final UUID BOOK_DEVOPS_IDENTIFIER = UUID.fromString("02c3d1fb-ca32-46bd-818f-704012b3fe9c");
+
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public DataInitializer(BookRepository bookRepository, UserRepository userRepository, IdGenerator idGenerator, PasswordEncoder passwordEncoder) {
+    public DataInitializer(BookRepository bookRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -87,7 +89,7 @@ public class DataInitializer implements CommandLineRunner {
         logger.info("Creating some initial books...");
         bookRepository.saveAll(Flux.just(
                 new Book(
-                        idGenerator.generateId(),
+                        BOOK_CLEAN_CODE_IDENTIFIER,
                         "9780132350884",
                         "Clean Code",
                         "Even bad code can function. But if code isn’t clean, it can bring a development " +
@@ -101,7 +103,7 @@ public class DataInitializer implements CommandLineRunner {
                         Collections.singletonList("Bob C. Martin"),
                         true, user),
                 new Book(
-                        idGenerator.generateId(),
+                        BOOK_CLOUD_NATIVE_IDENTIFIER,
                         "9781449374648",
                         "Cloud Native Java",
                         "What separates the traditional enterprise from the likes of Amazon, Netflix, " +
@@ -111,7 +113,7 @@ public class DataInitializer implements CommandLineRunner {
                                 "faster, using Spring Boot, Spring Cloud, and Cloud Foundry.",
                         Arrays.asList("Josh Long", "Kenny Bastiani"), false, null),
                 new Book(
-                        idGenerator.generateId(),
+                        BOOK_SPRING_ACTION_IDENTIFIER,
                         "9781617291203",
                         "Spring in Action: Covers Spring 4",
                         "Spring in Action, Fourth Edition is a hands-on guide to the Spring Framework, " +
@@ -122,7 +124,7 @@ public class DataInitializer implements CommandLineRunner {
                                 "entertaining examples that zoom in on the features and techniques you really need.",
                         Collections.singletonList("Craig Walls"), false, null),
                 new Book(
-                        idGenerator.generateId(),
+                        BOOK_DEVOPS_IDENTIFIER,
                         "9781942788003",
                         "The DevOps Handbook",
                         "Wondering if The DevOps Handbook is for you? Authors, Gene Kim, Jez Humble, " +

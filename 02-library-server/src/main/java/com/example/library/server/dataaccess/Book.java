@@ -1,5 +1,6 @@
 package com.example.library.server.dataaccess;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -48,6 +49,10 @@ public class Book {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getIsbn() {
         return isbn;
     }
@@ -85,4 +90,33 @@ public class Book {
             this.borrowedBy = null;
         }
     }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("title", title)
+                .append("isbn", isbn)
+                .append("description", description)
+                .append("borrowed", borrowed)
+                .append("borrowedBy", borrowedBy)
+                .toString();
+    }
+
 }
