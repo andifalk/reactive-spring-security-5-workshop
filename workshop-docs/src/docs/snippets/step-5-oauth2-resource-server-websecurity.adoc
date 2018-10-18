@@ -1,15 +1,5 @@
-package com.example.library.server.config;
-
-import com.example.library.server.common.Role;
-import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
-import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-
+[source,options="nowrap"]
+----
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
@@ -22,15 +12,20 @@ public class WebSecurityConfiguration {
                 .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .matchers(EndpointRequest.to("health")).permitAll()
                 .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name())
+                .matchers(EndpointRequest.toAnyEndpoint()).hasAuthority("SCOPE_admin") # <1>
                 .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
                 .pathMatchers(HttpMethod.DELETE, "/books").hasAuthority("SCOPE_curator")
                 .pathMatchers("/users/**").hasAuthority("SCOPE_admin")
                 .pathMatchers("/books/**").hasAuthority("SCOPE_user")
                 .anyExchange().authenticated()
                 .and()
-                .oauth2ResourceServer()
-                .jwt();
+                .oauth2ResourceServer() # <2>
+                .jwt(); # <3>
         return http.build();
     }
 }
+----
+<1> OAuth2 scopes are automatically mapped to _SCOPE_xxx_ authorities (like the standard _ROLE_xxx_ ones)
+<2> Autoconfiguration for an OAuth2 resource server
+<3> Configures JSON web token (JWT) handling for this resource server
+

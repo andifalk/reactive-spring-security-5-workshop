@@ -458,7 +458,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_introduction_2">5.5.1. Introduction</a></li>
 <li><a href="#_oauth2_oidc_in_spring_security_5">5.5.2. OAuth2/OIDC in Spring Security 5</a></li>
 <li><a href="#_what_we_will_build">5.5.3. What we will build</a></li>
-<li><a href="#authorization-server">5.5.4. Authorization Server</a></li>
+<li><a href="#identity-server">5.5.4. UAA Identity Server</a></li>
 <li><a href="#resource-server">5.5.5. Resource Server (Library-Server)</a></li>
 <li><a href="#oauth2-login-client">5.5.6. OAuth2 Login Client</a></li>
 </ul>
@@ -2290,11 +2290,10 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>authorizationserver</strong>: This is the OAuth2 authorization server which holds all users with their credentials.
-This is still based on Spring Boot 1.5.x.</p>
+<p><strong>uaa</strong>: This is the OAuth2/OIDC identity management service of CloudFoundry which holds all users with their credentials.</p>
 </li>
 <li>
-<p><strong>initial-library-server</strong>: The reactive version of the library server (same as previous workshop step <em>04-library-server</em>)</p>
+<p><strong>initial-library-server</strong>: The reactive version of the library server (similar to previous workshop step <em>04-library-server</em>)</p>
 </li>
 <li>
 <p><strong>initial-oauth2-login-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client</p>
@@ -2306,6 +2305,22 @@ This is still based on Spring Boot 1.5.x.</p>
 <p><strong>oauth2-library-server</strong>: Complete code of the reactive library OAuth2 resource server</p>
 </li>
 </ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The spring implementation of the authorization server previously used (based on Spring Boot 1.5.x) is not
+fully compliant with OIDC and therefore not usable any more with OAuth2/OIDC implementation
+of Spring Security 5.1.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2327,32 +2342,35 @@ This is still based on Spring Boot 1.5.x.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">URL</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Authorization Server</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9999/users" class="bare">http://localhost:9999/users</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Management Server (UAA)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa" class="bare">http://localhost:8090/uaa</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Login Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library Client (OAuth2 Login Client)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081" class="bare">http://localhost:8081</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library-Server (Resource Server)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library-Server (OAuth2 Resource Server)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080" class="bare">http://localhost:8080</a></p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>So now let&#8217;s start. Again, you will just use the provided <em>AuthorizationServer</em> and <em>Library-Server</em> and start
-to implement a OAuth2 login client based on the <em>initial-oauth2-login-client</em> project.</p>
+<p>So now let&#8217;s start.
+Again, you will just use the provided <em>uaa</em> identity management server, the <em>initial-library-server</em>
+and the <em>initial-oauth2-login-client</em> as starting point and implement
+a OAuth2 resource server and login client based on the project.</p>
 </div>
 <div class="paragraph">
-<p>First some information about how to start the required other components <em>AuthorizationServer</em> and <em>Library-Server</em>.</p>
+<p>But first read important information about how to start the required <em>uaa</em> identity management server.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="authorization-server"><a class="anchor" href="#authorization-server"></a><a class="link" href="#authorization-server">5.5.4. Authorization Server</a></h4>
+<h4 id="identity-server"><a class="anchor" href="#identity-server"></a><a class="link" href="#identity-server">5.5.4. UAA Identity Server</a></h4>
 <div class="paragraph">
-<p>For this workshop a simple authorization server issuing JWT OAuth2 tokens is provided. As there is no support for an
-authorization server in Spring Boot 2.0 this component has been implemented using Spring Boot 1.5.x.</p>
+<p>For this workshop the OpenID Connect certified <a href="https://github.com/cloudfoundry/uaa">UAA identity server</a> is provided.
+UAA is an abbreviation for CloudFoundry User Account and Authentication.
+This server is issuing OAuth2/OIDC JSON web tokens.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2362,19 +2380,52 @@ authorization server in Spring Boot 2.0 this component has been implemented usin
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You may look into the spring boot reference documentation <a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2-authorization-server">Spring Boot 1.5 Reference Documentation</a>
-on how to implement an authorization server.</p>
+<p>You may look into <a href="https://openid.net/certification/">OpenID Connect certified products</a>
+to find a suitable identity management server for your project.</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>To ensure OAuth2 authorization code grant works correctly with the other components the end points
-of the authorization server must be as follows:</p>
+<p>To start the UAA component you need an installed <a href="https://tomcat.apache.org/">Apache Tomcat</a> server.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Please <a href="https://tomcat.apache.org/download-80.cgi">download</a> most current version of the Apache Tomcat 8.x line and
+extract the downloaded archive in a directory of your choice.</p>
+</li>
+<li>
+<p>Open the file <em>05-oauth2/uaa/build.gradle</em> and replace the path entry for <em>tomcatHomeDir</em> with the
+directory you have extracted the Apache Tomcat files into.</p>
+</li>
+<li>
+<p>Execute <code><code>./gradlew downloadUAA</code></code> to download required war file for UAA</p>
+</li>
+<li>
+<p>Execute <code><code>./gradlew cargoRunLocal</code></code> to start the UAA server</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Wait until the UAA server has been started.
+If you see the output <code><code>Press Ctrl-C to stop the container</code></code> then UAA is ready.
+You can also look into the file <em>05-oauth2/uaa/uaa-server.log</em> to see
+the corresponding log output for UAA.</p>
+</div>
+<div class="paragraph">
+<p>To see the configuration please open the following url in your web browser:
+(Every OpenID Connect compliant identity server must provide a page at the endpoint <em>/&#8230;&#8203;/.well-known/openid-configuration</em></p>
+</div>
+<div class="paragraph">
+<p><a href="http://localhost:8090/uaa/oauth/token/.well-known/openid-configuration" class="bare">http://localhost:8090/uaa/oauth/token/.well-known/openid-configuration</a></p>
+</div>
+<div class="paragraph">
+<p>The important information provided by this is:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 5. Authorization Server Endpoints</caption>
+<caption class="title">Table 5. Identity Server Configuration</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -2382,59 +2433,87 @@ of the authorization server must be as follows:</p>
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Endpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Caller</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Value</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/oauth/authorize</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Authorization endpoint (for login and client authorization)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">issuer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Issuer url for issued tokens by this identity server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/oauth/token" class="bare">http://localhost:8090/uaa/oauth/token</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/oauth/token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">authorization_endpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handles authorization, usually asking for credentials and returns an authorization code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/oauth/authorize" class="bare">http://localhost:8090/uaa/oauth/authorize</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">token_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Token endpoint (exchanges given authorization code for access token)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/oauth/token" class="bare">http://localhost:8090/uaa/oauth/token</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">/oauth/check_token</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Check token endpoint (returns internal contents for access token)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Resource Server</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">userinfo_endpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Endpoint for requesting further user information</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/userinfo" class="bare">http://localhost:8090/uaa/userinfo</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">jwks_uri</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uri for loading public keys to verify signatures of JSON web tokens</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/token_keys" class="bare">http://localhost:8090/uaa/token_keys</a></p></td>
 </tr>
 </tbody>
 </table>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>To prevent conflicts with different JSESSION cookies the authorization server must run
-on a separate context path (not '/'). In our example please use '/users' as context path. In spring boot
-this can be achieved by the <em>server.context</em> property</p>
-</div>
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>To start the authorization server simply run the class <em>AuthorizationServerApplication</em> in
-project <em>05-oauth2-client/authorizationserver</em>.</p>
-</div>
 </div>
 <div class="sect3">
 <h4 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">5.5.5. Resource Server (Library-Server)</a></h4>
 <div class="paragraph">
-<p>For this workshop part the well-known library-server application has been changed again into a blocking servlet-based
-web application that also acts now as a OAuth2 resource server. This was required as there is no support yet in Spring
-for a reactive resource server.</p>
+<p>For this workshop part the well-known library-server application is used and will be extended to act
+ as a OAuth2 resource server.</p>
 </div>
+<div class="sect4">
+<h5 id="client-gradle-dependencies"><a class="anchor" href="#client-gradle-dependencies"></a><a class="link" href="#client-gradle-dependencies">Gradle dependencies</a></h5>
 <div class="paragraph">
-<p>As the library-server is already build using Spring Boot 2.0 the compatibility module
-<a href="https://github.com/spring-projects/spring-security-oauth2-boot">spring security oauth2 boot</a> was used for
-auto configuration using Spring Boot 2.0 with the <a href="https://projects.spring.io/spring-security-oauth/">old Spring Security OAuth project</a>.</p>
+<p>To use the new OAuth2 resource server support of Spring Security 5.1 you have to add the
+following required dependencies to the existing gradle build file.</p>
+</div>
+<div class="listingblock">
+<div class="title">gradle.build file</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>dependencies {
+    ...
+    compile('org.springframework.security:spring-security-oauth2-resource-server') <i class="conum" data-value="1"></i><b>(1)</b>
+	compile('org.springframework.security:spring-security-oauth2-jose') <i class="conum" data-value="2"></i><b>(2)</b>
+	...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This contains all code to build an OAuth 2.0/OIDC resource server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This contains Spring Security’s support for the JOSE (Javascript Object Signing and Encryption) framework. This is needed
+to support for example JSON Web Token (JWT)</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>These dependencies already have been added to the initial project.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2444,20 +2523,93 @@ auto configuration using Spring Boot 2.0 with the <a href="https://projects.spri
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You may look into the spring security oauth2 boot reference documentation <a href="https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-resource-server">Spring OAuth2 Autoconfig Reference Documentation</a>
-on how to implement a resource server.</p>
+<p>You may look into the spring security oauth2 boot reference documentation
+<a href="https://docs.spring.io/spring-boot/docs/2.1.0.RC1/reference/htmlsingle/#boot-features-security-oauth2-server">Spring Boot 2.1 Reference Documentation</a>
+and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.1.RELEASE/reference/html5/#webflux-oauth2-resource-server">Spring Security 5.1.1 Reference Documentation</a> on how to implement a resource server.</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
+</div>
+<div class="sect4">
+<h5 id="_implementation_steps"><a class="anchor" href="#_implementation_steps"></a><a class="link" href="#_implementation_steps">Implementation steps</a></h5>
+<div class="paragraph">
+<p>First step is to configure an OAuth2 resource server. For this you have to register the corresponding
+identity server/authorization server to use.</p>
+</div>
+<div class="listingblock">
+<div class="title">application.yml file</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/uaa/oauth/token <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The issuer url is used to look up the well known configuration page to get all required configuration settings to set up a resource server</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">WebSecurityConfiguration.java file</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>@EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
+public class WebSecurityConfiguration {
+
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        http
+                .csrf().disable()
+                .authorizeExchange()
+                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .matchers(EndpointRequest.to("health")).permitAll()
+                .matchers(EndpointRequest.to("info")).permitAll()
+                .matchers(EndpointRequest.toAnyEndpoint()).hasAuthority("SCOPE_admin") <i class="conum" data-value="1"></i><b>(1)</b>
+                .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
+                .pathMatchers(HttpMethod.DELETE, "/books").hasAuthority("SCOPE_curator")
+                .pathMatchers("/users/**").hasAuthority("SCOPE_admin")
+                .pathMatchers("/books/**").hasAuthority("SCOPE_user")
+                .anyExchange().authenticated()
+                .and()
+                .oauth2ResourceServer() <i class="conum" data-value="2"></i><b>(2)</b>
+                .jwt(); <i class="conum" data-value="3"></i><b>(3)</b>
+        return http.build();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>OAuth2 scopes are automatically mapped to <em>SCOPE_xxx</em> authorities (like the standard <em>ROLE_xxx</em> ones)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Autoconfiguration for an OAuth2 resource server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Configures JSON web token (JWT) handling for this resource server</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>To start the resource server simply run the class <em>LibraryServerApplication</em> in
-project <em>05-oauth2-client/library-server</em>.</p>
+project <em>05-oauth2-client/initial-library-server</em>.</p>
 </div>
 <div class="paragraph">
 <p>In the following paragraphs we now proceed to the workshop part where your interaction is required again:
 The OAuth2 login client.</p>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -2508,7 +2660,7 @@ to support for example JSON Web Token (JWT)</td>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_implementation_steps"><a class="anchor" href="#_implementation_steps"></a><a class="link" href="#_implementation_steps">Implementation steps</a></h5>
+<h5 id="_implementation_steps_2"><a class="anchor" href="#_implementation_steps_2"></a><a class="link" href="#_implementation_steps_2">Implementation steps</a></h5>
 <div class="paragraph">
 <p>First step is to configure an OAuth2 login client. For this you have to register the corresponding
 identity server/authorization server to use.
@@ -2929,7 +3081,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-10-18 21:31:50 CEST
+Last updated 2018-10-19 00:00:05 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

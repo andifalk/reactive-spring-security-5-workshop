@@ -679,16 +679,22 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.
 
 In the _05-oauth2_ project you will be provided the following sub-projects:
 
-* *authorizationserver*: This is the OAuth2 authorization server which holds all users with their credentials.
-This is still based on Spring Boot 1.5.x.
+* *uaa*: This is the OAuth2/OIDC identity management service of CloudFoundry which holds all users with their credentials.
 
-* *initial-library-server*: The reactive version of the library server (same as previous workshop step _04-library-server_)
+* *initial-library-server*: The reactive version of the library server (similar to previous workshop step _04-library-server_)
 
 * *initial-oauth2-login-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
 
 * *oauth2-login-client*: Complete code of the new OAuth2 Login Client (for reference)
 
 * *oauth2-library-server*: Complete code of the reactive library OAuth2 resource server
+
+[NOTE]
+====
+The spring implementation of the authorization server previously used (based on Spring Boot 1.5.x) is not
+fully compliant with OIDC and therefore not usable any more with OAuth2/OIDC implementation
+of Spring Security 5.1.
+====
 
 image::images/oauth2_spring_roles.png[scaledwidth="75%",alt="OAuth2 roles"]
 
@@ -697,77 +703,118 @@ These microservices have to be configured to be reachable via the following URL 
 .Microservice URL Adresses
 |===
 |Microservice |URL
-|Authorization Server
-|http://localhost:9999/users
-|Login Client
+|Identity Management Server (UAA)
+|http://localhost:8090/uaa
+|Library Client (OAuth2 Login Client)
 |http://localhost:8081
-|Library-Server (Resource Server)
+|Library-Server (OAuth2 Resource Server)
 |http://localhost:8080
 |===
 
-So now let's start. Again, you will just use the provided _AuthorizationServer_ and _Library-Server_ and start
-to implement a OAuth2 login client based on the _initial-oauth2-login-client_ project.
+So now let's start.
+Again, you will just use the provided _uaa_ identity management server, the _initial-library-server_
+and the _initial-oauth2-login-client_ as starting point and implement
+a OAuth2 resource server and login client based on the project.
 
-First some information about how to start the required other components _AuthorizationServer_ and _Library-Server_.
+But first read important information about how to start the required _uaa_ identity management server.
 
-[[authorization-server]]
-==== Authorization Server
+[[identity-server]]
+==== UAA Identity Server
 
-For this workshop a simple authorization server issuing JWT OAuth2 tokens is provided. As there is no support for an
-authorization server in Spring Boot 2.0 this component has been implemented using Spring Boot 1.5.x.
+For this workshop the OpenID Connect certified https://github.com/cloudfoundry/uaa[UAA identity server] is provided.
+UAA is an abbreviation for CloudFoundry User Account and Authentication.
+This server is issuing OAuth2/OIDC JSON web tokens.
 
 [TIP]
 ====
-You may look into the spring boot reference documentation https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2-authorization-server[Spring Boot 1.5 Reference Documentation]
-on how to implement an authorization server.
+You may look into https://openid.net/certification/[OpenID Connect certified products]
+to find a suitable identity management server for your project.
 ====
 
-To ensure OAuth2 authorization code grant works correctly with the other components the end points
-of the authorization server must be as follows:
+To start the UAA component you need an installed https://tomcat.apache.org/[Apache Tomcat] server.
 
-.Authorization Server Endpoints
+1. Please https://tomcat.apache.org/download-80.cgi[download] most current version of the Apache Tomcat 8.x line and
+extract the downloaded archive in a directory of your choice.
+2. Open the file _05-oauth2/uaa/build.gradle_ and replace the path entry for _tomcatHomeDir_ with the
+directory you have extracted the Apache Tomcat files into.
+3. Execute ```./gradlew downloadUAA``` to download required war file for UAA
+4. Execute ```./gradlew cargoRunLocal``` to start the UAA server
+
+Wait until the UAA server has been started.
+If you see the output ```Press Ctrl-C to stop the container``` then UAA is ready.
+You can also look into the file _05-oauth2/uaa/uaa-server.log_ to see
+the corresponding log output for UAA.
+
+To see the configuration please open the following url in your web browser:
+(Every OpenID Connect compliant identity server must provide a page at the endpoint _/.../.well-known/openid-configuration_
+
+http://localhost:8090/uaa/oauth/token/.well-known/openid-configuration
+
+The important information provided by this is:
+
+.Identity Server Configuration
 |===
-|Endpoint |Description |Caller
-|/oauth/authorize
-|Authorization endpoint (for login and client authorization)
-|Client
-|/oauth/token
+|Entry |Description |Value
+|issuer
+|Issuer url for issued tokens by this identity server
+|http://localhost:8090/uaa/oauth/token
+|authorization_endpoint
+|Handles authorization, usually asking for credentials and returns an authorization code
+|http://localhost:8090/uaa/oauth/authorize
+|token_endpoint
 |Token endpoint (exchanges given authorization code for access token)
-|Client
-|/oauth/check_token
-|Check token endpoint (returns internal contents for access token)
-|Resource Server
+|http://localhost:8090/uaa/oauth/token
+|userinfo_endpoint
+|Endpoint for requesting further user information
+|http://localhost:8090/uaa/userinfo
+|jwks_uri
+|Uri for loading public keys to verify signatures of JSON web tokens
+|http://localhost:8090/uaa/token_keys
 |===
-
-[IMPORTANT]
-====
-To prevent conflicts with different JSESSION cookies the authorization server must run
-on a separate context path (not '/'). In our example please use '/users' as context path. In spring boot
-this can be achieved by the _server.context_ property
-====
-
-To start the authorization server simply run the class _AuthorizationServerApplication_ in
-project _05-oauth2-client/authorizationserver_.
 
 [[resource-server]]
 ==== Resource Server (Library-Server)
 
-For this workshop part the well-known library-server application has been changed again into a blocking servlet-based
-web application that also acts now as a OAuth2 resource server. This was required as there is no support yet in Spring
-for a reactive resource server.
+For this workshop part the well-known library-server application is used and will be extended to act
+ as a OAuth2 resource server.
 
-As the library-server is already build using Spring Boot 2.0 the compatibility module
-https://github.com/spring-projects/spring-security-oauth2-boot[spring security oauth2 boot] was used for
-auto configuration using Spring Boot 2.0 with the https://projects.spring.io/spring-security-oauth/[old Spring Security OAuth project].
+[[client-gradle-dependencies]]
+===== Gradle dependencies
+
+To use the new OAuth2 resource server support of Spring Security 5.1 you have to add the
+following required dependencies to the existing gradle build file.
+
+.gradle.build file
+
+include::{snippets}/step-5-oauth2-resource-server-gradle-build.adoc[]
+
+[NOTE]
+====
+These dependencies already have been added to the initial project.
+====
 
 [TIP]
 ====
-You may look into the spring security oauth2 boot reference documentation https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-resource-server[Spring OAuth2 Autoconfig Reference Documentation]
-on how to implement a resource server.
+You may look into the spring security oauth2 boot reference documentation
+https://docs.spring.io/spring-boot/docs/2.1.0.RC1/reference/htmlsingle/#boot-features-security-oauth2-server[Spring Boot 2.1 Reference Documentation]
+and the https://docs.spring.io/spring-security/site/docs/5.1.1.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1.1 Reference Documentation] on how to implement a resource server.
 ====
 
+===== Implementation steps
+
+First step is to configure an OAuth2 resource server. For this you have to register the corresponding
+identity server/authorization server to use.
+
+.application.yml file
+
+include::{snippets}/step-5-oauth2-resource-server-properties.adoc[]
+
+.WebSecurityConfiguration.java file
+
+include::{snippets}/step-5-oauth2-resource-server-websecurity.adoc[]
+
 To start the resource server simply run the class _LibraryServerApplication_ in
-project _05-oauth2-client/library-server_.
+project _05-oauth2-client/initial-library-server_.
 
 In the following paragraphs we now proceed to the workshop part where your interaction is required again:
 The OAuth2 login client.

@@ -1,0 +1,13 @@
+[source,options="nowrap"]
+----
+dependencies {
+    ...
+    compile('org.springframework.security:spring-security-oauth2-resource-server') # <1>
+	compile('org.springframework.security:spring-security-oauth2-jose') # <2>
+	...
+}
+----
+<1> This contains all code to build an OAuth 2.0/OIDC resource server
+<2> This contains Spring Security’s support for the JOSE (Javascript Object Signing and Encryption) framework. This is needed
+to support for example JSON Web Token (JWT)
+
