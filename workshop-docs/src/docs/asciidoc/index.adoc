@@ -868,24 +868,33 @@ include::{snippets}/step-5-client-properties.adoc[]
 As the library-server is now configured as an OAuth2 resource server it requires
 a valid JWT token to successfully call the _/books_ endpoint now.
 
-From client side we use the _RestTemplate_ for calls to the RESTful service.
+From client side we use the new _WebClient_ for calls to the RESTful service.
+WebClient is the successor of _RestTemplate_ and works for both worlds (Servlet-based and reactive).
+
 To support JWT tokens in calls we have to add a client interceptor to the _RestTemplate_.
 The following code snippet shows how this is done:
 
-.RestTemplateConfiguration class
+.WebClientConfiguration class
 
-include::{snippets}/step-5-rest-template-configuration.adoc[]
+include::{snippets}/step-5-webclient-configuration.adoc[]
+
+Finally we need an updated client side security configuration to allow
+client endpoints and enable the OAuth2 client features:
+
+.SecurityConfiguration class
+
+include::{snippets}/step-5-client-security-configuration.adoc[]
 
 ===== Run all the components
 
 Finally start all three components:
 
-* Run _AuthorizationServerApplication_ class in project _05-oauth2-client/authorizationserver_
-* Run _LibraryServerApplication_ class in project _05-oauth2-client/library-server_
-* Run _OAuth2LoginClientApplication_ class in project _05-oauth2-client/initial-oauth2-login-client_
+* Run _UAA_ server in project _05-oauth2/uaa_
+* Run _LibraryServerApplication_ class in project _05-oauth2/initial-library-server_
+* Run _OAuth2LoginClientApplication_ class in project _05-oauth2/initial-oauth2-login-client_
 
-Now when you access http://localhost:8081[localhost:8081] you should be redirected to the authorization server.
-After logging in you should get the current authenticated user infos back from authorization server.
+Now when you access http://localhost:8081/userinfo[localhost:8081/userinfo] you should be redirected to the UAA identity server.
+After logging in you should get the current authenticated user info back from identity server.
 
 Here you can log in using one of these predefined users:
 
@@ -893,13 +902,13 @@ Here you can log in using one of these predefined users:
 |===
 |User |Password |Roles
 |user@example.com
-|user_4workshop
+|user
 |USER
 |curator@example.com
-|curator_4workshop
+|curator
 |USER, CURATOR
 |admin@example.com
-|admin_4workshop
+|admin
 |USER, CURATOR, ADMIN
 |===
 
@@ -908,7 +917,8 @@ This returns the book list from the library-server (resource server).
 
 [NOTE]
 ====
-You find the completed code in project _05-oauth2-client/oauth2-login-client_.
+You find the completed code in project _05-oauth2/oauth2-login-client_
+and _05-oauth2/oauth2-library-server_.
 ====
 
 This concludes our Spring Security 5.1 hands-on workshop.

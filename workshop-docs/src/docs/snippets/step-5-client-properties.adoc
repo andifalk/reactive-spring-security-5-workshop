@@ -5,21 +5,22 @@ spring:
     oauth2:
       client:
         registration:
-          login-client:
-            provider: local-authserver # <1>
-            client-id: library-client # <2>
+          uaa:
+            provider: uaa-authserver # <1>
+            client-id: library # <2>
             client-secret: secret # <3>
             client-authentication-method: basic # <4>
             authorization-grant-type: authorization_code # <5>
-            scope: profile # <6>
-            client-name: Login Client # <7>
+            scopes: openid,profile,email,user,curator,admin # <6>
+            client-name: UAA Client # <7>
             redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" # <8>
         provider:
-          local-authserver: # <9>
-            authorization-uri: http://localhost:9999/users/oauth/authorize # <10>
-            token-uri: http://localhost:9999/users/oauth/token # <11>
-            user-info-uri: http://localhost:9999/users/resources/userinfo # <12>
-            user-name-attribute: id # <13>
+          uaa-authserver: # <9>
+            authorization-uri: http://localhost:8090/uaa/oauth/authorize # <10>
+            token-uri: http://localhost:8090/uaa/oauth/token # <11>
+            user-info-uri: http://localhost:8090/uaa/userinfo # <12>
+            user-name-attribute: sub # <13>
+            jwk-set-uri: http://localhost:8090/uaa/token_keys # <14>
 ----
 <1> References the registered identity provider/authorization server to use for this OAuth2 client
 <2> The client id to use at the authorization server
@@ -34,4 +35,5 @@ spring:
 <11> The URI for getting a JWT token from the authorization server (exchanging the authorization code)
 <12> The URI to access the claims/attributes of the authenticated end-user using the JWT access token from the authorization server
 <13> The name of the attribute returned in the user info that references the name or identifier of the end-user. (retrieved from the user-info-uri endpoint)
+<14> URL pointing to the set of (rotating) public keys for verifying JWT signatures
 

@@ -112,7 +112,7 @@ class BookServiceTest {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
         when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(book));
         when(userRepository.findById(any(UUID.class))).thenReturn(
-                Mono.just(new User(UUID.randomUUID(), "test@example.com", "secret", "Max",
+                Mono.just(new User(UUID.randomUUID(), "test@example.com", "Max",
                         "Maier", Collections.singletonList(Role.USER))));
         StepVerifier.create(bookService.borrowById(UUID.randomUUID(), UUID.randomUUID())).verifyComplete();
 
@@ -140,7 +140,7 @@ class BookServiceTest {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
         when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(book));
         when(userRepository.findById(any(UUID.class))).thenReturn(
-                Mono.just(new User(UUID.randomUUID(), "test@example.com", "secret", "Max",
+                Mono.just(new User(UUID.randomUUID(), "test@example.com", "Max",
                         "Maier", Collections.singletonList(Role.USER))));
         StepVerifier.create(bookService.returnById(UUID.randomUUID(), UUID.randomUUID())).verifyComplete();
     }

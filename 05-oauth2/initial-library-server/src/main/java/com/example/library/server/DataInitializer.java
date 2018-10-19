@@ -33,14 +33,12 @@ public class DataInitializer implements CommandLineRunner {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final IdGenerator idGenerator;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public DataInitializer(BookRepository bookRepository, UserRepository userRepository, IdGenerator idGenerator, PasswordEncoder passwordEncoder) {
+    public DataInitializer(BookRepository bookRepository, UserRepository userRepository, IdGenerator idGenerator) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.idGenerator = idGenerator;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -57,21 +55,18 @@ public class DataInitializer implements CommandLineRunner {
                 new User(
                         USER_IDENTIFIER,
                         "user@example.com",
-                        passwordEncoder.encode("user"),
                         "Library",
                         "User",
                         Collections.singletonList(Role.USER)),
                 new User(
                         CURATOR_IDENTIFIER,
                         "curator@example.com",
-                        passwordEncoder.encode("curator"),
                         "Library",
                         "Curator",
                         Arrays.asList(Role.USER, Role.CURATOR)),
                 new User(
                         ADMIN_IDENTIFIER,
                         "admin@example.com",
-                        passwordEncoder.encode("admin"),
                         "Library",
                         "Administrator",
                         Arrays.asList(Role.USER, Role.CURATOR, Role.ADMIN))

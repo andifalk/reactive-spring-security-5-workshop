@@ -1,3 +1,5 @@
+[source,options="nowrap"]
+----
 package com.example.oauth2loginclient.config;
 
 import org.springframework.context.annotation.Bean;
@@ -16,25 +18,20 @@ public class SecurityConfiguration {
     @Bean
     SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
         http
-                .authorizeExchange()
-                .pathMatchers("/", "/books/**", "/users/**").permitAll()
+                .authorizeExchange() # <1>
+                .pathMatchers("/", "/books/**", "/users/**").permitAll() # <2>
                 .anyExchange().authenticated()
                 .and()
-                .oauth2Login()
+                .oauth2Login() # <3>
                 .and()
                 .formLogin()
                 .and()
-                .oauth2Client();
+                .oauth2Client(); # <4>
         return http.build();
     }
-
-    @Bean
-    MapReactiveUserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("secret")
-                .roles("USER")
-                .build();
-        return new MapReactiveUserDetailsService(userDetails);
-    }
 }
+----
+<1> Starting point for authorization rules (analogous to authorizeRequests in servlet world)
+<2> Allow all client side endpoints
+<3> Add OAuth2 login feature
+<4> Add OAuth2 standard client feature

@@ -27,7 +27,7 @@ public class LibraryUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userResource.getPassword();
+        return "n/a";
     }
 
     @Override

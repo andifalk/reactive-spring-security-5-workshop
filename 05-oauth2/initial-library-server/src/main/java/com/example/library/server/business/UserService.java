@@ -46,11 +46,11 @@ public class UserService {
     }
 
     private UserResource convert(User u) {
-        return new UserResource(u.getId(), u.getEmail(), u.getPassword(), u.getFirstName(), u.getLastName(), u.getRoles());
+        return new UserResource(u.getId(), u.getEmail(), u.getFirstName(), u.getLastName(), u.getRoles());
     }
 
     private User convert(UserResource ur) {
-        return new User(ur.getId() == null ? idGenerator.generateId() : ur.getId(), ur.getEmail(), ur.getPassword(),
+        return new User(ur.getId() == null ? idGenerator.generateId() : ur.getId(), ur.getEmail(),
                 ur.getFirstName(), ur.getLastName(), ur.getRoles());
     }
 }

@@ -63,6 +63,8 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-security')
+    //compile('org.springframework.security:spring-security-oauth2-jose')
+    //compile('org.springframework.security:spring-security-oauth2-resource-server')
     compile('org.apache.commons:commons-lang3')
     compile('org.modelmapper:modelmapper:2.3.0')
     runtime('org.springframework.boot:spring-boot-devtools')

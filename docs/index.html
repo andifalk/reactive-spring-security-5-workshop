@@ -2763,21 +2763,22 @@ To achieve this we add the following sections to the <em>application.yml</em> fi
     oauth2:
       client:
         registration:
-          login-client:
-            provider: local-authserver <i class="conum" data-value="1"></i><b>(1)</b>
-            client-id: library-client <i class="conum" data-value="2"></i><b>(2)</b>
+          uaa:
+            provider: uaa-authserver <i class="conum" data-value="1"></i><b>(1)</b>
+            client-id: library <i class="conum" data-value="2"></i><b>(2)</b>
             client-secret: secret <i class="conum" data-value="3"></i><b>(3)</b>
             client-authentication-method: basic <i class="conum" data-value="4"></i><b>(4)</b>
             authorization-grant-type: authorization_code <i class="conum" data-value="5"></i><b>(5)</b>
-            scope: profile <i class="conum" data-value="6"></i><b>(6)</b>
-            client-name: Login Client <i class="conum" data-value="7"></i><b>(7)</b>
+            scopes: openid,profile,email,user,curator,admin <i class="conum" data-value="6"></i><b>(6)</b>
+            client-name: UAA Client <i class="conum" data-value="7"></i><b>(7)</b>
             redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" <i class="conum" data-value="8"></i><b>(8)</b>
         provider:
-          local-authserver: <i class="conum" data-value="9"></i><b>(9)</b>
-            authorization-uri: http://localhost:9999/users/oauth/authorize <i class="conum" data-value="10"></i><b>(10)</b>
-            token-uri: http://localhost:9999/users/oauth/token <i class="conum" data-value="11"></i><b>(11)</b>
-            user-info-uri: http://localhost:9999/users/resources/userinfo <i class="conum" data-value="12"></i><b>(12)</b>
-            user-name-attribute: id <i class="conum" data-value="13"></i><b>(13)</b></code></pre>
+          uaa-authserver: <i class="conum" data-value="9"></i><b>(9)</b>
+            authorization-uri: http://localhost:8090/uaa/oauth/authorize <i class="conum" data-value="10"></i><b>(10)</b>
+            token-uri: http://localhost:8090/uaa/oauth/token <i class="conum" data-value="11"></i><b>(11)</b>
+            user-info-uri: http://localhost:8090/uaa/userinfo <i class="conum" data-value="12"></i><b>(12)</b>
+            user-name-attribute: sub <i class="conum" data-value="13"></i><b>(13)</b>
+            jwk-set-uri: http://localhost:8090/uaa/token_keys <i class="conum" data-value="14"></i><b>(14)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2834,6 +2835,10 @@ To achieve this we add the following sections to the <em>application.yml</em> fi
 <td><i class="conum" data-value="13"></i><b>13</b></td>
 <td>The name of the attribute returned in the user info that references the name or identifier of the end-user. (retrieved from the user-info-uri endpoint)</td>
 </tr>
+<tr>
+<td><i class="conum" data-value="14"></i><b>14</b></td>
+<td>URL pointing to the set of (rotating) public keys for verifying JWT signatures</td>
+</tr>
 </table>
 </div>
 <div class="paragraph">
@@ -2841,46 +2846,41 @@ To achieve this we add the following sections to the <em>application.yml</em> fi
 a valid JWT token to successfully call the <em>/books</em> endpoint now.</p>
 </div>
 <div class="paragraph">
-<p>From client side we use the <em>RestTemplate</em> for calls to the RESTful service.
-To support JWT tokens in calls we have to add a client interceptor to the <em>RestTemplate</em>.
+<p>From client side we use the new <em>WebClient</em> for calls to the RESTful service.
+WebClient is the successor of <em>RestTemplate</em> and works for both worlds (Servlet-based and reactive).</p>
+</div>
+<div class="paragraph">
+<p>To support JWT tokens in calls we have to add a client interceptor to the <em>RestTemplate</em>.
 The following code snippet shows how this is done:</p>
 </div>
 <div class="listingblock">
-<div class="title">RestTemplateConfiguration class</div>
+<div class="title">WebClientConfiguration class</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.config;
 
 ...
+package com.example.oauth2loginclient.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-public class RestTemplateConfiguration {
+public class WebClientConfiguration {
 
-  @Bean
-  RestTemplate restTemplate(OAuth2AuthorizedClientService clientService) {
-    return new RestTemplateBuilder()
-        .interceptors( <i class="conum" data-value="1"></i><b>(1)</b>
-            (ClientHttpRequestInterceptor)
-                (httpRequest, bytes, execution) -&gt; {
-                  Authentication authentication =
-                      SecurityContextHolder.getContext().getAuthentication(); <i class="conum" data-value="2"></i><b>(2)</b>
-                  if (authentication instanceof OAuth2AuthenticationToken) {
-                    OAuth2AuthenticationToken token =
-                            (OAuth2AuthenticationToken) authentication;
-
-                    OAuth2AuthorizedClient client =
-                        clientService.loadAuthorizedClient(
-                            token.getAuthorizedClientRegistrationId(), token.getName());
-
-                    httpRequest
-                        .getHeaders()
-                        .add(
-                            HttpHeaders.AUTHORIZATION, <i class="conum" data-value="3"></i><b>(3)</b>
-                            String.format("Bearer %s", client.getAccessToken().getTokenValue()));
-                  }
-                  return execution.execute(httpRequest, bytes);
-                })
-        .build();
-  }
+    @Bean
+    WebClient webClient(ReactiveClientRegistrationRepository clientRegistrationRepository,
+                        ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
+        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = <i class="conum" data-value="1"></i><b>(1)</b>
+                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository, authorizedClientRepository);
+        oauth.setDefaultOAuth2AuthorizedClient(true); <i class="conum" data-value="2"></i><b>(2)</b>
+        return WebClient.builder()
+                .filter(oauth) <i class="conum" data-value="3"></i><b>(3)</b>
+                .build();
+    }
 }</code></pre>
 </div>
 </div>
@@ -2888,15 +2888,74 @@ public class RestTemplateConfiguration {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Adds an client side interceptor to the rest template for adding the OAuth2 access token as header</td>
+<td>Creates a filter for handling all the OAuth2 token stuff (i.e. initiating the OAuth2 grant flow)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Gets the authentication object with OAuth2 credentials from the security context</td>
+<td>Flag to automatically include the token handling into all webclient calls (use with caution)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Adds the OAuth2 access token (base64 encoded JWT) as <em>Authorization</em> header to all requests</td>
+<td>Add the filter to webclient</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Finally we need an updated client side security configuration to allow
+client endpoints and enable the OAuth2 client features:</p>
+</div>
+<div class="listingblock">
+<div class="title">SecurityConfiguration class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@EnableWebFluxSecurity
+@Configuration
+public class SecurityConfiguration {
+
+    @Bean
+    SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
+        http
+                .authorizeExchange() <i class="conum" data-value="1"></i><b>(1)</b>
+                .pathMatchers("/", "/books/**", "/users/**").permitAll() <i class="conum" data-value="2"></i><b>(2)</b>
+                .anyExchange().authenticated()
+                .and()
+                .oauth2Login() <i class="conum" data-value="3"></i><b>(3)</b>
+                .and()
+                .formLogin()
+                .and()
+                .oauth2Client(); <i class="conum" data-value="4"></i><b>(4)</b>
+        return http.build();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Starting point for authorization rules (analogous to authorizeRequests in servlet world)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Allow all client side endpoints</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Add OAuth2 login feature</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Add OAuth2 standard client feature</td>
 </tr>
 </table>
 </div>
@@ -2909,19 +2968,19 @@ public class RestTemplateConfiguration {
 <div class="ulist">
 <ul>
 <li>
-<p>Run <em>AuthorizationServerApplication</em> class in project <em>05-oauth2-client/authorizationserver</em></p>
+<p>Run <em>UAA</em> server in project <em>05-oauth2/uaa</em></p>
 </li>
 <li>
-<p>Run <em>LibraryServerApplication</em> class in project <em>05-oauth2-client/library-server</em></p>
+<p>Run <em>LibraryServerApplication</em> class in project <em>05-oauth2/initial-library-server</em></p>
 </li>
 <li>
-<p>Run <em>OAuth2LoginClientApplication</em> class in project <em>05-oauth2-client/initial-oauth2-login-client</em></p>
+<p>Run <em>OAuth2LoginClientApplication</em> class in project <em>05-oauth2/initial-oauth2-login-client</em></p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Now when you access <a href="http://localhost:8081">localhost:8081</a> you should be redirected to the authorization server.
-After logging in you should get the current authenticated user infos back from authorization server.</p>
+<p>Now when you access <a href="http://localhost:8081/userinfo">localhost:8081/userinfo</a> you should be redirected to the UAA identity server.
+After logging in you should get the current authenticated user info back from identity server.</p>
 </div>
 <div class="paragraph">
 <p>Here you can log in using one of these predefined users:</p>
@@ -2941,17 +3000,17 @@ After logging in you should get the current authenticated user infos back from a
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">user_4workshop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">curator_4workshop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">curator</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">admin_4workshop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
 </tr>
 </tbody>
@@ -2968,7 +3027,8 @@ This returns the book list from the library-server (resource server).</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <em>05-oauth2-client/oauth2-login-client</em>.</p>
+<p>You find the completed code in project <em>05-oauth2/oauth2-login-client</em>
+and <em>05-oauth2/oauth2-library-server</em>.</p>
 </div>
 </td>
 </tr>
@@ -3080,7 +3140,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-10-19 00:19:34 CEST
+Last updated 2018-10-19 09:24:10 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

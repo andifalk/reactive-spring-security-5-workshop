@@ -41,7 +41,7 @@ class UserServiceTest {
     @Test
     void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() {
         when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))));
         StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
     }
@@ -51,7 +51,7 @@ class UserServiceTest {
     @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
     void verifyFindOneByEmailAccessIsGrantedForAllRoles() {
         when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))));
         StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
     }
@@ -61,10 +61,10 @@ class UserServiceTest {
     @WithMockUser(roles = "ADMIN")
     void verifyCreateAccessIsGrantedForAdmin() {
         when(userRepository.insert(Mockito.<Mono<User>>any())).thenReturn(Flux.just(new User(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))));
         StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))))).verifyComplete();
     }
 
@@ -73,7 +73,7 @@ class UserServiceTest {
     @WithMockUser(roles = {"USER", "CURATOR"})
     void verifyCreateAccessIsDeniedForUserAndCurator() {
         StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))))).verifyError(AccessDeniedException.class);
     }
 
@@ -81,7 +81,7 @@ class UserServiceTest {
     @Test
     void verifyCreateAccessIsDeniedForUnauthenticated() {
         StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))))).verifyError(AccessDeniedException.class);
     }
 
@@ -90,7 +90,7 @@ class UserServiceTest {
     @WithMockUser(roles = "ADMIN")
     void verifyFindByIdAccessIsGrantedForAdmin() {
         when(userRepository.findById(any(UUID.class))).thenReturn(Mono.just(new User(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))));
         StepVerifier.create(userService.findById(UUID.randomUUID())).expectNextCount(1).verifyComplete();
     }
@@ -113,7 +113,7 @@ class UserServiceTest {
     @WithMockUser(roles = "ADMIN")
     void verifyFindAllAccessIsGrantedForAdmin() {
         when(userRepository.findAll()).thenReturn(Flux.just(new User(UUID.randomUUID(),
-                "test@example.com", "secret", "Max", "Maier",
+                "test@example.com", "Max", "Maier",
                 Collections.singletonList(Role.USER))));
         StepVerifier.create(userService.findAll()).expectNextCount(1).verifyComplete();
     }

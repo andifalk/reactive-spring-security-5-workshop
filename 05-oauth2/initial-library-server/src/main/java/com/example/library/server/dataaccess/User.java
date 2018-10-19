@@ -19,8 +19,6 @@ public class User {
     @Indexed
     private String email;
 
-    private String password;
-
     private String firstName;
 
     private String lastName;
@@ -31,10 +29,9 @@ public class User {
     }
 
     @PersistenceConstructor
-    public User(UUID id, String email, String password, String firstName, String lastName, List<Role> roles) {
+    public User(UUID id, String email, String firstName, String lastName, List<Role> roles) {
         this.id = id;
         this.email = email;
-        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
@@ -58,10 +55,6 @@ public class User {
 
     public List<Role> getRoles() {
         return roles;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override

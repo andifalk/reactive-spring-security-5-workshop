@@ -30,10 +30,12 @@ repositories {
 
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-webflux')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
     compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.security:spring-security-oauth2-client')
-    compile('org.springframework.security:spring-security-oauth2-jose')
+    //compile('org.springframework.security:spring-security-oauth2-client')
+    //compile('org.springframework.security:spring-security-oauth2-jose')
     compile('org.springframework.boot:spring-boot-starter-actuator')
     runtime('org.springframework.boot:spring-boot-devtools')
     testCompile('org.springframework.boot:spring-boot-starter-test')

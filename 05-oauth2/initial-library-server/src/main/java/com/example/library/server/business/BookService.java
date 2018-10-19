@@ -97,7 +97,7 @@ public class BookService {
         return new Book(
                 idGenerator.generateId(), br.getIsbn(), br.getTitle(), br.getDescription(),
                 br.getAuthors(), br.isBorrowed(),
-                borrowedBy != null ? new User(borrowedBy.getId(), borrowedBy.getEmail(), borrowedBy.getPassword(),
+                borrowedBy != null ? new User(borrowedBy.getId(), borrowedBy.getEmail(),
                         borrowedBy.getFirstName(), borrowedBy.getLastName(), borrowedBy.getRoles()) : null);
     }
 
@@ -105,6 +105,6 @@ public class BookService {
         User borrowedBy = b.getBorrowedBy();
         return new BookResource(b.getId(), b.getIsbn(), b.getTitle(), b.getDescription(),
                 b.getAuthors(), b.isBorrowed(), borrowedBy != null ? new UserResource(borrowedBy.getId(), borrowedBy.getEmail(),
-                borrowedBy.getPassword(), borrowedBy.getFirstName(), borrowedBy.getLastName(), borrowedBy.getRoles()) : null);
+                borrowedBy.getFirstName(), borrowedBy.getLastName(), borrowedBy.getRoles()) : null);
     }
 }
