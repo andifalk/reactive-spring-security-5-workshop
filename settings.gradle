@@ -11,4 +11,5 @@ include '05-oauth2:oauth2-login-client'
 include '05-oauth2:initial-oauth2-login-client'
 include '05-oauth2:uaa'
 include 'workshop-docs'
+include 'reactive-playground'
 
