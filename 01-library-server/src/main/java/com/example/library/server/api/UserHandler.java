@@ -28,7 +28,6 @@ public class UserHandler {
         this.userService = userService;
     }
 
-    @SuppressWarnings("unused")
     public Mono<ServerResponse> getAllUsers(ServerRequest request) {
         return ok().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .body(userService.findAll(), UserResource.class);

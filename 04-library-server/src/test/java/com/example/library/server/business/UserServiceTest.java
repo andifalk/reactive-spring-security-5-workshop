@@ -33,7 +33,6 @@ class UserServiceTest {
   @MockBean
   private UserRepository userRepository;
 
-  @SuppressWarnings("unused")
   @MockBean
   private IdGenerator idGenerator;
 

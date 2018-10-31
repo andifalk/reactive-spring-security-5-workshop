@@ -185,7 +185,6 @@ class BookApiIntegrationTests {
                 .expectBody().consumeWith(document("create-book"));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("to create a new book fails for missing CSRF token")
     void verifyCreateBookCsrfForbidden() throws JsonProcessingException {

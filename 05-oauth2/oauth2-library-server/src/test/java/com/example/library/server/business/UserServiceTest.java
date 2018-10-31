@@ -34,11 +34,9 @@ class UserServiceTest {
     @MockBean
     private UserRepository userRepository;
 
-    @SuppressWarnings("unused")
     @MockBean
     private IdGenerator idGenerator;
 
-    @SuppressWarnings("unused")
     @MockBean
     private ReactiveJwtDecoder reactiveJwtDecoder;
 

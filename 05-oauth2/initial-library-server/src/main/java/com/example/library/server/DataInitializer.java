@@ -9,16 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 /**
  * Store initial users and books in mongodb.
