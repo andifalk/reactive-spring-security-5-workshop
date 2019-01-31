@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
 <meta name="author" content="Andreas Falk">
-<title>Reactive Spring Security 5 Hands-On Workshop</title>
+<title>Reactive Spring Security 5.1 Hands-On Workshop</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -422,7 +422,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Reactive Spring Security 5 Hands-On Workshop</h1>
+<h1>Reactive Spring Security 5.1 Hands-On Workshop</h1>
 <div class="details">
 <span id="author" class="author">Andreas Falk</span><br>
 <span id="email" class="email"><a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a></span><br>
@@ -465,6 +465,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
+<li><a href="#_feedback">6. Feedback</a></li>
 <li><a href="#_online_references">Appendix A: Online References</a></li>
 <li><a href="#_book_references">Appendix B: Book References</a></li>
 </ul>
@@ -475,7 +476,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="imageblock">
 <div class="content">
-<img src="images/novatec_logo_big.png" alt="novatec">
+<img src="images/entwicklertag_frankfurt.jpg" alt="novatec">
 </div>
 </div>
 </div>
@@ -517,7 +518,7 @@ more and more secure step-by-step.</p>
 <p>Git</p>
 </li>
 <li>
-<p>A Java 8 or 9 JDK</p>
+<p>A Java JDK (Java 8 or 11 are supported and tested)</p>
 </li>
 <li>
 <p>Any Java IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
@@ -834,22 +835,25 @@ There is a separate project for each step:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>00-library-server: This contains the initial unsecured application</p>
+<p><strong>reactive-playground</strong>: This project provides a playground to try reactive streams with project reactor</p>
 </li>
 <li>
-<p>01-library-server: This has just added the spring boot starter dependencies for spring security</p>
+<p><strong>00-library-server</strong>: This contains the initial unsecured application</p>
 </li>
 <li>
-<p>02-library-server: This adds a persistent user store for authentication</p>
+<p><strong>01-library-server</strong>: This has just added the spring boot starter dependencies for spring security</p>
 </li>
 <li>
-<p>03-library-server: This adds custom authentication and authorization rules</p>
+<p><strong>02-library-server</strong>: This adds a persistent user store for authentication</p>
 </li>
 <li>
-<p>04-library-server: This adds automatic integration tests for authorization</p>
+<p><strong>03-library-server</strong>: This adds custom authentication and authorization rules</p>
 </li>
 <li>
-<p>05-oauth2: This adds an OAuth2 login client and resource server for interacting with an identity server for login</p>
+<p><strong>04-library-server</strong>: This adds automatic integration tests for authorization</p>
+</li>
+<li>
+<p><strong>05-oauth2</strong>: This adds an OAuth2 login client and resource server for interacting with an identity server for login</p>
 </li>
 </ul>
 </div>
@@ -3038,6 +3042,23 @@ and <em>05-oauth2/oauth2-library-server</em>.</p>
 <p>This concludes our Spring Security 5.1 hands-on workshop.
 I hope you learned a lot regarding security and especially Spring Security 5.1.</p>
 </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_feedback"><a class="anchor" href="#_feedback"></a><a class="link" href="#_feedback">6. Feedback</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Please provide feedback for this workshop directly to organization of the Frankfurter Entwicklertag
+using the provided QR code.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/qr_code_frankfurter_entwicklertag.png" alt="novatec">
+</div>
+</div>
 <div class="admonitionblock important">
 <table>
 <tr>
@@ -3046,7 +3067,7 @@ I hope you learned a lot regarding security and especially Spring Security 5.1.<
 </td>
 <td class="content">
 <div class="paragraph">
-<p>If you have feedback for this workshop, suggestions for improvements or you want me to
+<p>If you have further feedback for this workshop, suggestions for improvements or you want me to
 conduct this workshop somewhere else please do not hesitate to contact me via</p>
 </div>
 <div class="ulist">
@@ -3068,9 +3089,6 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div class="paragraph">
 <p>Thank YOU very much for being part of this workshop :-)</p>
-</div>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -3140,7 +3158,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-10-19 09:24:10 CEST
+Last updated 2019-01-31 17:50:36 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
