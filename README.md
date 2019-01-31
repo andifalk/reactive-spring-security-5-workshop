@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/License-Apache%20License%202.0-brightgreen.svg)][1]
+[![Build Status](https://travis-ci.org/andifalk/reactive-spring-security-5-workshop.svg?branch=master)](https://travis-ci.org/andifalk/reactive-spring-security-5-workshop)
+
 # Spring Security 5 Workshop
 
 This is a hands-on workshop on securing a reactive Spring Boot 2.0 based web application using Spring Security 5.0.
@@ -21,3 +24,12 @@ The workshop is split up into the following parts:
 * [Step 3: Add Authorization](https://andifalk.github.io/reactive-spring-security-5-workshop/#_step_3_add_authorization)
 * [Step 4: Security Testing](https://andifalk.github.io/reactive-spring-security-5-workshop/#_step_4_security_testing)
 * [Step 5: OAuth2/OpenID Connect](https://andifalk.github.io/reactive-spring-security-5-workshop/#_step_5_oauth2)
+
+
+## License
+
+Apache 2.0 licensed
+
+Copyright (c) by 2019 Andreas Falk
+
+[1]:http://www.apache.org/licenses/LICENSE-2.0.txt
