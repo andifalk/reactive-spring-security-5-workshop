@@ -1,4 +1,4 @@
-= Reactive Spring Security 5 Hands-On Workshop
+= Reactive Spring Security 5.1 Hands-On Workshop
 Andreas Falk <andreas.falk@novatec-gmbh.de>
 :doctype: book
 :icons: font
@@ -10,7 +10,7 @@ Andreas Falk <andreas.falk@novatec-gmbh.de>
 :numbered: ''
 :docinfo:
 
-image::images/novatec_logo_big.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+image::images/entwicklertag_frankfurt.jpg[scaledwidth="50%", scaledheight="50%",alt="novatec"]
 
 == Introduction
 
@@ -28,7 +28,7 @@ This will be done in following steps:
 === Requirements for this workshop
 
 * Git
-* A Java 8 or 9 JDK
+* A Java JDK (Java 8 or 11 are supported and tested)
 * Any Java IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
 * Basic knowledge of https://www.reactivemanifesto.org[Reactive Systems] and reactive programming using https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux] & https://projectreactor.io[Reactor]
 
@@ -186,12 +186,13 @@ It provides two programming models:
 This interactive hands-on workshop is organized into several step with one step building upon each other.
 There is a separate project for each step:
 
-* 00-library-server: This contains the initial unsecured application
-* 01-library-server: This has just added the spring boot starter dependencies for spring security
-* 02-library-server: This adds a persistent user store for authentication
-* 03-library-server: This adds custom authentication and authorization rules
-* 04-library-server: This adds automatic integration tests for authorization
-* 05-oauth2: This adds an OAuth2 login client and resource server for interacting with an identity server for login
+* **reactive-playground**: This project provides a playground to try reactive streams with project reactor
+* **00-library-server**: This contains the initial unsecured application
+* **01-library-server**: This has just added the spring boot starter dependencies for spring security
+* **02-library-server**: This adds a persistent user store for authentication
+* **03-library-server**: This adds custom authentication and authorization rules
+* **04-library-server**: This adds automatic integration tests for authorization
+* **05-oauth2**: This adds an OAuth2 login client and resource server for interacting with an identity server for login
 
 == Workshop Steps
 
@@ -924,9 +925,15 @@ and _05-oauth2/oauth2-library-server_.
 This concludes our Spring Security 5.1 hands-on workshop.
 I hope you learned a lot regarding security and especially Spring Security 5.1.
 
+== Feedback
+Please provide feedback for this workshop directly to organization of the Frankfurter Entwicklertag
+using the provided QR code.
+
+image::images/qr_code_frankfurter_entwicklertag.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+
 [IMPORTANT]
 ====
-If you have feedback for this workshop, suggestions for improvements or you want me to
+If you have further feedback for this workshop, suggestions for improvements or you want me to
 conduct this workshop somewhere else please do not hesitate to contact me via
 
 * Mail: andreas.falk@novatec-gmbh.de

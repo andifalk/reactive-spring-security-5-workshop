@@ -1,4 +1,4 @@
-# Spring Security 5 Workshop
+# Spring Security 5.1 Workshop
 
 ## Reactive Playground
 
