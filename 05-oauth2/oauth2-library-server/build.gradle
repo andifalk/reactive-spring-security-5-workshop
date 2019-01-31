@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
         asciidoctorVersion = '1.5.6'
         snippetsDir = file('build/generated-snippets')
     }
@@ -62,7 +62,7 @@ dependencies {
     compile('org.springframework.security:spring-security-oauth2-jose')
     compile('org.springframework.security:spring-security-oauth2-resource-server')
     compile('org.apache.commons:commons-lang3')
-    compile('org.modelmapper:modelmapper:2.3.0')
+    compile('org.modelmapper:modelmapper:2.3.2')
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
     testCompile('org.springframework.boot:spring-boot-starter-test')

@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -28,7 +28,7 @@ repositories {
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
+    compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity5')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.security:spring-security-oauth2-client')
     compile('org.springframework.security:spring-security-oauth2-jose')

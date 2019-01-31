@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
         asciidoctorVersion = '1.5.6'
         snippetsDir = file('build/generated-snippets')
     }
@@ -60,10 +60,11 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.apache.commons:commons-lang3')
-    compile('org.modelmapper:modelmapper:2.3.0')
+    compile('org.modelmapper:modelmapper:2.3.2')
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.security:spring-security-test')
     testCompile('io.projectreactor:reactor-test')
     testCompile('org.springframework.restdocs:spring-restdocs-webtestclient')
     testCompile('org.mockito:mockito-junit-jupiter')
