@@ -50,7 +50,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to create a book for role 'CURATOR'")
     @Test
-    @WithMockUser(roles = "CURATOR")
+    @WithMockUser(authorities = "SCOPE_curator")
     void verifyCreateAccessIsGrantedForCurator() {
         when(bookRepository.insert(Mockito.<Mono<Book>>any())).thenReturn(Flux.just(new Book()));
         StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
@@ -61,7 +61,7 @@ class BookServiceTest {
 
     @DisplayName("denies access to create a book for roles 'USER' and 'ADMIN'")
     @Test
-    @WithMockUser(roles = {"USER", "ADMIN"})
+    @WithMockUser(authorities = {"SCOPE_user", "ADMIN"})
     void verifyCreateAccessIsDeniedForUserAndAdmin() {
         StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
                 "123456789", "title", "description", Collections.singletonList("author"),
@@ -80,7 +80,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to find a book by id for role 'USER'")
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "SCOPE_user")
     void verifyFindByIdAccessIsGrantedForRoleUser() {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(new Book()));
         StepVerifier.create(bookService.findById(UUID.randomUUID())).expectNextCount(1).verifyComplete();
@@ -88,7 +88,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to find a book by id for role 'CURATOR'")
     @Test
-    @WithMockUser(roles = "CURATOR")
+    @WithMockUser(authorities = "SCOPE_curator")
     void verifyFindByIdAccessIsGrantedForRoleCurator() {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(new Book()));
         StepVerifier.create(bookService.findById(UUID.randomUUID())).expectNextCount(1).verifyComplete();
@@ -96,7 +96,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to find a book by id for role 'ADMIN'")
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(authorities = "SCOPE_admin")
     void verifyFindByIdAccessIsGrantedForRoleAdmin() {
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(new Book()));
         StepVerifier.create(bookService.findById(UUID.randomUUID())).expectNextCount(1).verifyComplete();
@@ -110,7 +110,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to borrow a book by id for role 'USER'")
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "SCOPE_user")
     void verifyBorrowByIdAccessIsGrantedForUser() {
         Book book = new Book(UUID.randomUUID(), "123456", "title", "description", Arrays.asList("author1", "author2"), false, null);
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
@@ -125,7 +125,7 @@ class BookServiceTest {
 
     @DisplayName("denies access to borrow a book by id for roles 'CURATOR' or 'ADMIN'")
     @Test
-    @WithMockUser(roles = {"CURATOR", "ADMIN"})
+    @WithMockUser(authorities = {"SCOPE_curator", "SCOPE_admin"})
     void verifyBorrowByIdAccessIsDeniedForCuratorOrAdmin() {
         StepVerifier.create(bookService.borrowById(UUID.randomUUID(), UUID.randomUUID())).verifyError(AccessDeniedException.class);
     }
@@ -138,7 +138,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to return a book by id for role 'USER'")
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "SCOPE_user")
     void verifyReturnByIdAccessIsGrantedForUser() {
         Book book = new Book(UUID.randomUUID(), "123456", "title", "description", Arrays.asList("author1", "author2"), false, null);
         when(bookRepository.findById(any(UUID.class))).thenReturn(Mono.just(book));
@@ -151,7 +151,7 @@ class BookServiceTest {
 
     @DisplayName("denies access to return a book by id for roles 'CURATOR' or 'ADMIN'")
     @Test
-    @WithMockUser(roles = {"CURATOR", "ADMIN"})
+    @WithMockUser(roles = {"SCOPE_curator", "SCOPE_admin"})
     void verifyReturnByIdAccessIsDeniedForCuratorOrAdmin() {
         StepVerifier.create(bookService.returnById(UUID.randomUUID(), UUID.randomUUID())).verifyError(AccessDeniedException.class);
     }
@@ -164,7 +164,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to find all books for role 'USER'")
     @Test
-    @WithMockUser
+    @WithMockUser(authorities = "SCOPE_user")
     void verifyFindAllAccessIsGrantedForUser() {
         when(bookRepository.findAll()).thenReturn(Flux.just(new Book()));
         StepVerifier.create(bookService.findAll()).expectNextCount(1).verifyComplete();
@@ -172,7 +172,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to find all books for role 'CURATOR'")
     @Test
-    @WithMockUser(roles = "CURATOR")
+    @WithMockUser(authorities = "SCOPE_curator")
     void verifyFindAllAccessIsGrantedForCurator() {
         when(bookRepository.findAll()).thenReturn(Flux.just(new Book()));
         StepVerifier.create(bookService.findAll()).expectNextCount(1).verifyComplete();
@@ -180,7 +180,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to find all books for role 'ADMIN'")
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(authorities = "SCOPE_admin")
     void verifyFindAllAccessIsGrantedForAdmin() {
         when(bookRepository.findAll()).thenReturn(Flux.just(new Book()));
         StepVerifier.create(bookService.findAll()).expectNextCount(1).verifyComplete();
@@ -195,7 +195,7 @@ class BookServiceTest {
 
     @DisplayName("grants access to delete a book for role 'CURATOR'")
     @Test
-    @WithMockUser(roles = {"CURATOR"})
+    @WithMockUser(authorities = {"SCOPE_curator"})
     void verifyDeleteByIdAccessIsGrantedForCurator() {
         when(bookRepository.deleteById(any(UUID.class))).thenReturn(Mono.empty());
         StepVerifier.create(bookService.deleteById(UUID.randomUUID())).verifyComplete();
@@ -203,7 +203,7 @@ class BookServiceTest {
 
     @DisplayName("denies access to delete a book for role 'USER' and 'ADMIN'")
     @Test
-    @WithMockUser(roles = {"USER", "ADMIN"})
+    @WithMockUser(authorities = {"SCOPE_user", "SCOPE_admin"})
     void verifyDeleteByIdAccessIsDeniedForUserAndAdmin() {
         StepVerifier.create(bookService.deleteById(UUID.randomUUID())).verifyError(AccessDeniedException.class);
     }

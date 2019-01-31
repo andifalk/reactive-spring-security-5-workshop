@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -30,12 +31,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
 @Import({UserHandler.class, UserRouter.class})
 @AutoConfigureRestDocs
 @DisplayName("Verify user api")
+@WithMockUser
 class UserApiIntegrationTests {
 
   @Autowired
@@ -111,6 +114,7 @@ class UserApiIntegrationTests {
     given(userService.deleteById(userId)).willReturn(Mono.empty());
 
     webClient
+            .mutateWith(csrf())
             .delete().uri("/users/{userId}", userId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -143,6 +147,7 @@ class UserApiIntegrationTests {
     );
 
     webClient
+            .mutateWith(csrf())
             .post().uri("/users").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromObject(
                     new ObjectMapper().writeValueAsString(userResource)))

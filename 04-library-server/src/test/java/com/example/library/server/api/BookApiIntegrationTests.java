@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -26,11 +27,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(BookRestController.class)
 @AutoConfigureRestDocs
 @DisplayName("Verify book api")
+@WithMockUser
 class BookApiIntegrationTests {
 
   @Autowired
@@ -105,6 +108,7 @@ class BookApiIntegrationTests {
     given(bookService.deleteById(bookId)).willReturn(Mono.empty());
 
     webClient
+            .mutateWith(csrf())
             .delete().uri("/books/{bookId}", bookId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -122,6 +126,7 @@ class BookApiIntegrationTests {
     UUID bookId = UUID.randomUUID();
 
     webClient
+            .mutateWith(csrf())
             .post().uri("/books/{bookId}/borrow", bookId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -139,6 +144,7 @@ class BookApiIntegrationTests {
     UUID bookId = UUID.randomUUID();
 
     webClient
+            .mutateWith(csrf())
             .post().uri("/books/{bookId}/return", bookId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
@@ -172,6 +178,7 @@ class BookApiIntegrationTests {
     );
 
     webClient
+            .mutateWith(csrf())
             .post().uri("/books").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromObject(
                     new ObjectMapper().writeValueAsString(bookResource)))
