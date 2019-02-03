@@ -3,6 +3,7 @@
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Expires: 0
 Pragma: no-cache
+Referrer-Policy: no-referrer
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1 ; mode=block

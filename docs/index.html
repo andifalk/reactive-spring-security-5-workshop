@@ -455,12 +455,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></li>
 <li><a href="#_step_5_oauth2_openid_connect">5.5. Step 5: OAuth2/OpenID Connect</a>
 <ul class="sectlevel3">
-<li><a href="#_introduction_2">5.5.1. Introduction</a></li>
-<li><a href="#_oauth2_oidc_in_spring_security_5">5.5.2. OAuth2/OIDC in Spring Security 5</a></li>
-<li><a href="#_what_we_will_build">5.5.3. What we will build</a></li>
-<li><a href="#identity-server">5.5.4. UAA Identity Server</a></li>
-<li><a href="#resource-server">5.5.5. Resource Server (Library-Server)</a></li>
-<li><a href="#oauth2-login-client">5.5.6. OAuth2 Login Client</a></li>
+<li><a href="#_oauth_2_0">5.5.1. OAuth 2.0</a></li>
+<li><a href="#_openid_connect_1_0">5.5.2. OpenID Connect 1.0</a></li>
+<li><a href="#_tokens_in_oidc_and_oauth_2_0">5.5.3. Tokens in OIDC and OAuth 2.0</a></li>
+<li><a href="#_oauth2_oidc_in_spring_security_5">5.5.4. OAuth2/OIDC in Spring Security 5</a></li>
+<li><a href="#_what_we_will_build">5.5.5. What we will build</a></li>
+<li><a href="#identity-server">5.5.6. UAA Identity Server</a></li>
+<li><a href="#resource-server">5.5.7. Resource Server (Library-Server)</a></li>
+<li><a href="#oauth2-login-client">5.5.8. OAuth2 Login Client</a></li>
 </ul>
 </li>
 </ul>
@@ -518,10 +520,10 @@ more and more secure step-by-step.</p>
 <p>Git</p>
 </li>
 <li>
-<p>A Java JDK (Java 8 or 11 are supported and tested)</p>
+<p>A Java JDK (Java 8, 9 or 11 are supported and tested)</p>
 </li>
 <li>
-<p>Any Java IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
+<p>Any Java IDE capable of building with <a href="https://gradle.org/">Gradle</a> (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
 </li>
 <li>
 <p>Basic knowledge of <a href="https://www.reactivemanifesto.org">Reactive Systems</a> and reactive programming using <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux">Spring WebFlux</a> &amp; <a href="https://projectreactor.io">Reactor</a></p>
@@ -530,7 +532,7 @@ more and more secure step-by-step.</p>
 </div>
 <div class="paragraph">
 <p>As we are building the samples using <a href="https://gradle.org">Gradle</a> your Java IDE should be capable use this.
-As IntelliJ user support for Gradle is included by default.
+As IntelliJ user support for <a href="https://gradle.org/">Gradle</a> is included by default.
 As an Eclipse user you have to install a plugin via the marketplace</p>
 </div>
 <div class="imageblock">
@@ -611,8 +613,12 @@ fit into the <a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">OWASP 
 </div>
 </div>
 <div class="paragraph">
-<p>You may also have a look into the <a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls">OWASP ProActive Controls</a> document which describes how to develop
-your applications using good security patterns.</p>
+<p>The <a href="https://owasp.org">Open Web Application Security Project</a> has plenty of further free resources available.</p>
+</div>
+<div class="paragraph">
+<p>As a developer you may also have a look into the <a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls">OWASP ProActive Controls</a> document which describes how to develop
+your applications using good security patterns.
+To help getting all security requirements right for your project and how to test these the <a href="https://github.com/OWASP/ASVS">Application Security Verification Standard</a> can help you here.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -635,7 +641,7 @@ your applications using good security patterns.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In this workshop you will be provided a finished but completely unsecured reactive
-web application. This library server application provides a RESTful service for administering books and users.</p>
+web application. This library server application provides a <a href="https://martinfowler.com/articles/richardsonMaturityModel.html">RESTful service</a> for administering books and users.</p>
 </div>
 <div class="paragraph">
 <p>The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
@@ -853,7 +859,7 @@ There is a separate project for each step:</p>
 <p><strong>04-library-server</strong>: This adds automatic integration tests for authorization</p>
 </li>
 <li>
-<p><strong>05-oauth2</strong>: This adds an OAuth2 login client and resource server for interacting with an identity server for login</p>
+<p><strong>05-oauth2</strong>: This adds an OAuth2/OIDC login client and resource server for interacting with an identity server for login</p>
 </li>
 </ul>
 </div>
@@ -1000,6 +1006,7 @@ This automatically adds all recommended security response headers to all http re
 <pre class="highlightjs highlight nowrap"><code>Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Expires: 0
 Pragma: no-cache
+Referrer-Policy: no-referrer
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1 ; mode=block</code></pre>
@@ -2085,10 +2092,10 @@ project.</p>
 <div class="sect2">
 <h3 id="_step_5_oauth2_openid_connect"><a class="anchor" href="#_step_5_oauth2_openid_connect"></a><a class="link" href="#_step_5_oauth2_openid_connect">5.5. Step 5: OAuth2/OpenID Connect</a></h3>
 <div class="sect3">
-<h4 id="_introduction_2"><a class="anchor" href="#_introduction_2"></a><a class="link" href="#_introduction_2">5.5.1. Introduction</a></h4>
+<h4 id="_oauth_2_0"><a class="anchor" href="#_oauth_2_0"></a><a class="link" href="#_oauth_2_0">5.5.1. OAuth 2.0</a></h4>
 <div class="paragraph">
-<p>OAuth2 is the base protocol for authorizing 3rd party authentication services
-for using business services in the internet like stackoverflow.com.</p>
+<p><a href="https://tools.ietf.org/html/rfc6749">OAuth 2.0</a> is the base protocol for authorizing 3rd party authentication services
+for using business services in the internet like <a href="https://stackoverflow.com">stackoverflow</a>.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2100,29 +2107,35 @@ for using business services in the internet like stackoverflow.com.</p>
 using the requested service.</p>
 </div>
 <div class="paragraph">
-<p>Depending on the application type OAuth2 provides the following grants (flows):</p>
+<p>Depending on the application type OAuth 2.0 provides the following grants (flows):</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Authorization Code Grant</p>
+<p><a href="https://tools.ietf.org/html/rfc6749#section-4.1">Authorization Code Grant</a></p>
 </li>
 <li>
-<p>Implicit Grant</p>
+<p><a href="https://tools.ietf.org/html/rfc7636">Authorization Code Grant with PKCE</a></p>
 </li>
 <li>
-<p>Client Credentials Grant</p>
+<p><a href="https://tools.ietf.org/html/rfc6749#section-4.2">Implicit Grant</a></p>
 </li>
 <li>
-<p>Resource Owner Password Credentials Grant</p>
+<p><a href="https://tools.ietf.org/html/rfc6749#section-4.3">Resource Owner Password Credentials Grant</a></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc6749#section-4.4">Client Credentials Grant</a></p>
 </li>
 </ul>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_openid_connect_1_0"><a class="anchor" href="#_openid_connect_1_0"></a><a class="link" href="#_openid_connect_1_0">5.5.2. OpenID Connect 1.0</a></h4>
 <div class="paragraph">
-<p>OpenID Connect (OIDC) is buiuld upon OAuth2 and provides additional identity information
-to the scopes of OAuth2. For common enterprise applications OpenID Connect should be used.
-Nowadays OAuth2 is frequently used together with providing identity in JSON web tokens (JWT).
-But only OIDC specifies the use of JWT, OAuth2 does not.</p>
+<p><a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect 1.0 (OIDC)</a> is build upon <a href="https://tools.ietf.org/html/rfc6749">OAuth2</a> and provides additional identity information
+to OAuth2. For common enterprise applications that typically require authentication OpenID Connect should be used.
+<a href="https://openid.net/specs/openid-connect-core-1_0.html">OIDC</a> adds <a href="https://tools.ietf.org/html/rfc7519">JSON web tokens (JWT)</a> as mandatory format for id tokens to the spec.
+In OAuth2 the format of <a href="https://tools.ietf.org/html/rfc6750">bearer tokens</a> is not specified.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2130,13 +2143,44 @@ But only OIDC specifies the use of JWT, OAuth2 does not.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>OIDC adds an additional id token to the access token of OAuth2 and specifies
-a user info endpoint to retrieve further user information.
-With hybrid flow OIDC also adds one more grant (flow) to the existing ones of OAuth2.</p>
+<p>OIDC adds an id token in addition to the access token of OAuth2 and specifies
+a user info endpoint to retrieve further user information using the access token.</p>
+</div>
+<div class="paragraph">
+<p>OIDC supports the following grant flows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">Authorization Code Flow</a></p>
+</li>
+<li>
+<p><a href="https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">Implicit Flow</a></p>
+</li>
+<li>
+<p><a href="https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">Hybrid Flow</a></p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_oauth2_oidc_in_spring_security_5"><a class="anchor" href="#_oauth2_oidc_in_spring_security_5"></a><a class="link" href="#_oauth2_oidc_in_spring_security_5">5.5.2. OAuth2/OIDC in Spring Security 5</a></h4>
+<h4 id="_tokens_in_oidc_and_oauth_2_0"><a class="anchor" href="#_tokens_in_oidc_and_oauth_2_0"></a><a class="link" href="#_tokens_in_oidc_and_oauth_2_0">5.5.3. Tokens in OIDC and OAuth 2.0</a></h4>
+<div class="paragraph">
+<p>Tokens can be used in two ways:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Self-contained token (containing all information directly in token payload, e.g. JWT)</p>
+</li>
+<li>
+<p>Reference token (token is used to look up further information)</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_oauth2_oidc_in_spring_security_5"><a class="anchor" href="#_oauth2_oidc_in_spring_security_5"></a><a class="link" href="#_oauth2_oidc_in_spring_security_5">5.5.4. OAuth2/OIDC in Spring Security 5</a></h4>
 <div class="paragraph">
 <div class="title">Spring Security 5.0 introduced new support for OAuth2/OpenID Connect (OIDC) directly in spring security.</div>
 <p>In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
@@ -2150,7 +2194,10 @@ on a third party library <a href="https://connect2id.com/products/nimbus-oauth-o
 for reactive clients and resource server as well.</p>
 </div>
 <div class="paragraph">
-<p>Spring Security 5.2 will add a basic OAuth2/OIDC authorization server again (for local dev
+<p>Spring Security 5.2 adds client support for authorization code flow with PKCE.</p>
+</div>
+<div class="paragraph">
+<p>Spring Security 5.3 will add a basic OAuth2/OIDC authorization server again (for local dev
 and demos but not for productive use).</p>
 </div>
 <div class="paragraph">
@@ -2202,7 +2249,7 @@ and Spring Security 5.x/Spring Boot 2.x.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">5.1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2.1.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.1.2</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>4</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>3</sup></p></td>
@@ -2210,7 +2257,15 @@ and Spring Security 5.x/Spring Boot 2.x.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">5.2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.2.0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>4</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">(X)<sup>3</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>5</sup></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.3.0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>2</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>4</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">X<sup>6</sup></p></td>
@@ -2236,9 +2291,9 @@ together with <a href="https://github.com/spring-projects/spring-security-oauth2
 </td>
 <td class="content">
 <div class="paragraph">
-<p>The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.2 will mainly suit for fast prototyping and demo
+<p>The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.3 will mainly suit for fast prototyping and demo
 purposes. For production please use one of the <a href="https://openid.net/developers/certified/">officially certified</a> products like for example
-<a href="https://www.keycloak.org/">KeyCloak</a>, <a href="https://github.com/cloudfoundry/uaa">UAA</a> or <a href="https://www.okta.com/products/single-sign-on/">Okta</a>.</p>
+<a href="https://www.keycloak.org/">KeyCloak</a>, <a href="https://github.com/cloudfoundry/uaa">UAA</a>, <a href="https://identityserver.io">IdentityServer</a>, <a href="https://auth0.com">Auth0</a> or <a href="https://www.okta.com/products/single-sign-on/">Okta</a>.</p>
 </div>
 </td>
 </tr>
@@ -2286,7 +2341,7 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_what_we_will_build"><a class="anchor" href="#_what_we_will_build"></a><a class="link" href="#_what_we_will_build">5.5.3. What we will build</a></h4>
+<h4 id="_what_we_will_build"><a class="anchor" href="#_what_we_will_build"></a><a class="link" href="#_what_we_will_build">5.5.5. What we will build</a></h4>
 <div class="paragraph">
 <p>In the <em>05-oauth2</em> project you will be provided the following sub-projects:</p>
 </div>
@@ -2369,7 +2424,7 @@ a OAuth2 resource server and login client based on the project.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="identity-server"><a class="anchor" href="#identity-server"></a><a class="link" href="#identity-server">5.5.4. UAA Identity Server</a></h4>
+<h4 id="identity-server"><a class="anchor" href="#identity-server"></a><a class="link" href="#identity-server">5.5.6. UAA Identity Server</a></h4>
 <div class="paragraph">
 <p>For this workshop the OpenID Connect certified <a href="https://github.com/cloudfoundry/uaa">UAA identity server</a> is provided.
 UAA is an abbreviation for CloudFoundry User Account and Authentication.
@@ -2469,7 +2524,7 @@ the corresponding log output for UAA.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">5.5.5. Resource Server (Library-Server)</a></h4>
+<h4 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">5.5.7. Resource Server (Library-Server)</a></h4>
 <div class="paragraph">
 <p>For this workshop part the well-known library-server application is used and will be extended to act
  as a OAuth2 resource server.</p>
@@ -2616,7 +2671,7 @@ The OAuth2 login client.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="oauth2-login-client"><a class="anchor" href="#oauth2-login-client"></a><a class="link" href="#oauth2-login-client">5.5.6. OAuth2 Login Client</a></h4>
+<h4 id="oauth2-login-client"><a class="anchor" href="#oauth2-login-client"></a><a class="link" href="#oauth2-login-client">5.5.8. OAuth2 Login Client</a></h4>
 <div class="sect4">
 <h5 id="client-gradle-dependencies"><a class="anchor" href="#client-gradle-dependencies"></a><a class="link" href="#client-gradle-dependencies">Gradle dependencies</a></h5>
 <div class="paragraph">
@@ -3158,7 +3213,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-01-31 17:50:36 CET
+Last updated 2019-02-03 15:55:14 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

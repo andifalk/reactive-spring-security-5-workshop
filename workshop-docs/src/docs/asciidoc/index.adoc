@@ -28,12 +28,12 @@ This will be done in following steps:
 === Requirements for this workshop
 
 * Git
-* A Java JDK (Java 8 or 11 are supported and tested)
-* Any Java IDE capable of building with Gradle (IntelliJ, Eclipse, VS Code, ...)
+* A Java JDK (Java 8, 9 or 11 are supported and tested)
+* Any Java IDE capable of building with https://gradle.org/[Gradle] (IntelliJ, Eclipse, VS Code, ...)
 * Basic knowledge of https://www.reactivemanifesto.org[Reactive Systems] and reactive programming using https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux] & https://projectreactor.io[Reactor]
 
 As we are building the samples using https://gradle.org[Gradle] your Java IDE should be capable use this.
-As IntelliJ user support for Gradle is included by default.
+As IntelliJ user support for https://gradle.org/[Gradle] is included by default.
 As an Eclipse user you have to install a plugin via the marketplace
 
 image::images/eclipse_gradle.png[scaledwidth="50%", scaledheight="50%",alt="eclipse_gradle"]
@@ -73,8 +73,11 @@ We will look at:
 
 image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="owasp_top_10"]
 
-You may also have a look into the https://www.owasp.org/index.php/OWASP_Proactive_Controls[OWASP ProActive Controls] document which describes how to develop
+The https://owasp.org[Open Web Application Security Project] has plenty of further free resources available.
+
+As a developer you may also have a look into the https://www.owasp.org/index.php/OWASP_Proactive_Controls[OWASP ProActive Controls] document which describes how to develop
 your applications using good security patterns.
+To help getting all security requirements right for your project and how to test these the https://github.com/OWASP/ASVS[Application Security Verification Standard] can help you here.
 
 [NOTE]
 ====
@@ -84,7 +87,7 @@ You will find more sources of information about security referenced in the appen
 == The workshop application
 
 In this workshop you will be provided a finished but completely unsecured reactive
-web application. This library server application provides a RESTful service for administering books and users.
+web application. This library server application provides a https://martinfowler.com/articles/richardsonMaturityModel.html[RESTful service] for administering books and users.
 
 The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
 users is build using the Spring WebFlux router model.
@@ -192,7 +195,7 @@ There is a separate project for each step:
 * **02-library-server**: This adds a persistent user store for authentication
 * **03-library-server**: This adds custom authentication and authorization rules
 * **04-library-server**: This adds automatic integration tests for authorization
-* **05-oauth2**: This adds an OAuth2 login client and resource server for interacting with an identity server for login
+* **05-oauth2**: This adds an OAuth2/OIDC login client and resource server for interacting with an identity server for login
 
 == Workshop Steps
 
@@ -560,33 +563,48 @@ In the last workshop part we will look at the new OAuth2 login client and resour
 
 === Step 5: OAuth2/OpenID Connect
 
-==== Introduction
+==== OAuth 2.0
 
-OAuth2 is the base protocol for authorizing 3rd party authentication services
-for using business services in the internet like stackoverflow.com.
+https://tools.ietf.org/html/rfc6749[OAuth 2.0] is the base protocol for authorizing 3rd party authentication services
+for using business services in the internet like https://stackoverflow.com[stackoverflow].
 
 image::images/oauth_roles.png[scaledwidth="50%", scaledheight="50%",alt="oauth_roles"]
 
 Authorizations are permitted via scopes that the user has to confirm before
 using the requested service.
 
-Depending on the application type OAuth2 provides the following grants (flows):
+Depending on the application type OAuth 2.0 provides the following grants (flows):
 
-- Authorization Code Grant
-- Implicit Grant
-- Client Credentials Grant
-- Resource Owner Password Credentials Grant
+- https://tools.ietf.org/html/rfc6749#section-4.1[Authorization Code Grant]
+- https://tools.ietf.org/html/rfc7636[Authorization Code Grant with PKCE]
+- https://tools.ietf.org/html/rfc6749#section-4.2[Implicit Grant]
+- https://tools.ietf.org/html/rfc6749#section-4.3[Resource Owner Password Credentials Grant]
+- https://tools.ietf.org/html/rfc6749#section-4.4[Client Credentials Grant]
 
-OpenID Connect (OIDC) is buiuld upon OAuth2 and provides additional identity information
-to the scopes of OAuth2. For common enterprise applications OpenID Connect should be used.
-Nowadays OAuth2 is frequently used together with providing identity in JSON web tokens (JWT).
-But only OIDC specifies the use of JWT, OAuth2 does not.
+==== OpenID Connect 1.0
+
+https://openid.net/specs/openid-connect-core-1_0.html[OpenID Connect 1.0 (OIDC)] is build upon https://tools.ietf.org/html/rfc6749[OAuth2] and provides additional identity information
+to OAuth2. For common enterprise applications that typically require authentication OpenID Connect should be used.
+https://openid.net/specs/openid-connect-core-1_0.html[OIDC] adds https://tools.ietf.org/html/rfc7519[JSON web tokens (JWT)] as mandatory format for id tokens to the spec.
+In OAuth2 the format of https://tools.ietf.org/html/rfc6750[bearer tokens] is not specified.
 
 image::images/openid_roles.png[scaledwidth="50%", scaledheight="50%",alt="openid_roles"]
 
-OIDC adds an additional id token to the access token of OAuth2 and specifies
-a user info endpoint to retrieve further user information.
-With hybrid flow OIDC also adds one more grant (flow) to the existing ones of OAuth2.
+OIDC adds an id token in addition to the access token of OAuth2 and specifies
+a user info endpoint to retrieve further user information using the access token.
+
+OIDC supports the following grant flows:
+
+- https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth[Authorization Code Flow]
+- https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth[Implicit Flow]
+- https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth[Hybrid Flow]
+
+==== Tokens in OIDC and OAuth 2.0
+
+Tokens can be used in two ways:
+
+1. Self-contained token (containing all information directly in token payload, e.g. JWT)
+2. Reference token (token is used to look up further information)
 
 ==== OAuth2/OIDC in Spring Security 5
 
@@ -600,7 +618,9 @@ Spring Security 5.0 only provides the client side for servlet-based clients.
 Spring Security 5.1 adds the resource server support and reactive support
 for reactive clients and resource server as well.
 
-Spring Security 5.2 will add a basic OAuth2/OIDC authorization server again (for local dev
+Spring Security 5.2 adds client support for authorization code flow with PKCE.
+
+Spring Security 5.3 will add a basic OAuth2/OIDC authorization server again (for local dev
 and demos but not for productive use).
 
 Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
@@ -629,13 +649,19 @@ and Spring Security 5.x/Spring Boot 2.x.
 |(X)^3^
 |--
 |5.1
-|2.1.x
+|2.1.2
 |X^2^
 |X^4^
 |(X)^3^
 |X^5^
 |5.2
-|2.x
+|2.2.0
+|X^2^
+|X^4^
+|(X)^3^
+|X^5^
+|5.3
+|2.3.0
 |X^2^
 |X^4^
 |X^6^
@@ -653,9 +679,9 @@ together with https://github.com/spring-projects/spring-security-oauth2-boot[Spr
 
 [TIP]
 ====
-The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.2 will mainly suit for fast prototyping and demo
+The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.3 will mainly suit for fast prototyping and demo
 purposes. For production please use one of the https://openid.net/developers/certified/[officially certified] products like for example
-https://www.keycloak.org/[KeyCloak], https://github.com/cloudfoundry/uaa[UAA] or https://www.okta.com/products/single-sign-on/[Okta].
+https://www.keycloak.org/[KeyCloak], https://github.com/cloudfoundry/uaa[UAA], https://identityserver.io[IdentityServer], https://auth0.com[Auth0] or https://www.okta.com/products/single-sign-on/[Okta].
 ====
 
 You can find more information on building OAuth2 secured microservices with Spring Boot *1.5.x* in
