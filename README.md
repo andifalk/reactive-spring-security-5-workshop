@@ -1,9 +1,27 @@
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-brightgreen.svg)][1]
 [![Build Status](https://travis-ci.org/andifalk/reactive-spring-security-5-workshop.svg?branch=master)](https://travis-ci.org/andifalk/reactive-spring-security-5-workshop)
+![Release](https://img.shields.io/github/release/andifalk/reactive-spring-security-5-workshop.svg?style=flat)
 
-# Spring Security 5 Workshop
+# Reactive Spring Security 5 Workshop
 
 This is a hands-on workshop on securing a reactive Spring Boot 2.0 based web application using Spring Security 5.0.
+
+Topics that will be covered by this workshop are:
+
+* [Reactive Streams Programming](http://www.reactive-streams.org/) with [Project Reactor](https://projectreactor.io) and [Spring WebFlux](https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html)
+* [OWASP Top 10 Application Security Risks 2017](https://www.owasp.org/index.php/Top_10-2017_Top_10)
+* Base concepts of [Spring Security 5](https://spring.io/projects/spring-security) (i.e. Security Web Filter Chain)
+* Authentication
+* Authorization
+* Secure Password encryption and encryption upgrading
+* [Security Headers](https://securityheaders.com)
+* Coverage of common security challenges like
+  * Session fixation
+  * CSRF
+  * SQL injection
+  * XSS
+* Automated security testing
+* [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and [OpenID Connect 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 
 To start the workshop you need
 
