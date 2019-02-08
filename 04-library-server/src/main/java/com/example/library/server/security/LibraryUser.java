@@ -1,6 +1,6 @@
 package com.example.library.server.security;
 
-import com.example.library.server.business.UserResource;
+import com.example.library.server.dataaccess.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,31 +8,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class LibraryUser implements UserDetails {
+public class LibraryUser extends User implements UserDetails {
 
-    private final UserResource userResource;
-
-    public LibraryUser(UserResource userResource) {
-        this.userResource = userResource;
+    public LibraryUser(User user) {
+        super(user);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils
                 .commaSeparatedStringToAuthorityList(
-                        userResource.getRoles().stream()
+                        getRoles().stream()
                                 .map(rn -> "ROLE_" + rn.name())
                                 .collect(Collectors.joining(",")));
     }
 
     @Override
-    public String getPassword() {
-        return userResource.getPassword();
-    }
-
-    @Override
     public String getUsername() {
-        return userResource.getEmail();
+        return getEmail();
     }
 
     @Override
@@ -53,9 +46,5 @@ public class LibraryUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public UserResource getUserResource() {
-        return userResource;
     }
 }

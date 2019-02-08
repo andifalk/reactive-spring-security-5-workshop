@@ -25,12 +25,16 @@ public class UserService {
         this.modelMapper = modelMapper;
     }
 
-    public Mono<UserResource> findOneByEmail(String email) {
-        return userRepository.findOneByEmail(email).map(this::convert);
+    public Mono<User> findOneByEmail(String email) {
+        return userRepository.findOneByEmail(email);
     }
 
     public Mono<Void> create(Mono<UserResource> userResource) {
         return userRepository.insert(userResource.map(this::convert)).then();
+    }
+
+    public Mono<User> update(User user) {
+        return userRepository.save(user);
     }
 
     public Mono<UserResource> findById(UUID uuid) {

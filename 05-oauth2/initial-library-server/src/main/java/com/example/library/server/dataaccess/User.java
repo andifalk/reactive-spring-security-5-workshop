@@ -28,6 +28,10 @@ public class User {
     public User() {
     }
 
+    public User(User user) {
+        this(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getRoles());
+    }
+
     @PersistenceConstructor
     public User(UUID id, String email, String firstName, String lastName, List<Role> roles) {
         this.id = id;

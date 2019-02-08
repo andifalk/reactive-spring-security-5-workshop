@@ -45,19 +45,19 @@ public class BookService {
         }
 
         return bookRepository
-                .findById(uuid)
-                .log()
-                .flatMap(
-                        b ->
-                                userRepository
-                                        .findById(userId)
-                                        .flatMap(
-                                                u -> {
-                                                    b.doBorrow(u);
-                                                    return bookRepository.save(b).then();
-                                                })
-                                        .switchIfEmpty(Mono.empty()))
-                .switchIfEmpty(Mono.empty());
+            .findById(uuid)
+            .log()
+            .flatMap(
+                b ->
+                    userRepository
+                        .findById(userId)
+                        .flatMap(
+                            u -> {
+                              b.doBorrow(u);
+                              return bookRepository.save(b).then();
+                            })
+                        .switchIfEmpty(Mono.empty()))
+            .switchIfEmpty(Mono.empty());
     }
 
     @PreAuthorize("hasAuthority('SCOPE_user')")
@@ -68,19 +68,19 @@ public class BookService {
         }
 
         return bookRepository
-                .findById(uuid)
-                .log()
-                .flatMap(
-                        b ->
-                                userRepository
-                                        .findById(userId)
-                                        .flatMap(
-                                                u -> {
-                                                    b.doReturn(u);
-                                                    return bookRepository.save(b).then();
-                                                })
-                                        .switchIfEmpty(Mono.empty()))
-                .switchIfEmpty(Mono.empty());
+            .findById(uuid)
+            .log()
+            .flatMap(
+                b ->
+                    userRepository
+                        .findById(userId)
+                        .flatMap(
+                            u -> {
+                              b.doReturn(u);
+                              return bookRepository.save(b).then();
+                            })
+                        .switchIfEmpty(Mono.empty()))
+            .switchIfEmpty(Mono.empty());
     }
 
     public Flux<BookResource> findAll() {
