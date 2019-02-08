@@ -449,8 +449,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_workshop_organization">4. Workshop Organization</a></li>
 <li><a href="#_workshop_steps">5. Workshop Steps</a>
 <ul class="sectlevel2">
-<li><a href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a></li>
-<li><a href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></li>
+<li><a href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a>
+<ul class="sectlevel3">
+<li><a href="#_common_security_problems">5.1.1. Common Security Problems</a></li>
+</ul>
+</li>
+<li><a href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a>
+<ul class="sectlevel3">
+<li><a href="#_webfilter">5.2.1. WebFilter</a></li>
+<li><a href="#_webfilterchainproxy">5.2.2. WebFilterChainProxy</a></li>
+<li><a href="#_encrypting_passwords">5.2.3. Encrypting Passwords</a></li>
+<li><a href="#_persistent_user_storage">5.2.4. Persistent User Storage</a></li>
+<li><a href="#_automatic_password_encryption_updates">5.2.5. Automatic Password Encryption Updates</a></li>
+</ul>
+</li>
 <li><a href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></li>
 <li><a href="#_step_4_security_testing">5.4. Step 4: Security Testing</a></li>
 <li><a href="#_step_5_oauth2_openid_connect">5.5. Step 5: OAuth2/OpenID Connect</a>
@@ -978,6 +990,8 @@ All monitoring web endpoints can now only be accessed with an authenticated user
 See <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-actuator">Actuator Security</a>
 for details.</p>
 </div>
+<div class="sect3">
+<h4 id="_common_security_problems"><a class="anchor" href="#_common_security_problems"></a><a class="link" href="#_common_security_problems">5.1.1. Common Security Problems</a></h4>
 <div class="paragraph">
 <p>Additionally spring security improved the security of the web application automatically for:</p>
 </div>
@@ -1043,12 +1057,219 @@ dialog on the screen.</p>
 <p>Now let&#8217;s proceed to next step and start with customizing the authentication part.</p>
 </div>
 </div>
+</div>
 <div class="sect2">
 <h3 id="_step_2_customize_authentication"><a class="anchor" href="#_step_2_customize_authentication"></a><a class="link" href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a></h3>
 <div class="paragraph">
 <div class="title">Now it is time to start customizing the auto-configuration.</div>
 <p>The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.</p>
 </div>
+<div class="paragraph">
+<p>Before we start let&#8217;s look into some internal details how spring security works
+for the reactive web stack.</p>
+</div>
+<div class="sect3">
+<h4 id="_webfilter"><a class="anchor" href="#_webfilter"></a><a class="link" href="#_webfilter">5.2.1. WebFilter</a></h4>
+<div class="paragraph">
+<p>Like the <em>javax.servlet.Filter</em> in the blocking servlet-based web stack there is a comparable functionality
+in the reactive world: The <em>WebFilter</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">WebFilter</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>public interface WebFilter {
+
+	/**
+	 * Process the Web request and (optionally) delegate to the next
+	 * {@code WebFilter} through the given {@link WebFilterChain}.
+	 * @param exchange the current server exchange
+	 * @param chain provides a way to delegate to the next filter
+	 * @return {@code Mono&lt;Void&gt;} to indicate when request processing is complete
+	 */
+	Mono&lt;Void&gt; filter(ServerWebExchange exchange, WebFilterChain chain);
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By using the <em>WebFilter</em> you can add functionality that called around each request and response.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. Spring Security WebFilter</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Filter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AuthenticationWebFilter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performs authentication of a particular request</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AuthorizationWebFilter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Determines if an authenticated user has access to a specific object</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CorsWebFilter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handles CORS preflight requests and intercepts</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CsrfWebFilter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Applies &lt;a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)" &gt;CSRF&lt;/a&gt; protection using a synchronizer token pattern.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>To see how such a <em>WebFilter</em> works we will implement a simple <em>LoggingWebFilter</em>:</p>
+</div>
+<div class="listingblock">
+<div class="title">LoggingWebFilter</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.filter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+@Component
+public class LoggingWebFilter implements WebFilter {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(LoggingWebFilter.class);
+
+    @Override
+    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, WebFilterChain chain) {
+        LOGGER.info("Request {} called", exchange.getRequest().getPath().value());
+        return chain.filter(exchange);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_webfilterchainproxy"><a class="anchor" href="#_webfilterchainproxy"></a><a class="link" href="#_webfilterchainproxy">5.2.2. WebFilterChainProxy</a></h4>
+<div class="paragraph">
+<p>In step 1 we just used the auto configuration of Spring Boot.
+This configured default security settings as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">Default security configuration (with Spring Boot)</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>@Configuration
+class WebFluxSecurityConfiguration {
+   ...
+
+   /**
+	 * The default {@link ServerHttpSecurity} configuration.
+	 * @param http
+	 * @return
+	 */
+	private SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+		http
+			.authorizeExchange()
+				.anyExchange().authenticated();
+
+		if (isOAuth2Present &amp;&amp; OAuth2ClasspathGuard.shouldConfigure(this.context)) {
+			OAuth2ClasspathGuard.configure(this.context, http);
+		} else {
+			http
+				.httpBasic().and()
+				.formLogin();
+		}
+
+		SecurityWebFilterChain result = http.build();
+		return result;
+	}
+
+	...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see this uses a <em>SecurityWebFilterChain</em> as central component.</p>
+</div>
+<div class="listingblock">
+<div class="title">SecurityWebFilterChain</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>/**
+ * Defines a filter chain which is capable of being matched against a {@link ServerWebExchange} in order to decide
+ * whether it applies to that request.
+ *
+ * @author Rob Winch
+ * @since 5.0
+ */
+public interface SecurityWebFilterChain {
+
+	/**
+	 * Determines if this {@link SecurityWebFilterChain} matches the provided {@link ServerWebExchange}
+	 * @param exchange the {@link ServerWebExchange}
+	 * @return true if it matches, else false
+	 */
+	Mono&lt;Boolean&gt; matches(ServerWebExchange exchange);
+
+	/**
+	 * The {@link WebFilter} to use
+	 * @return
+	 */
+	Flux&lt;WebFilter&gt; getWebFilters();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To customize the spring security configuration you have to implement one or more
+of <em>SecurityWebFilterChain</em> configuration methods.</p>
+</div>
+<div class="paragraph">
+<p>These are handled centrally by the <em>WebFilterChainProxy</em> class.</p>
+</div>
+<div class="listingblock">
+<div class="title">WebFilterChainProxy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>public class WebFilterChainProxy implements WebFilter {
+	private final List&lt;SecurityWebFilterChain&gt; filters;
+
+	public WebFilterChainProxy(List&lt;SecurityWebFilterChain&gt; filters) {
+		this.filters = filters;
+	}
+
+	public WebFilterChainProxy(SecurityWebFilterChain... filters) {
+		this.filters = Arrays.asList(filters);
+	}
+
+	@Override
+	public Mono&lt;Void&gt; filter(ServerWebExchange exchange, WebFilterChain chain) { <i class="conum" data-value="1"></i><b>(1)</b>
+		return Flux.fromIterable(this.filters)
+				.filterWhen( securityWebFilterChain -&gt; securityWebFilterChain.matches(exchange))
+				.next()
+				.switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
+				.flatMap( securityWebFilterChain -&gt; securityWebFilterChain.getWebFilters()
+					.collectList()
+				)
+				.map( filters -&gt; new FilteringWebHandler(webHandler -&gt; chain.filter(webHandler), filters))
+				.map( handler -&gt; new DefaultWebFilterChain(handler) )
+				.flatMap( securedChain -&gt; securedChain.filter(exchange));
+	}
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Central point for spring security to step into reactive web requests</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_encrypting_passwords"><a class="anchor" href="#_encrypting_passwords"></a><a class="link" href="#_encrypting_passwords">5.2.3. Encrypting Passwords</a></h4>
 <div class="paragraph">
 <p>We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class <em>WebSecurityConfiguration</em> to package <em>com.example.library.server.config</em> having the following
@@ -1229,6 +1450,9 @@ public class DataInitializer implements CommandLineRunner {
 </tr>
 </table>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_persistent_user_storage"><a class="anchor" href="#_persistent_user_storage"></a><a class="link" href="#_persistent_user_storage">5.2.4. Persistent User Storage</a></h4>
 <div class="paragraph">
 <p>Now that we already have configured the encrypting part for passwords of our user storage
 we need to connect our own user store (the users already stored in the MongoDB) with spring security&#8217;s
@@ -1374,7 +1598,7 @@ replaced the default user with our own users from our MongoDB persistent storage
 <p>If you restart the application now you have to use the following user credentials to log in:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 1. User credentials</caption>
+<caption class="title">Table 2. User credentials</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -1403,6 +1627,12 @@ replaced the default user with our own users from our MongoDB persistent storage
 </tr>
 </tbody>
 </table>
+</div>
+<div class="sect3">
+<h4 id="_automatic_password_encryption_updates"><a class="anchor" href="#_automatic_password_encryption_updates"></a><a class="link" href="#_automatic_password_encryption_updates">5.2.5. Automatic Password Encryption Updates</a></h4>
+<div class="paragraph">
+<p>TODO</p>
+</div>
 <div class="paragraph">
 <p>This is the end of step 2 of the workshop.</p>
 </div>
@@ -1425,6 +1655,7 @@ replaced the default user with our own users from our MongoDB persistent storage
 for our application.</p>
 </div>
 </div>
+</div>
 <div class="sect2">
 <h3 id="_step_3_add_authorization"><a class="anchor" href="#_step_3_add_authorization"></a><a class="link" href="#_step_3_add_authorization">5.3. Step 3: Add Authorization</a></h3>
 <div class="paragraph">
@@ -1445,7 +1676,7 @@ by playing around with manipulated URL&#8217;s.</p>
 <p>Our required authorization rule matrix looks like this:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 2. Authorization rules for library-server</caption>
+<caption class="title">Table 3. Authorization rules for library-server</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2213,7 +2444,7 @@ that are used how to implement OAuth2/OIDC.</p>
 and Spring Security 5.x/Spring Boot 2.x.</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 3. OAuth2 support in Spring Security + Spring Boot</caption>
+<caption class="title">Table 4. OAuth2 support in Spring Security + Spring Boot</caption>
 <colgroup>
 <col style="width: 16.6666%;">
 <col style="width: 16.6666%;">
@@ -2389,7 +2620,7 @@ of Spring Security 5.1.</p>
 <p>These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 4. Microservice URL Adresses</caption>
+<caption class="title">Table 5. Microservice URL Adresses</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -2483,7 +2714,7 @@ the corresponding log output for UAA.</p>
 <p>The important information provided by this is:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 5. Identity Server Configuration</caption>
+<caption class="title">Table 6. Identity Server Configuration</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -3045,7 +3276,7 @@ After logging in you should get the current authenticated user info back from id
 <p>Here you can log in using one of these predefined users:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 6. User credentials</caption>
+<caption class="title">Table 7. User credentials</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -3213,7 +3444,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-03 15:55:14 CET
+Last updated 2019-02-08 19:59:07 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

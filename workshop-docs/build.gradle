@@ -30,7 +30,6 @@ asciidoctor {
     inputs.dir snippetsDir
     outputDir  targetDir
     separateOutputDirs false
-
 }
 
 repositories {

@@ -1,0 +1,29 @@
+[source,options="nowrap"]
+----
+public class WebFilterChainProxy implements WebFilter {
+	private final List<SecurityWebFilterChain> filters;
+
+	public WebFilterChainProxy(List<SecurityWebFilterChain> filters) {
+		this.filters = filters;
+	}
+
+	public WebFilterChainProxy(SecurityWebFilterChain... filters) {
+		this.filters = Arrays.asList(filters);
+	}
+
+	@Override
+	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) { # <1>
+		return Flux.fromIterable(this.filters)
+				.filterWhen( securityWebFilterChain -> securityWebFilterChain.matches(exchange))
+				.next()
+				.switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
+				.flatMap( securityWebFilterChain -> securityWebFilterChain.getWebFilters()
+					.collectList()
+				)
+				.map( filters -> new FilteringWebHandler(webHandler -> chain.filter(webHandler), filters))
+				.map( handler -> new DefaultWebFilterChain(handler) )
+				.flatMap( securedChain -> securedChain.filter(exchange));
+	}
+}
+----
+<1> Central point for spring security to step into reactive web requests

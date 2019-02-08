@@ -251,6 +251,8 @@ All monitoring web endpoints can now only be accessed with an authenticated user
 See https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-actuator[Actuator Security]
 for details.
 
+==== Common Security Problems
+
 Additionally spring security improved the security of the web application automatically for:
 
 * https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#ns-session-fixation[Session Fixation]:
@@ -289,6 +291,65 @@ Now let's proceed to next step and start with customizing the authentication par
 
 The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.
 
+Before we start let's look into some internal details how spring security works
+for the reactive web stack.
+
+==== WebFilter
+
+Like the _javax.servlet.Filter_ in the blocking servlet-based web stack there is a comparable functionality
+in the reactive world: The _WebFilter_.
+
+.WebFilter
+
+include::{snippets}/step-2-web-filter.adoc[]
+
+By using the _WebFilter_ you can add functionality that called around each request and response.
+
+.Spring Security WebFilter
+|===
+|Filter |Description
+|AuthenticationWebFilter
+|Performs authentication of a particular request
+|AuthorizationWebFilter
+|Determines if an authenticated user has access to a specific object
+|CorsWebFilter
+|Handles CORS preflight requests and intercepts
+|CsrfWebFilter
+|Applies <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)" >CSRF</a> protection using a synchronizer token pattern.
+|===
+
+To see how such a _WebFilter_ works we will implement a simple _LoggingWebFilter_:
+
+.LoggingWebFilter
+
+include::{snippets}/step-2-logging-web-filter.adoc[]
+
+==== WebFilterChainProxy
+
+In step 1 we just used the auto configuration of Spring Boot.
+This configured default security settings as follows:
+
+.Default security configuration (with Spring Boot)
+
+include::{snippets}/step-2-default-security-config.adoc[]
+
+As you can see this uses a _SecurityWebFilterChain_ as central component.
+
+.SecurityWebFilterChain
+
+include::{snippets}/step-2-security-web-filter-chain.adoc[]
+
+To customize the spring security configuration you have to implement one or more
+of _SecurityWebFilterChain_ configuration methods.
+
+These are handled centrally by the _WebFilterChainProxy_ class.
+
+.WebFilterChainProxy
+
+include::{snippets}/step-2-web-filter-chain-proxy.adoc[]
+
+==== Encrypting Passwords
+
 We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
 contents.
@@ -323,6 +384,8 @@ _PasswordEncoder_ we just have configured.
 .DataInitializer class
 
 include::{snippets}/step-2-data-initializer.adoc[]
+
+==== Persistent User Storage
 
 Now that we already have configured the encrypting part for passwords of our user storage
 we need to connect our own user store (the users already stored in the MongoDB) with spring security's
@@ -360,6 +423,10 @@ If you restart the application now you have to use the following user credential
 |admin
 |USER, CURATOR, ADMIN
 |===
+
+==== Automatic Password Encryption Updates
+
+TODO
 
 This is the end of step 2 of the workshop.
 

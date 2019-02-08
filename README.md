@@ -6,6 +6,8 @@
 
 This is a hands-on workshop on securing a reactive Spring Boot 2.0 based web application using Spring Security 5.0.
 
+## Topics
+
 Topics that will be covered by this workshop are:
 
 * [Reactive Streams Programming](http://www.reactive-streams.org/) with [Project Reactor](https://projectreactor.io) and [Spring WebFlux](https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html)
@@ -23,17 +25,17 @@ Topics that will be covered by this workshop are:
 * Automated security testing
 * [OAuth 2.0](https://tools.ietf.org/html/rfc6749) and [OpenID Connect 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 
-To start the workshop you need
+## Requirements
 
-[the workshop tutorial documentation (html)](https://andifalk.github.io/reactive-spring-security-5-workshop/)
+To start the workshop you need:
 
-or
+* [Java JDK version 8, 9 or 11](https://openjdk.java.net/install/)
+* A Java IDE ([Eclipse](https://www.eclipse.org/), [STS](https://spring.io/tools), [IntelliJ](https://www.jetbrains.com/idea/), [VS Code](https://code.visualstudio.com/), [NetBeans](https://netbeans.org/), ...)
+* To test the RESTful services on the command line [curl](https://curl.haxx.se/download.html) would be helpful to install
+* The workshop tutorial documentation ([html](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html) or [pdf](https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf))
+* [The initial reactive application to be made secure](https://github.com/andifalk/reactive-spring-security-5-workshop/tree/master/00-library-server)
 
-[the workshop tutorial documentation (pdf)](https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/index.pdf)
-
-and 
-
-[the initial application to be made secure](https://github.com/andifalk/reactive-spring-security-5-workshop/tree/master/00-library-server)
+## Workshop structure
 
 The workshop is split up into the following parts:
 
