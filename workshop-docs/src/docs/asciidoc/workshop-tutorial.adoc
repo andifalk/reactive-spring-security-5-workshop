@@ -315,7 +315,7 @@ By using the _WebFilter_ you can add functionality that called around each reque
 |CorsWebFilter
 |Handles CORS preflight requests and intercepts
 |CsrfWebFilter
-|Applies <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)" >CSRF</a> protection using a synchronizer token pattern.
+|Applies https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)[CSRF] protection using a synchronizer token pattern.
 |===
 
 To see how such a _WebFilter_ works we will implement a simple _LoggingWebFilter_:
