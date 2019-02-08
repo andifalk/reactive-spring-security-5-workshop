@@ -16,6 +16,7 @@ import java.util.UUID;
  * REST api for books.
  */
 @RestController
+@Validated
 public class BookRestController {
 
     private static final String PATH_VARIABLE_BOOK_ID = "bookId";
