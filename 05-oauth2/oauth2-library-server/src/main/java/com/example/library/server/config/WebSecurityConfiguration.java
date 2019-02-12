@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
@@ -30,7 +31,7 @@ public class WebSecurityConfiguration {
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer()
-                .jwt();
+                .jwt().jwtAuthenticationConverter(new ReactiveJwtAuthenticationConverterAdapter(new GrantedAuthoritiesGroupExtractor()));
         return http.build();
     }
 }

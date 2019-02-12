@@ -14,9 +14,7 @@ import java.util.Map;
 public class UserInfoRestController {
 
     @GetMapping("/userinfo")
-    Mono<Map<String, Object>> userInfo(
-            @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient,
-            @AuthenticationPrincipal OAuth2User oauth2User) {
+    Mono<Map<String, Object>> userInfo(@AuthenticationPrincipal OAuth2User oauth2User) {
         return Mono.just(oauth2User.getAttributes());
     }
 }

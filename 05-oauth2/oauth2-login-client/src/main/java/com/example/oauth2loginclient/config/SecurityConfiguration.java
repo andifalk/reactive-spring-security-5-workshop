@@ -15,26 +15,10 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
-        http
-                .authorizeExchange()
-                .pathMatchers("/", "/books/**", "/users/**").permitAll()
-                .anyExchange().authenticated()
-                .and()
+        http.authorizeExchange().anyExchange().authenticated().and()
                 .oauth2Login()
-                .and()
-                .formLogin()
                 .and()
                 .oauth2Client();
         return http.build();
-    }
-
-    @Bean
-    MapReactiveUserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("secret")
-                .roles("USER")
-                .build();
-        return new MapReactiveUserDetailsService(userDetails);
     }
 }

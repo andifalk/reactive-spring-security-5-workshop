@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
 
 @RestController
@@ -22,19 +23,18 @@ public class BookRestController {
 
   @GetMapping("/books")
   Flux<BookResource> books(
-      @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient) {
+      @RegisteredOAuth2AuthorizedClient("library-client") OAuth2AuthorizedClient authorizedClient) {
     return webClient
         .get()
         .uri("http://localhost:8080/books")
-        //.attributes(clientRegistrationId("uaa"))
-        .attributes(oauth2AuthorizedClient(authorizedClient))
+        .attributes(clientRegistrationId("library-client"))
         .retrieve()
         .bodyToFlux(BookResource.class);
   }
 
   @GetMapping("/users")
   Flux<UserResource> users(
-      @RegisteredOAuth2AuthorizedClient("uaa") OAuth2AuthorizedClient authorizedClient) {
+      @RegisteredOAuth2AuthorizedClient("library-client") OAuth2AuthorizedClient authorizedClient) {
     return webClient
         .get()
         .uri("http://localhost:8080/users")

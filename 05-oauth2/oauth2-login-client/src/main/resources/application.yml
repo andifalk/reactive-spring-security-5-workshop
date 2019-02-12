@@ -6,21 +6,12 @@ spring:
     oauth2:
       client:
         registration:
-          uaa:
-            provider: uaa-authserver
-            client-id: library
-            client-secret: secret
-            client-authentication-method: basic
-            authorization-grant-type: authorization_code
-            scopes: openid,profile,email,user,curator,admin
-            client-name: UAA Client
+          library-client:
+            provider: okta
+            client-id: 0oajbryix1d8ABX1i0h7
+            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl
             redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email, offline_access
         provider:
-          uaa-authserver:
-            authorization-uri: http://localhost:8090/uaa/oauth/authorize
-            token-uri: http://localhost:8090/uaa/oauth/token
-            user-info-uri: http://localhost:8090/uaa/userinfo
-            user-name-attribute: sub
-            jwk-set-uri: http://localhost:8090/uaa/token_keys
-
-
+          okta:
+            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7

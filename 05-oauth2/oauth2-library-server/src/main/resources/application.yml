@@ -10,10 +10,9 @@ spring:
   data:
     mongodb:
       port: 40495
-
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8090/uaa/oauth/token
+          issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7
 
