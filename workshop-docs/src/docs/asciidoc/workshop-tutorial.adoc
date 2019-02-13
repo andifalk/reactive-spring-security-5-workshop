@@ -904,6 +904,12 @@ identity server/authorization server to use.
 
 include::{snippets}/step-5-oauth2-resource-server-properties.adoc[]
 
+The issuer URI is used to retrieve the well known OpenID Connect configuration.
+
+.https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration
+
+include::{snippets}/step-5-well-known-oidc-config.adoc[]
+
 .WebSecurityConfiguration.java file
 
 include::{snippets}/step-5-oauth2-resource-server-websecurity.adoc[]

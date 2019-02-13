@@ -2840,7 +2840,7 @@ identity server/authorization server to use.</p>
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8090/uaa/oauth/token <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+          issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -2851,10 +2851,60 @@ identity server/authorization server to use.</p>
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>The issuer URI is used to retrieve the well known OpenID Connect configuration.</p>
+</div>
+<div class="listingblock">
+<div class="title"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration</a></div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>{
+  "issuer": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7",
+  "authorization_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize",
+  "token_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token",
+  "userinfo_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo",
+  "registration_endpoint": "https://dev-667216.oktapreview.com/oauth2/v1/clients",
+  "jwks_uri": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys",
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "code id_token",
+    "code token",
+    "id_token token",
+    "code id_token token"
+  ],
+  "response_modes_supported": [
+    "query",
+    "fragment",
+    "form_post",
+    "okta_post_message"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "implicit",
+    "refresh_token",
+    "password"
+  ],
+  ...
+}</code></pre>
+</div>
+</div>
 <div class="listingblock">
 <div class="title">WebSecurityConfiguration.java file</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code>@EnableWebFluxSecurity
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.config;
+
+import com.example.library.server.common.Role;
+import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
+import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
 
@@ -2866,7 +2916,7 @@ public class WebSecurityConfiguration {
                 .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .matchers(EndpointRequest.to("health")).permitAll()
                 .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasAuthority("SCOPE_admin") <i class="conum" data-value="1"></i><b>(1)</b>
+                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name()) <i class="conum" data-value="1"></i><b>(1)</b>
                 .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
                 .pathMatchers(HttpMethod.DELETE, "/books").hasAuthority("SCOPE_curator")
                 .pathMatchers("/users/**").hasAuthority("SCOPE_admin")
@@ -2874,7 +2924,9 @@ public class WebSecurityConfiguration {
                 .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer() <i class="conum" data-value="2"></i><b>(2)</b>
-                .jwt(); <i class="conum" data-value="3"></i><b>(3)</b>
+                .jwt() <i class="conum" data-value="3"></i><b>(3)</b>
+                .jwtAuthenticationConverter(new ReactiveJwtAuthenticationConverterAdapter(
+                        new GrantedAuthoritiesGroupExtractor())); <i class="conum" data-value="4"></i><b>(4)</b>
         return http.build();
     }
 }</code></pre>
@@ -2893,6 +2945,10 @@ public class WebSecurityConfiguration {
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>Configures JSON web token (JWT) handling for this resource server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Configures a JWT authentication converter acting as authorities extractor</td>
 </tr>
 </table>
 </div>
@@ -3409,7 +3465,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-13 22:39:45 CET
+Last updated 2019-02-13 23:00:36 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

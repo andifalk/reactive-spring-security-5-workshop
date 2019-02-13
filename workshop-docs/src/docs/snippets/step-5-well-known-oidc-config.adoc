@@ -1,0 +1,33 @@
+[source,options="nowrap"]
+----
+{
+  "issuer": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7",
+  "authorization_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize",
+  "token_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token",
+  "userinfo_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo",
+  "registration_endpoint": "https://dev-667216.oktapreview.com/oauth2/v1/clients",
+  "jwks_uri": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys",
+  "response_types_supported": [
+    "code",
+    "id_token",
+    "code id_token",
+    "code token",
+    "id_token token",
+    "code id_token token"
+  ],
+  "response_modes_supported": [
+    "query",
+    "fragment",
+    "form_post",
+    "okta_post_message"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "implicit",
+    "refresh_token",
+    "password"
+  ],
+  ...
+}
+----
+
