@@ -2,9 +2,6 @@
 ----
 package com.example.oauth2loginclient.config;
 
-...
-package com.example.oauth2loginclient.config;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
@@ -19,14 +16,15 @@ public class WebClientConfiguration {
     WebClient webClient(ReactiveClientRegistrationRepository clientRegistrationRepository,
                         ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
         ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = # <1>
-                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository, authorizedClientRepository);
-        oauth.setDefaultOAuth2AuthorizedClient(true); # <2>
+                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository,
+                                                                          authorizedClientRepository);
+        oauth.setDefaultClientRegistrationId("library-app"); # <2>
         return WebClient.builder()
                 .filter(oauth) # <3>
                 .build();
     }
 }
 ----
-<1> Creates a filter for handling all the OAuth2 token stuff (i.e. initiating the OAuth2 grant flow)
-<2> Flag to automatically include the token handling into all webclient calls (use with caution)
+<1> Creates a filter for handling all the OAuth2 token stuff (i.e. initiating the OAuth2 code grant flow)
+<2> Registration id for client for automatic token handling
 <3> Add the filter to webclient

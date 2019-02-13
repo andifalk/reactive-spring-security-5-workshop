@@ -451,7 +451,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_step_1_auto_configuration">5.1. Step 1: Auto Configuration</a>
 <ul class="sectlevel3">
-<li><a href="#_common_security_problems">5.1.1. Common Security Problems</a></li>
+<li><a href="#_login">5.1.1. Login</a></li>
+<li><a href="#_common_security_problems">5.1.2. Common Security Problems</a></li>
+<li><a href="#_logout">5.1.3. Logout</a></li>
 </ul>
 </li>
 <li><a href="#_step_2_customize_authentication">5.2. Step 2: Customize Authentication</a>
@@ -934,6 +936,8 @@ just continue using <em>02-library-server</em>.</p>
 <div class="paragraph">
 <p>Please start the application by running the class <em>LibraryServerApplication</em>.</p>
 </div>
+<div class="sect3">
+<h4 id="_login"><a class="anchor" href="#_login"></a><a class="link" href="#_login">5.1.1. Login</a></h4>
 <div class="imageblock">
 <div class="content">
 <img src="images/loginform.png" alt="owasp_top_10">
@@ -990,8 +994,9 @@ All monitoring web endpoints can now only be accessed with an authenticated user
 See <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-actuator">Actuator Security</a>
 for details.</p>
 </div>
+</div>
 <div class="sect3">
-<h4 id="_common_security_problems"><a class="anchor" href="#_common_security_problems"></a><a class="link" href="#_common_security_problems">5.1.1. Common Security Problems</a></h4>
+<h4 id="_common_security_problems"><a class="anchor" href="#_common_security_problems"></a><a class="link" href="#_common_security_problems">5.1.2. Common Security Problems</a></h4>
 <div class="paragraph">
 <p>Additionally spring security improved the security of the web application automatically for:</p>
 </div>
@@ -1026,6 +1031,9 @@ X-Frame-Options: DENY
 X-XSS-Protection: 1 ; mode=block</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_logout"><a class="anchor" href="#_logout"></a><a class="link" href="#_logout">5.1.3. Logout</a></h4>
 <div class="paragraph">
 <p>Spring security 5 also added a bit more user friendly logout functionality out of the box.
 If you direct your browser to <a href="http://localhost:8080/logout">localhost:8080/logout</a> you will see the following
@@ -1119,7 +1127,7 @@ in the reactive world: The <em>WebFilter</em>.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">CsrfWebFilter</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Applies &lt;a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)" &gt;CSRF&lt;/a&gt; protection using a synchronizer token pattern.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Applies <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)">CSRF</a> protection using a synchronizer token pattern.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2579,9 +2587,6 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>uaa</strong>: This is the OAuth2/OIDC identity management service of CloudFoundry which holds all users with their credentials.</p>
-</li>
-<li>
 <p><strong>initial-library-server</strong>: The reactive version of the library server (similar to previous workshop step <em>04-library-server</em>)</p>
 </li>
 <li>
@@ -3053,81 +3058,50 @@ To achieve this we add the following sections to the <em>application.yml</em> fi
     oauth2:
       client:
         registration:
-          uaa:
-            provider: uaa-authserver <i class="conum" data-value="1"></i><b>(1)</b>
-            client-id: library <i class="conum" data-value="2"></i><b>(2)</b>
-            client-secret: secret <i class="conum" data-value="3"></i><b>(3)</b>
-            client-authentication-method: basic <i class="conum" data-value="4"></i><b>(4)</b>
-            authorization-grant-type: authorization_code <i class="conum" data-value="5"></i><b>(5)</b>
-            scopes: openid,profile,email,user,curator,admin <i class="conum" data-value="6"></i><b>(6)</b>
-            client-name: UAA Client <i class="conum" data-value="7"></i><b>(7)</b>
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" <i class="conum" data-value="8"></i><b>(8)</b>
+          library-client: <i class="conum" data-value="1"></i><b>(1)</b>
+            provider: okta <i class="conum" data-value="2"></i><b>(2)</b>
+            client-id: 0oajbryix1d8ABX1i0h7 <i class="conum" data-value="3"></i><b>(3)</b>
+            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl <i class="conum" data-value="4"></i><b>(4)</b>
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" <i class="conum" data-value="5"></i><b>(5)</b>
+            scope: openid, profile, email, offline_access <i class="conum" data-value="6"></i><b>(6)</b>
         provider:
-          uaa-authserver: <i class="conum" data-value="9"></i><b>(9)</b>
-            authorization-uri: http://localhost:8090/uaa/oauth/authorize <i class="conum" data-value="10"></i><b>(10)</b>
-            token-uri: http://localhost:8090/uaa/oauth/token <i class="conum" data-value="11"></i><b>(11)</b>
-            user-info-uri: http://localhost:8090/uaa/userinfo <i class="conum" data-value="12"></i><b>(12)</b>
-            user-name-attribute: sub <i class="conum" data-value="13"></i><b>(13)</b>
-            jwk-set-uri: http://localhost:8090/uaa/token_keys <i class="conum" data-value="14"></i><b>(14)</b></code></pre>
+          okta: <i class="conum" data-value="7"></i><b>(7)</b>
+            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 <i class="conum" data-value="8"></i><b>(8)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>References the registered identity provider/authorization server to use for this OAuth2 client</td>
+<td>The registration id for the client</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The client id to use at the authorization server</td>
+<td>References the registered identity provider to use for this OAuth2 client</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The client secret to use at the authorization server</td>
+<td>The client id to use at the identity provider</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The authentication mode to use at the authorization server (may be basic or post)</td>
+<td>The client secret to use at the identity provider</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>The required OAuth2 flow, here the most commonly used flow <em>authorization_code</em> is used</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>The required OAuth2 scope to use at the authorization server</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>A human readable name for this OAuth2 login client configuration</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
 <td>The pattern to build the required redirect URL back from authorization server to this client</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="9"></i><b>9</b></td>
-<td>Name of the identity provider (in this case the local OAuth2 authorization server)</td>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The required OAuth2 scopes to use at the identity provider</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="10"></i><b>10</b></td>
-<td>The URI for authorizing the user at the authorization server (getting the authorization code)</td>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Name of the identity provider (Okta identity provider service)</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="11"></i><b>11</b></td>
-<td>The URI for getting a JWT token from the authorization server (exchanging the authorization code)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="12"></i><b>12</b></td>
-<td>The URI to access the claims/attributes of the authenticated end-user using the JWT access token from the authorization server</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="13"></i><b>13</b></td>
-<td>The name of the attribute returned in the user info that references the name or identifier of the end-user. (retrieved from the user-info-uri endpoint)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="14"></i><b>14</b></td>
-<td>URL pointing to the set of (rotating) public keys for verifying JWT signatures</td>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>The issuer URI for tokens (is used to read the identity provider configuration from <em><a href="https://&#8230;&#8203;/.well-known/openid-configuration" class="bare">https://&#8230;&#8203;/.well-known/openid-configuration</a></em>)</td>
 </tr>
 </table>
 </div>
@@ -3148,9 +3122,6 @@ The following code snippet shows how this is done:</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.config;
 
-...
-package com.example.oauth2loginclient.config;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
@@ -3165,8 +3136,9 @@ public class WebClientConfiguration {
     WebClient webClient(ReactiveClientRegistrationRepository clientRegistrationRepository,
                         ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
         ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = <i class="conum" data-value="1"></i><b>(1)</b>
-                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository, authorizedClientRepository);
-        oauth.setDefaultOAuth2AuthorizedClient(true); <i class="conum" data-value="2"></i><b>(2)</b>
+                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository,
+                                                                          authorizedClientRepository);
+        oauth.setDefaultClientRegistrationId("library-app"); <i class="conum" data-value="2"></i><b>(2)</b>
         return WebClient.builder()
                 .filter(oauth) <i class="conum" data-value="3"></i><b>(3)</b>
                 .build();
@@ -3178,11 +3150,11 @@ public class WebClientConfiguration {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Creates a filter for handling all the OAuth2 token stuff (i.e. initiating the OAuth2 grant flow)</td>
+<td>Creates a filter for handling all the OAuth2 token stuff (i.e. initiating the OAuth2 code grant flow)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Flag to automatically include the token handling into all webclient calls (use with caution)</td>
+<td>Registration id for client for automatic token handling</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -3203,9 +3175,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
@@ -3214,14 +3183,10 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
-        http
-                .authorizeExchange() <i class="conum" data-value="1"></i><b>(1)</b>
-                .pathMatchers("/", "/books/**", "/users/**").permitAll() <i class="conum" data-value="2"></i><b>(2)</b>
-                .anyExchange().authenticated()
+        http.authorizeExchange() <i class="conum" data-value="1"></i><b>(1)</b>
+                .anyExchange().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
                 .and()
                 .oauth2Login() <i class="conum" data-value="3"></i><b>(3)</b>
-                .and()
-                .formLogin()
                 .and()
                 .oauth2Client(); <i class="conum" data-value="4"></i><b>(4)</b>
         return http.build();
@@ -3237,15 +3202,15 @@ public class SecurityConfiguration {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Allow all client side endpoints</td>
+<td>Secure all client side endpoints</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Add OAuth2 login feature</td>
+<td>Add OAuth2/OIDC login feature</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Add OAuth2 standard client feature</td>
+<td>Add OAuth2/OIDC standard client feature</td>
 </tr>
 </table>
 </div>
@@ -3290,18 +3255,18 @@ After logging in you should get the current authenticated user info back from id
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">curator</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
 </tr>
 </tbody>
 </table>
@@ -3444,7 +3409,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-08 19:59:07 CET
+Last updated 2019-02-13 22:39:45 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

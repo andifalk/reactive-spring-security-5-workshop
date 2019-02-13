@@ -6,9 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
@@ -17,14 +14,10 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
-        http
-                .authorizeExchange() # <1>
-                .pathMatchers("/", "/books/**", "/users/**").permitAll() # <2>
-                .anyExchange().authenticated()
+        http.authorizeExchange() # <1>
+                .anyExchange().authenticated() # <2>
                 .and()
                 .oauth2Login() # <3>
-                .and()
-                .formLogin()
                 .and()
                 .oauth2Client(); # <4>
         return http.build();
@@ -32,6 +25,6 @@ public class SecurityConfiguration {
 }
 ----
 <1> Starting point for authorization rules (analogous to authorizeRequests in servlet world)
-<2> Allow all client side endpoints
-<3> Add OAuth2 login feature
-<4> Add OAuth2 standard client feature
+<2> Secure all client side endpoints
+<3> Add OAuth2/OIDC login feature
+<4> Add OAuth2/OIDC standard client feature

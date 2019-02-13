@@ -222,6 +222,8 @@ include::{snippets}/step-1-gradle-build.adoc[]
 
 Please start the application by running the class _LibraryServerApplication_.
 
+==== Login
+
 image::images/loginform.png[scaledwidth="40%", scaledheight="40%",alt="owasp_top_10"]
 
 If you browse to http://localhost:8080/books[localhost:8080/books] then you will notice
@@ -269,6 +271,8 @@ This automatically adds all recommended security response headers to all http re
 .default security response headers
 
 include::{snippets}/step-1-security-response-header.adoc[]
+
+==== Logout
 
 Spring security 5 also added a bit more user friendly logout functionality out of the box.
 If you direct your browser to http://localhost:8080/logout[localhost:8080/logout] you will see the following
@@ -772,8 +776,6 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.
 
 In the _05-oauth2_ project you will be provided the following sub-projects:
 
-* *uaa*: This is the OAuth2/OIDC identity management service of CloudFoundry which holds all users with their credentials.
-
 * *initial-library-server*: The reactive version of the library server (similar to previous workshop step _04-library-server_)
 
 * *initial-oauth2-login-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
@@ -996,14 +998,14 @@ Here you can log in using one of these predefined users:
 |===
 |User |Password |Roles
 |user@example.com
-|user
+|Library_access#1
 |USER
-|curator@example.com
-|curator
-|USER, CURATOR
 |admin@example.com
-|admin
+|Library_access#2
 |USER, CURATOR, ADMIN
+|curator@example.com
+|Library_access#3
+|USER, CURATOR
 |===
 
 You can now access http://localhost:8081/books[localhost:8081/books] as well.
