@@ -2,12 +2,10 @@
 ----
 dependencies {
     ...
-	compile('org.springframework.security:spring-security-oauth2-client') # <1>
-	compile('org.springframework.security:spring-security-oauth2-jose') # <2>
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-client') <1>
 	...
 }
 ----
-<1> This contains core classes and interfaces that provide support for the OAuth 2.0 Authorization Framework and for OpenID Connect Core 1.0
-<2> This contains Spring Security’s support for the JOSE (Javascript Object Signing and Encryption) framework. This is needed
-to support for example JSON Web Token (JWT)
+<1> Spring Boot starter for OAuth2 client including core OAuth2/OIDC client and JOSE (Javascript Object Signing and Encryption)
+framework to support for example JSON Web Token (JWT)
 

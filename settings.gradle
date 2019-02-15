@@ -1,4 +1,5 @@
 rootProject.name = 'reactive-spring-security-5-workshop'
+include '00-reactive-playground'
 include '00-library-server'
 include '01-library-server'
 include '02-library-server'
@@ -9,7 +10,6 @@ include '05-oauth2:initial-library-server'
 include '05-oauth2:oauth2-library-server'
 include '05-oauth2:oauth2-login-client'
 include '05-oauth2:initial-oauth2-login-client'
-include '05-oauth2:uaa'
 include 'workshop-docs'
-include 'reactive-playground'
+
 
