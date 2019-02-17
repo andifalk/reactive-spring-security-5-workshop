@@ -8,24 +8,26 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
+public class LibraryReactiveUserDetailsService
+    implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    public LibraryReactiveUserDetailsService(UserService userService) {
-        this.userService = userService;
-    }
+  public LibraryReactiveUserDetailsService(UserService userService) {
+    this.userService = userService;
+  }
 
-    @Override
-    public Mono<UserDetails> findByUsername(String username) {
-        return userService.findOneByEmail(username).map(LibraryUser::new);
-    }
+  @Override
+  public Mono<UserDetails> findByUsername(String username) {
+    return userService.findOneByEmail(username).map(LibraryUser::new);
+  }
 
-    @Override
-    public Mono<UserDetails> updatePassword(UserDetails user, String newPassword) {
-        return userService.findOneByEmail(user.getUsername())
-                .doOnSuccess(u -> u.setPassword(newPassword))
-                .flatMap(userService::update)
-                .map(LibraryUser::new);
-    }
+  @Override
+  public Mono<UserDetails> updatePassword(UserDetails user, String newPassword) {
+    return userService
+        .findOneByEmail(user.getUsername())
+        .doOnSuccess(u -> u.setPassword(newPassword))
+        .flatMap(userService::update)
+        .map(LibraryUser::new);
+  }
 }

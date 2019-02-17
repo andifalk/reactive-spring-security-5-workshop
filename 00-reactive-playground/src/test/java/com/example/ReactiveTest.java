@@ -2,20 +2,16 @@ package com.example;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
 
-public class ReactiveTest {
+class ReactiveTest {
 
-    @Test
-    void testSimple() {
-        Flux<String> aFlux = Flux.just("MyString");
-        //Flux<String> aFlux = Flux.just("MyString").log();
+  @Test
+  void testSimple() {
+    Flux<String> aFlux = Flux.just("MyString");
+    // Flux<String> aFlux = Flux.just("MyString").log();
 
-        aFlux.subscribe(
-                f -> System.out.println("Here's some value: " + f)
-        );
+    aFlux.subscribe(f -> System.out.println("Here's some value: " + f));
 
-        //StepVerifier.create(aFlux).expectNext("MyString").verifyComplete();
-    }
-
+    // StepVerifier.create(aFlux).expectNext("MyString").verifyComplete();
+  }
 }

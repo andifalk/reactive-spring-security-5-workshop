@@ -8,9 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebFluxSecurity
 public class WebSecurityConfiguration {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
 }

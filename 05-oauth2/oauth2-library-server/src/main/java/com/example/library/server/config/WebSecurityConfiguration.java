@@ -15,23 +15,34 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
 
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                .csrf().disable()
-                .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .matchers(EndpointRequest.to("health")).permitAll()
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name())
-                .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers(HttpMethod.DELETE, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers("/users/**").hasAuthority("SCOPE_admin")
-                .pathMatchers("/books/**").hasAuthority("SCOPE_user")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2ResourceServer()
-                .jwt().jwtAuthenticationConverter(new ReactiveJwtAuthenticationConverterAdapter(new GrantedAuthoritiesGroupExtractor()));
-        return http.build();
-    }
+  @Bean
+  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http.csrf()
+        .disable()
+        .authorizeExchange()
+        .matchers(PathRequest.toStaticResources().atCommonLocations())
+        .permitAll()
+        .matchers(EndpointRequest.to("health"))
+        .permitAll()
+        .matchers(EndpointRequest.to("info"))
+        .permitAll()
+        .matchers(EndpointRequest.toAnyEndpoint())
+        .hasRole(Role.ADMIN.name())
+        .pathMatchers(HttpMethod.POST, "/books")
+        .hasAuthority("SCOPE_curator")
+        .pathMatchers(HttpMethod.DELETE, "/books")
+        .hasAuthority("SCOPE_curator")
+        .pathMatchers("/users/**")
+        .hasAuthority("SCOPE_admin")
+        .pathMatchers("/books/**")
+        .hasAuthority("SCOPE_user")
+        .anyExchange()
+        .authenticated()
+        .and()
+        .oauth2ResourceServer()
+        .jwt()
+        .jwtAuthenticationConverter(
+            new ReactiveJwtAuthenticationConverterAdapter(new GrantedAuthoritiesGroupExtractor()));
+    return http.build();
+  }
 }

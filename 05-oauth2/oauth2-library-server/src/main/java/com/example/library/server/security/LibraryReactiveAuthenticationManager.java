@@ -8,15 +8,15 @@ import reactor.core.publisher.Mono;
 
 public class LibraryReactiveAuthenticationManager implements ReactiveAuthenticationManager {
 
-    private final ReactiveJwtDecoder jwtDecoder;
+  private final ReactiveJwtDecoder jwtDecoder;
 
-    public LibraryReactiveAuthenticationManager(ReactiveJwtDecoder jwtDecoder) {
-        Assert.notNull(jwtDecoder, "jwtDecoder cannot be null");
-        this.jwtDecoder = jwtDecoder;
-    }
+  public LibraryReactiveAuthenticationManager(ReactiveJwtDecoder jwtDecoder) {
+    Assert.notNull(jwtDecoder, "jwtDecoder cannot be null");
+    this.jwtDecoder = jwtDecoder;
+  }
 
-    @Override
-    public Mono<Authentication> authenticate(Authentication authentication) {
-        return null;
-    }
+  @Override
+  public Mono<Authentication> authenticate(Authentication authentication) {
+    return null;
+  }
 }

@@ -11,18 +11,17 @@ import reactor.core.publisher.Mono;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler
-    public Mono<ResponseEntity<String>> handle(RuntimeException ex) {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-        logger.error(ex.getMessage());
-        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-    }
+  @ExceptionHandler
+  public Mono<ResponseEntity<String>> handle(RuntimeException ex) {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+    logger.error(ex.getMessage());
+    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+  }
 
-    @ExceptionHandler
-    public Mono<ResponseEntity<String>> handle(Exception ex) {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-        logger.error(ex.getMessage());
-        return Mono.just(ResponseEntity.badRequest().build());
-    }
-
+  @ExceptionHandler
+  public Mono<ResponseEntity<String>> handle(Exception ex) {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+    logger.error(ex.getMessage());
+    return Mono.just(ResponseEntity.badRequest().build());
+  }
 }

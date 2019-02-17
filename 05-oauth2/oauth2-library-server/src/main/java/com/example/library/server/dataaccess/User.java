@@ -13,82 +13,79 @@ import java.util.UUID;
 @Document(collection = "users")
 public class User {
 
-    @Id
-    private UUID id;
+  @Id private UUID id;
 
-    @Indexed
-    private String email;
+  @Indexed private String email;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 
-    private List<Role> roles;
+  private List<Role> roles;
 
-    public User() {
-    }
+  public User() {}
 
-    public User(User user) {
-        this(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getRoles());
-    }
+  public User(User user) {
+    this(user.getId(), user.getEmail(), user.getFirstName(), user.getLastName(), user.getRoles());
+  }
 
-    @PersistenceConstructor
-    public User(UUID id, String email, String firstName, String lastName, List<Role> roles) {
-        this.id = id;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.roles = roles;
-    }
+  @PersistenceConstructor
+  public User(UUID id, String email, String firstName, String lastName, List<Role> roles) {
+    this.id = id;
+    this.email = email;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.roles = roles;
+  }
 
-    public UUID getId() {
-        return id;
-    }
+  public UUID getId() {
+    return id;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
+  public List<Role> getRoles() {
+    return roles;
+  }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+  public void setRoles(List<Role> roles) {
+    this.roles = roles;
+  }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("id", id)
-                .append("email", email)
-                .append("firstName", firstName)
-                .append("lastName", lastName)
-                .append("roles", roles)
-                .toString();
-    }
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("id", id)
+        .append("email", email)
+        .append("firstName", firstName)
+        .append("lastName", lastName)
+        .append("roles", roles)
+        .toString();
+  }
 }

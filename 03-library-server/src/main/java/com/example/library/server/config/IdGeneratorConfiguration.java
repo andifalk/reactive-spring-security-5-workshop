@@ -8,9 +8,8 @@ import org.springframework.util.JdkIdGenerator;
 @Configuration
 public class IdGeneratorConfiguration {
 
-    @Bean
-    public IdGenerator idGenerator() {
-        return new JdkIdGenerator();
-    }
-
+  @Bean
+  public IdGenerator idGenerator() {
+    return new JdkIdGenerator();
+  }
 }

@@ -9,14 +9,14 @@ import reactor.core.publisher.Mono;
 @Service
 public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsService {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    public LibraryReactiveUserDetailsService(UserService userService) {
-        this.userService = userService;
-    }
+  public LibraryReactiveUserDetailsService(UserService userService) {
+    this.userService = userService;
+  }
 
-    @Override
-    public Mono<UserDetails> findByUsername(String username) {
-        return userService.findOneByEmail(username).map(LibraryUser::new);
-    }
+  @Override
+  public Mono<UserDetails> findByUsername(String username) {
+    return userService.findOneByEmail(username).map(LibraryUser::new);
+  }
 }

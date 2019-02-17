@@ -26,7 +26,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 
 @ExtendWith(SpringExtension.class)
@@ -35,14 +37,13 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 @DisplayName("Verify book api")
 class BookApiIntegrationTests {
 
-  @Autowired
-  private WebTestClient webClient;
+  @Autowired private WebTestClient webClient;
 
-  @MockBean
-  private BookService bookService;
+  @MockBean private BookService bookService;
 
   // Base 64 encoded authorization header for credentials 'user:secret'
-  private String authorization = "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes());
+  private String authorization =
+      "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes());
 
   @Test
   @DisplayName("to get list of books")
@@ -71,13 +72,16 @@ class BookApiIntegrationTests {
         .isOk()
         .expectBody()
         .json(
-            "[{\"id\":\"" + bookId + "\",\"isbn\":\"1234566\",\"title\":\"title\",\"description\":\"description\",\"authors\":[\"Author\"],\"borrowed\":false,\"borrowedBy\":null}]")
-        .consumeWith(document("get-books",
+            "[{\"id\":\""
+                + bookId
+                + "\",\"isbn\":\"1234566\",\"title\":\"title\",\"description\":\"description\",\"authors\":[\"Author\"],\"borrowed\":false,\"borrowedBy\":null}]")
+        .consumeWith(
+            document(
+                "get-books",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
                 requestHeaders(
-                        headerWithName("Authorization").description(
-                                "Basic auth credentials"))));
+                    headerWithName("Authorization").description("Basic auth credentials"))));
   }
 
   @Test
@@ -98,20 +102,25 @@ class BookApiIntegrationTests {
                     null)));
 
     webClient
-            .get().uri("/books/{bookId}", bookId)
-            .accept(MediaType.APPLICATION_JSON)
-            .header("Authorization", authorization)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody()
-            .json(
-                    "{\"id\":\"" + bookId + "\",\"isbn\":\"1234566\",\"title\":\"title\",\"description\":\"description\",\"authors\":[\"Author\"],\"borrowed\":false,\"borrowedBy\":null}")
-            .consumeWith(document("get-book", preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint()),
-                    requestHeaders(
-                            headerWithName("Authorization").description(
-                                    "Basic auth credentials"))));
+        .get()
+        .uri("/books/{bookId}", bookId)
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Authorization", authorization)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .json(
+            "{\"id\":\""
+                + bookId
+                + "\",\"isbn\":\"1234566\",\"title\":\"title\",\"description\":\"description\",\"authors\":[\"Author\"],\"borrowed\":false,\"borrowedBy\":null}")
+        .consumeWith(
+            document(
+                "get-book",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("Basic auth credentials"))));
   }
 
   @Test
@@ -122,19 +131,21 @@ class BookApiIntegrationTests {
     given(bookService.deleteById(bookId)).willReturn(Mono.empty());
 
     webClient
-            .delete().uri("/books/{bookId}", bookId)
-            .accept(MediaType.APPLICATION_JSON)
-            .header("Authorization", authorization)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody()
-            .consumeWith(document("delete-book",
-                    preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint()),
-                    requestHeaders(
-                            headerWithName("Authorization").description(
-                                    "Basic auth credentials"))));
+        .delete()
+        .uri("/books/{bookId}", bookId)
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Authorization", authorization)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .consumeWith(
+            document(
+                "delete-book",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("Basic auth credentials"))));
   }
 
   @Test
@@ -144,19 +155,21 @@ class BookApiIntegrationTests {
     UUID bookId = UUID.randomUUID();
 
     webClient
-            .post().uri("/books/{bookId}/borrow", bookId)
-            .accept(MediaType.APPLICATION_JSON)
-            .header("Authorization", authorization)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody()
-            .consumeWith(document("borrow-book",
-                    preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint()),
-                    requestHeaders(
-                            headerWithName("Authorization").description(
-                                    "Basic auth credentials"))));
+        .post()
+        .uri("/books/{bookId}/borrow", bookId)
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Authorization", authorization)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .consumeWith(
+            document(
+                "borrow-book",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("Basic auth credentials"))));
   }
 
   @Test
@@ -166,19 +179,21 @@ class BookApiIntegrationTests {
     UUID bookId = UUID.randomUUID();
 
     webClient
-            .post().uri("/books/{bookId}/return", bookId)
-            .accept(MediaType.APPLICATION_JSON)
-            .header("Authorization", authorization)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody()
-            .consumeWith(document("return-book",
-                    preprocessRequest(prettyPrint()),
-                    preprocessResponse(prettyPrint()),
-                    requestHeaders(
-                            headerWithName("Authorization").description(
-                                    "Basic auth credentials"))));
+        .post()
+        .uri("/books/{bookId}/return", bookId)
+        .accept(MediaType.APPLICATION_JSON)
+        .header("Authorization", authorization)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .consumeWith(
+            document(
+                "return-book",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("Basic auth credentials"))));
   }
 
   @SuppressWarnings("unchecked")
@@ -188,7 +203,7 @@ class BookApiIntegrationTests {
 
     BookResource bookResource =
         new BookResource(
-                UUID.randomUUID(),
+            UUID.randomUUID(),
             "1234566",
             "title",
             "description",
@@ -196,28 +211,30 @@ class BookApiIntegrationTests {
             false,
             null);
 
-    given(bookService.create(any())).willAnswer(
-      i -> {
-        ((Mono<BookResource>) i.getArgument(0)).subscribe();
-        return Mono.empty();
-      }
-    );
+    given(bookService.create(any()))
+        .willAnswer(
+            i -> {
+              ((Mono<BookResource>) i.getArgument(0)).subscribe();
+              return Mono.empty();
+            });
 
     webClient
-            .post().uri("/books")
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("Authorization", authorization)
-            .body(BodyInserters.fromObject(
-                    new ObjectMapper().writeValueAsString(bookResource)))
-            .exchange()
-            .expectStatus()
-            .isCreated()
-            .expectBody().consumeWith(document("create-book",
-            preprocessRequest(prettyPrint()),
-            preprocessResponse(prettyPrint()),
-            requestHeaders(
-                    headerWithName("Authorization").description(
-                            "Basic auth credentials"))));
+        .post()
+        .uri("/books")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", authorization)
+        .body(BodyInserters.fromObject(new ObjectMapper().writeValueAsString(bookResource)))
+        .exchange()
+        .expectStatus()
+        .isCreated()
+        .expectBody()
+        .consumeWith(
+            document(
+                "create-book",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("Basic auth credentials"))));
   }
 }

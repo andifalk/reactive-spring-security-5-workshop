@@ -14,50 +14,51 @@ import java.util.UUID;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
-    private final ModelMapper modelMapper;
+  private final UserRepository userRepository;
+  private final IdGenerator idGenerator;
+  private final ModelMapper modelMapper;
 
-    @Autowired
-    public UserService(UserRepository userRepository, IdGenerator idGenerator, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
-        this.modelMapper = modelMapper;
-    }
+  @Autowired
+  public UserService(
+      UserRepository userRepository, IdGenerator idGenerator, ModelMapper modelMapper) {
+    this.userRepository = userRepository;
+    this.idGenerator = idGenerator;
+    this.modelMapper = modelMapper;
+  }
 
-    public Mono<User> findOneByEmail(String email) {
-        return userRepository.findOneByEmail(email);
-    }
+  public Mono<User> findOneByEmail(String email) {
+    return userRepository.findOneByEmail(email);
+  }
 
-    public Mono<Void> create(Mono<UserResource> userResource) {
-        return userRepository.insert(userResource.map(this::convert)).then();
-    }
+  public Mono<Void> create(Mono<UserResource> userResource) {
+    return userRepository.insert(userResource.map(this::convert)).then();
+  }
 
-    public Mono<User> update(User user) {
-        return userRepository.save(user);
-    }
+  public Mono<User> update(User user) {
+    return userRepository.save(user);
+  }
 
-    public Mono<UserResource> findById(UUID uuid) {
-        return userRepository.findById(uuid).map(this::convert);
-    }
+  public Mono<UserResource> findById(UUID uuid) {
+    return userRepository.findById(uuid).map(this::convert);
+  }
 
-    public Flux<UserResource> findAll() {
-        return userRepository.findAll().map(this::convert);
-    }
+  public Flux<UserResource> findAll() {
+    return userRepository.findAll().map(this::convert);
+  }
 
-    public Mono<Void> deleteById(UUID uuid) {
-        return userRepository.deleteById(uuid);
-    }
+  public Mono<Void> deleteById(UUID uuid) {
+    return userRepository.deleteById(uuid);
+  }
 
-    private UserResource convert(User u) {
-        return modelMapper.map(u, UserResource.class);
-    }
+  private UserResource convert(User u) {
+    return modelMapper.map(u, UserResource.class);
+  }
 
-    private User convert(UserResource ur) {
-        User user = modelMapper.map(ur, User.class);
-        if (user.getId() == null) {
-            user.setId(idGenerator.generateId());
-        }
-        return user;
+  private User convert(UserResource ur) {
+    User user = modelMapper.map(ur, User.class);
+    if (user.getId() == null) {
+      user.setId(idGenerator.generateId());
     }
+    return user;
+  }
 }

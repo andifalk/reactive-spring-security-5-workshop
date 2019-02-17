@@ -11,11 +11,11 @@ import reactor.core.publisher.Mono;
 @Component
 public class LoggingWebFilter implements WebFilter {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(LoggingWebFilter.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(LoggingWebFilter.class);
 
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        LOGGER.info("Request {} called", exchange.getRequest().getPath().value());
-        return chain.filter(exchange);
-    }
+  @Override
+  public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    LOGGER.info("Request {} called", exchange.getRequest().getPath().value());
+    return chain.filter(exchange);
+  }
 }

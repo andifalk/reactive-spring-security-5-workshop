@@ -10,35 +10,37 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
-public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
+public class LibraryReactiveUserDetailsService
+    implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LibraryReactiveUserDetailsService.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(LibraryReactiveUserDetailsService.class);
 
-    private final UserService userService;
+  private final UserService userService;
 
-    public LibraryReactiveUserDetailsService(UserService userService) {
-        this.userService = userService;
-    }
+  public LibraryReactiveUserDetailsService(UserService userService) {
+    this.userService = userService;
+  }
 
-    @Override
-    public Mono<UserDetails> findByUsername(String username) {
-        LOGGER.info("Finding user for user name {}", username);
+  @Override
+  public Mono<UserDetails> findByUsername(String username) {
+    LOGGER.info("Finding user for user name {}", username);
 
-        return userService.findOneByEmail(username).map(LibraryUser::new);
-    }
+    return userService.findOneByEmail(username).map(LibraryUser::new);
+  }
 
+  @Override
+  public Mono<UserDetails> updatePassword(UserDetails user, String newPassword) {
 
-    @Override
-    public Mono<UserDetails> updatePassword(UserDetails user, String newPassword) {
+    LOGGER.warn("Password upgrade for user with name '{}'", user.getUsername());
 
-        LOGGER.warn("Password upgrade for user with name '{}'", user.getUsername());
+    // Only for demo purposes. NEVER log passwords in production!!!
+    LOGGER.info("Password upgraded from '{}' to '{}'", user.getPassword(), newPassword);
 
-        // Only for demo purposes. NEVER log passwords in production!!!
-        LOGGER.info("Password upgraded from '{}' to '{}'", user.getPassword(), newPassword);
-
-        return userService.findOneByEmail(user.getUsername())
-                .doOnSuccess(u -> u.setPassword(newPassword))
-                .flatMap(userService::update)
-                .map(LibraryUser::new);
-    }
+    return userService
+        .findOneByEmail(user.getUsername())
+        .doOnSuccess(u -> u.setPassword(newPassword))
+        .flatMap(userService::update)
+        .map(LibraryUser::new);
+  }
 }

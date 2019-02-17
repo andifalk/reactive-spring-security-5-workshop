@@ -18,102 +18,105 @@ import java.util.UUID;
 @PreAuthorize("hasAnyAuthority('SCOPE_user', 'SCOPE_curator', 'SCOPE_admin')")
 public class BookService {
 
-    private final BookRepository bookRepository;
-    private final UserRepository userRepository;
-    private final IdGenerator idGenerator;
-    private final ModelMapper modelMapper;
+  private final BookRepository bookRepository;
+  private final UserRepository userRepository;
+  private final IdGenerator idGenerator;
+  private final ModelMapper modelMapper;
 
-    @Autowired
-    public BookService(BookRepository bookRepository, UserRepository userRepository,
-                       IdGenerator idGenerator, ModelMapper modelMapper) {
-        this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
-        this.idGenerator = idGenerator;
-        this.modelMapper = modelMapper;
+  @Autowired
+  public BookService(
+      BookRepository bookRepository,
+      UserRepository userRepository,
+      IdGenerator idGenerator,
+      ModelMapper modelMapper) {
+    this.bookRepository = bookRepository;
+    this.userRepository = userRepository;
+    this.idGenerator = idGenerator;
+    this.modelMapper = modelMapper;
+  }
+
+  @PreAuthorize("hasAuthority('SCOPE_curator')")
+  public Mono<Void> create(Mono<BookResource> bookResource) {
+    return bookRepository.insert(bookResource.map(this::convert)).then();
+  }
+
+  public Mono<BookResource> findById(UUID uuid) {
+    return bookRepository.findById(uuid).map(this::convert);
+  }
+
+  @PreAuthorize("hasAuthority('SCOPE_user')")
+  public Mono<Void> borrowById(UUID uuid, UUID userId) {
+
+    if (uuid == null || userId == null) {
+      return Mono.empty();
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_curator')")
-    public Mono<Void> create(Mono<BookResource> bookResource) {
-        return bookRepository.insert(bookResource.map(this::convert)).then();
+    return bookRepository
+        .findById(uuid)
+        .log()
+        .flatMap(
+            b ->
+                userRepository
+                    .findById(userId)
+                    .flatMap(
+                        u -> {
+                          b.doBorrow(u);
+                          return bookRepository.save(b).then();
+                        })
+                    .switchIfEmpty(Mono.empty()))
+        .switchIfEmpty(Mono.empty());
+  }
+
+  @PreAuthorize("hasAuthority('SCOPE_user')")
+  public Mono<Void> returnById(UUID uuid, UUID userId) {
+
+    if (uuid == null || userId == null) {
+      return Mono.empty();
     }
 
-    public Mono<BookResource> findById(UUID uuid) {
-        return bookRepository.findById(uuid).map(this::convert);
+    return bookRepository
+        .findById(uuid)
+        .log()
+        .flatMap(
+            b ->
+                userRepository
+                    .findById(userId)
+                    .flatMap(
+                        u -> {
+                          b.doReturn(u);
+                          return bookRepository.save(b).then();
+                        })
+                    .switchIfEmpty(Mono.empty()))
+        .switchIfEmpty(Mono.empty());
+  }
+
+  public Flux<BookResource> findAll() {
+    return bookRepository.findAll().map(this::convert);
+  }
+
+  @PreAuthorize("hasAuthority('SCOPE_curator')")
+  public Mono<Void> deleteById(UUID uuid) {
+    return bookRepository.deleteById(uuid).then();
+  }
+
+  private Book convert(BookResource br) {
+    UserResource borrowedBy = br.getBorrowedBy();
+    Book book = modelMapper.map(br, Book.class);
+    if (borrowedBy != null) {
+      book.doBorrow(modelMapper.map(borrowedBy, User.class));
     }
-
-    @PreAuthorize("hasAuthority('SCOPE_user')")
-    public Mono<Void> borrowById(UUID uuid, UUID userId) {
-
-        if (uuid == null || userId == null) {
-            return Mono.empty();
-        }
-
-        return bookRepository
-            .findById(uuid)
-            .log()
-            .flatMap(
-                b ->
-                    userRepository
-                        .findById(userId)
-                        .flatMap(
-                            u -> {
-                              b.doBorrow(u);
-                              return bookRepository.save(b).then();
-                            })
-                        .switchIfEmpty(Mono.empty()))
-            .switchIfEmpty(Mono.empty());
+    if (book.getId() == null) {
+      book.setId(idGenerator.generateId());
     }
+    return book;
+  }
 
-    @PreAuthorize("hasAuthority('SCOPE_user')")
-    public Mono<Void> returnById(UUID uuid, UUID userId) {
-
-        if (uuid == null || userId == null) {
-            return Mono.empty();
-        }
-
-        return bookRepository
-            .findById(uuid)
-            .log()
-            .flatMap(
-                b ->
-                    userRepository
-                        .findById(userId)
-                        .flatMap(
-                            u -> {
-                              b.doReturn(u);
-                              return bookRepository.save(b).then();
-                            })
-                        .switchIfEmpty(Mono.empty()))
-            .switchIfEmpty(Mono.empty());
+  private BookResource convert(Book b) {
+    User borrowedBy = b.getBorrowedBy();
+    BookResource bookResource = modelMapper.map(b, BookResource.class);
+    if (borrowedBy != null) {
+      bookResource.setBorrowedBy(modelMapper.map(borrowedBy, UserResource.class));
     }
-
-    public Flux<BookResource> findAll() {
-        return bookRepository.findAll().map(this::convert);
-    }
-
-    @PreAuthorize("hasAuthority('SCOPE_curator')")
-    public Mono<Void> deleteById(UUID uuid) {
-        return bookRepository.deleteById(uuid).then();
-    }
-
-    private Book convert(BookResource br) {
-        UserResource borrowedBy = br.getBorrowedBy();
-        Book book = modelMapper.map(br, Book.class);
-        if (borrowedBy != null) {
-            book.doBorrow(modelMapper.map(borrowedBy, User.class));
-        }
-        if (book.getId() == null) {
-            book.setId(idGenerator.generateId());
-        }
-        return book;
-    }
-
-    private BookResource convert(Book b) {
-        User borrowedBy = b.getBorrowedBy();
-        BookResource bookResource = modelMapper.map(b, BookResource.class);
-        if (borrowedBy != null) {
-            bookResource.setBorrowedBy(modelMapper.map(borrowedBy, UserResource.class));
-        }
-        return bookResource;
-    }
+    return bookResource;
+  }
 }

@@ -20,37 +20,49 @@ import java.net.URI;
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
 
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        return http
-                //.csrf().disable()
-                .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .matchers(EndpointRequest.to("health")).permitAll()
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name())
-                .pathMatchers(HttpMethod.POST, "/books").hasRole(Role.CURATOR.name())
-                .pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
-                .pathMatchers("/users/**").hasRole(Role.ADMIN.name())
-                .anyExchange().authenticated()
-                //.anyExchange().permitAll()
-                .and()
-                .httpBasic().and().formLogin().and()
-                .logout().logoutSuccessHandler(logoutSuccessHandler())
-                .and()
-                .build();
-    }
+  @Bean
+  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    return http
+        // .csrf().disable()
+        .authorizeExchange()
+        .matchers(PathRequest.toStaticResources().atCommonLocations())
+        .permitAll()
+        .matchers(EndpointRequest.to("health"))
+        .permitAll()
+        .matchers(EndpointRequest.to("info"))
+        .permitAll()
+        .matchers(EndpointRequest.toAnyEndpoint())
+        .hasRole(Role.ADMIN.name())
+        .pathMatchers(HttpMethod.POST, "/books")
+        .hasRole(Role.CURATOR.name())
+        .pathMatchers(HttpMethod.DELETE, "/books")
+        .hasRole(Role.CURATOR.name())
+        .pathMatchers("/users/**")
+        .hasRole(Role.ADMIN.name())
+        .anyExchange()
+        .authenticated()
+        // .anyExchange().permitAll()
+        .and()
+        .httpBasic()
+        .and()
+        .formLogin()
+        .and()
+        .logout()
+        .logoutSuccessHandler(logoutSuccessHandler())
+        .and()
+        .build();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
 
-    @Bean
-    public ServerLogoutSuccessHandler logoutSuccessHandler() {
-        RedirectServerLogoutSuccessHandler logoutSuccessHandler = new RedirectServerLogoutSuccessHandler();
-        logoutSuccessHandler.setLogoutSuccessUrl(URI.create("/books"));
-        return logoutSuccessHandler;
-    }
-
+  @Bean
+  public ServerLogoutSuccessHandler logoutSuccessHandler() {
+    RedirectServerLogoutSuccessHandler logoutSuccessHandler =
+        new RedirectServerLogoutSuccessHandler();
+    logoutSuccessHandler.setLogoutSuccessUrl(URI.create("/books"));
+    return logoutSuccessHandler;
+  }
 }

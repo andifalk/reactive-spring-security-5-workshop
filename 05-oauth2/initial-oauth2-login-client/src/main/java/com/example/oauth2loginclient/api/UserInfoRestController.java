@@ -9,8 +9,8 @@ import java.util.Map;
 @RestController
 public class UserInfoRestController {
 
-    @GetMapping("/userinfo")
-    Mono<Map<String, Object>> userInfo() {
-        return Mono.empty();
-    }
+  @GetMapping("/userinfo")
+  Mono<Map<String, Object>> userInfo() {
+    return Mono.empty();
+  }
 }

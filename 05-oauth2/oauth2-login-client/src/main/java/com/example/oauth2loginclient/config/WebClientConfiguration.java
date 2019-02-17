@@ -10,14 +10,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfiguration {
 
-    @Bean
-    WebClient webClient(ReactiveClientRegistrationRepository clientRegistrationRepository,
-                        ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
-        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
-                new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository, authorizedClientRepository);
-        oauth.setDefaultClientRegistrationId("library-app");
-        return WebClient.builder()
-                .filter(oauth)
-                .build();
-    }
+  @Bean
+  WebClient webClient(
+      ReactiveClientRegistrationRepository clientRegistrationRepository,
+      ServerOAuth2AuthorizedClientRepository authorizedClientRepository) {
+    ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
+        new ServerOAuth2AuthorizedClientExchangeFilterFunction(
+            clientRegistrationRepository, authorizedClientRepository);
+    oauth.setDefaultClientRegistrationId("library-app");
+    return WebClient.builder().filter(oauth).build();
+  }
 }

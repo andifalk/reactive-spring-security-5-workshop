@@ -9,28 +9,28 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-/**
- * Reactive router for users.
- */
+/** Reactive router for users. */
 @Configuration
 public class UserRouter {
 
-    @Bean
-    public RouterFunction<ServerResponse> route(UserHandler userHandler) {
+  @Bean
+  public RouterFunction<ServerResponse> route(UserHandler userHandler) {
 
-        return RouterFunctions
-                .route(RequestPredicates.GET("/users")
-                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
-                            userHandler::getAllUsers)
-                .andRoute(RequestPredicates.GET("/users/{userId}")
-                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
-                        userHandler::getUser)
-                .andRoute(RequestPredicates.POST("/users")
-                                .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON_UTF8)),
-                        userHandler::createUser)
-                .andRoute(RequestPredicates.DELETE("/users/{userId}")
-                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
-                        userHandler::deleteUser);
-    }
-
+    return RouterFunctions.route(
+            RequestPredicates.GET("/users")
+                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
+            userHandler::getAllUsers)
+        .andRoute(
+            RequestPredicates.GET("/users/{userId}")
+                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
+            userHandler::getUser)
+        .andRoute(
+            RequestPredicates.POST("/users")
+                .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON_UTF8)),
+            userHandler::createUser)
+        .andRoute(
+            RequestPredicates.DELETE("/users/{userId}")
+                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
+            userHandler::deleteUser);
+  }
 }

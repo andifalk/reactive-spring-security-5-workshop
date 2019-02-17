@@ -7,6 +7,5 @@ import java.util.UUID;
 
 public interface UserRepository extends ReactiveMongoRepository<User, UUID> {
 
-    Mono<User> findOneByEmail(String email);
-
+  Mono<User> findOneByEmail(String email);
 }
