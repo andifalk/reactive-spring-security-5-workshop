@@ -376,7 +376,11 @@ The _WebSecurityConfiguration_ implementation does two important things:
 
 include::{snippets}/step-2-password-encoder.adoc[]
 
-In spring security 5 creating an instance of the _DelegatingPasswordEncoder_ is much easier by using the class _PasswordEncoderFactories_.
+In spring security 5 creating an instance of the _DelegatingPasswordEncoder_ is much easier
+by using the class _PasswordEncoderFactories_. In past years several previously used password encryption algorithms
+have been broken (like _MD4_ or _MD5_). By using _PasswordEncoderFactories_ you always get a configured
+_PasswordEncoder_ that uses an _PasswordEncoder_ with a _state of the art_ encryption algorithm like _BCrypt_ at the time
+of creating this workshop.
 
 .DelegatingPasswordEncoder class
 
@@ -430,7 +434,43 @@ If you restart the application now you have to use the following user credential
 
 ==== Automatic Password Encryption Updates
 
-TODO
+We already looked into the _DelegatingPasswordEncoder_ and _PasswordEncoderFactories_. As these classes have knowledge
+about all encryption algorithms that are supported in spring security, the framework can detect
+an _outdated_ encryption algorithm. By extending our already existing _LibraryReactiveUserDetailsService_ class
+with the additionally provided interface _ReactiveUserDetailsPasswordService_ we can now enable an automatic
+password encryption upgrade mechanism.
+
+The _ReactiveUserDetailsPasswordService_ interface just defines one more operation.
+
+.ReactiveUserDetailsPasswordService interface
+
+include::{snippets}/step-2-reactive-user-details-password-service.adoc[]
+
+First we need a user having a password that is encrypted using an _outdated_ algorithm. We achieve this by modifying
+the existing _DataInitializer_ class.
+
+.DataInitializer class
+
+include::{snippets}/step-2-data-initializer-old-user.adoc[]
+
+To activate support for automatic password encryption upgrades we need to extend our existing
+_LibraryReactiveUserDetailsService_ class.
+
+.LibraryReactiveUserDetailsService class
+
+include::{snippets}/step-2-library-user-details-password-service.adoc[]
+
+Now restart the application and see what happens if we try to get the list of books using this new
+user (username='old@example.com', password='user').
+
+In the console you should see the log output showing the old _MD5_ password being updated to _bcrypt_ password.
+
+[CAUTION]
+====
+Never log any sensitive data like passwords, tokens etc., even in encrypted format. Also never put such sensitive data
+into your version control. And never let error details reach the client (via REST API or web application).
+Make sure you disable stacktraces in client error messages using property _server.error.include-stacktrace=never_
+====
 
 This is the end of step 2 of the workshop.
 

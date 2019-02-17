@@ -1360,7 +1360,11 @@ public interface PasswordEncoder {
 </table>
 </div>
 <div class="paragraph">
-<p>In spring security 5 creating an instance of the <em>DelegatingPasswordEncoder</em> is much easier by using the class <em>PasswordEncoderFactories</em>.</p>
+<p>In spring security 5 creating an instance of the <em>DelegatingPasswordEncoder</em> is much easier
+by using the class <em>PasswordEncoderFactories</em>. In past years several previously used password encryption algorithms
+have been broken (like <em>MD4</em> or <em>MD5</em>). By using <em>PasswordEncoderFactories</em> you always get a configured
+<em>PasswordEncoder</em> that uses an <em>PasswordEncoder</em> with a <em>state of the art</em> encryption algorithm like <em>BCrypt</em> at the time
+of creating this workshop.</p>
 </div>
 <div class="listingblock">
 <div class="title">DelegatingPasswordEncoder class</div>
@@ -1639,7 +1643,190 @@ replaced the default user with our own users from our MongoDB persistent storage
 <div class="sect3">
 <h4 id="_automatic_password_encryption_updates"><a class="anchor" href="#_automatic_password_encryption_updates"></a><a class="link" href="#_automatic_password_encryption_updates">5.2.5. Automatic Password Encryption Updates</a></h4>
 <div class="paragraph">
-<p>TODO</p>
+<p>We already looked into the <em>DelegatingPasswordEncoder</em> and <em>PasswordEncoderFactories</em>. As these classes have knowledge
+about all encryption algorithms that are supported in spring security, the framework can detect
+an <em>outdated</em> encryption algorithm. By extending our already existing <em>LibraryReactiveUserDetailsService</em> class
+with the additionally provided interface <em>ReactiveUserDetailsPasswordService</em> we can now enable an automatic
+password encryption upgrade mechanism.</p>
+</div>
+<div class="paragraph">
+<p>The <em>ReactiveUserDetailsPasswordService</em> interface just defines one more operation.</p>
+</div>
+<div class="listingblock">
+<div class="title">ReactiveUserDetailsPasswordService interface</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package org.springframework.security.core.userdetails;
+
+import reactor.core.publisher.Mono;
+
+public interface ReactiveUserDetailsPasswordService {
+
+	/**
+	 * Modify the specified user's password. This should change the user's password in the
+	 * persistent user repository (datbase, LDAP etc).
+	 *
+	 * @param user the user to modify the password for
+	 * @param newPassword the password to change to
+	 * @return the updated UserDetails with the new password
+	 */
+	Mono&lt;UserDetails&gt; updatePassword(UserDetails user, String newPassword);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First we need a user having a password that is encrypted using an <em>outdated</em> algorithm. We achieve this by modifying
+the existing <em>DataInitializer</em> class.</p>
+</div>
+<div class="listingblock">
+<div class="title">DataInitializer class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server;
+
+...
+
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
+
+...
+
+/** Store initial users and books in mongodb. */
+@Component
+public class DataInitializer implements CommandLineRunner {
+
+  ...
+
+  private static final UUID ENCRYPT_UPGRADE_USER_IDENTIFIER =
+      UUID.fromString("a7365322-0aac-4602-83b6-380bccb786e2"); <i class="conum" data-value="1"></i><b>(1)</b>
+
+  ...
+
+  private void createUsers() {
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    DelegatingPasswordEncoder oldPasswordEncoder =
+        new DelegatingPasswordEncoder(
+            "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5"))); <i class="conum" data-value="2"></i><b>(2)</b>
+
+    logger.info("Creating users with USER, CURATOR and ADMIN roles...");
+    userRepository
+        .saveAll(
+            Flux.just(
+                ...,
+                new User(   <i class="conum" data-value="3"></i><b>(3)</b>
+                    ENCRYPT_UPGRADE_USER_IDENTIFIER,
+                    "old@example.com",
+                    oldPasswordEncoder.encode("user"),
+                    "Library",
+                    "OldEncryption",
+                    Collections.singletonList(Role.USER))))
+        .log()
+        .then(userRepository.count())
+        .subscribe(c -&gt; logger.info("{} users created", c));
+  }
+
+  ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We need an additional user with a password using an old encryption.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>To encrypt a user with an <em>outdated</em> password we have to add an additional password encoder for <em>MD5</em> encryption.
+Never do such a thing in production. Always use the default <em>PasswordEncoderFactories</em> class instead</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Here we add another user with password encrypted by added <em>MD5</em> password encoder</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To activate support for automatic password encryption upgrades we need to extend our existing
+<em>LibraryReactiveUserDetailsService</em> class.</p>
+</div>
+<div class="listingblock">
+<div class="title">LibraryReactiveUserDetailsService class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.security;
+
+import com.example.library.server.business.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsPasswordService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+
+@Service
+public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsService, ReactiveUserDetailsPasswordService { <i class="conum" data-value="1"></i><b>(1)</b>
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LibraryReactiveUserDetailsService.class); <i class="conum" data-value="2"></i><b>(2)</b>
+
+    ...
+
+    @Override
+    public Mono&lt;UserDetails&gt; updatePassword(UserDetails user, String newPassword) { <i class="conum" data-value="3"></i><b>(3)</b>
+
+        LOGGER.warn("Password upgrade for user with name '{}'", user.getUsername());
+
+        // Only for demo purposes. NEVER log passwords in production!!!
+        LOGGER.info("Password upgraded from '{}' to '{}'", user.getPassword(), newPassword);
+
+        return userService.findOneByEmail(user.getUsername())
+                .doOnSuccess(u -&gt; u.setPassword(newPassword))
+                .flatMap(userService::update)
+                .map(LibraryUser::new);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>To provide our own user store we have to implement the spring security&#8217;s predefined interface <em>ReactiveUserDetailsService</em>
+which is the binding component between the authentication service and our <em>LibraryUser</em>. Now we also add <em>ReactiveUserDetailsPasswordService</em>
+to enable automatic password encryption upgrades</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>To log the password upgrade action here we provide a logger. Please note: NEVER log passwords in production!!</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This operation is called automatically by spring security if it detects a password that is encrypted using an
+<em>outdated</em> encryption algorithm like <em>MD5</em> message digest</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now restart the application and see what happens if we try to get the list of books using this new
+user (username='<a href="mailto:old@example.com">old@example.com</a>', password='user').</p>
+</div>
+<div class="paragraph">
+<p>In the console you should see the log output showing the old <em>MD5</em> password being updated to <em>bcrypt</em> password.</p>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Never log any sensitive data like passwords, tokens etc., even in encrypted format. Also never put such sensitive data
+into your version control. And never let error details reach the client (via REST API or web application).
+Make sure you disable stacktraces in client error messages using property <em>server.error.include-stacktrace=never</em></p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>This is the end of step 2 of the workshop.</p>
@@ -2975,8 +3162,7 @@ following required dependencies to the existing gradle build file.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>dependencies {
     ...
-	compile('org.springframework.security:spring-security-oauth2-client') <i class="conum" data-value="1"></i><b>(1)</b>
-	compile('org.springframework.security:spring-security-oauth2-jose') <i class="conum" data-value="2"></i><b>(2)</b>
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-client') <i class="conum" data-value="1"></i><b>(1)</b>
 	...
 }</code></pre>
 </div>
@@ -2985,12 +3171,8 @@ following required dependencies to the existing gradle build file.</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This contains core classes and interfaces that provide support for the OAuth 2.0 Authorization Framework and for OpenID Connect Core 1.0</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>This contains Spring Security’s support for the JOSE (Javascript Object Signing and Encryption) framework. This is needed
-to support for example JSON Web Token (JWT)</td>
+<td>Spring Boot starter for OAuth2 client including core OAuth2/OIDC client and JOSE (Javascript Object Signing and Encryption)
+framework to support for example JSON Web Token (JWT)</td>
 </tr>
 </table>
 </div>
@@ -3157,7 +3339,8 @@ To achieve this we add the following sections to the <em>application.yml</em> fi
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>The issuer URI for tokens (is used to read the identity provider configuration from <em><a href="https://&#8230;&#8203;/.well-known/openid-configuration" class="bare">https://&#8230;&#8203;/.well-known/openid-configuration</a></em>)</td>
+<td>The issuer URI for tokens (is used to read the identity provider configuration
+from <a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration</a>)</td>
 </tr>
 </table>
 </div>
@@ -3465,7 +3648,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-13 23:00:36 CET
+Last updated 2019-02-17 18:31:59 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

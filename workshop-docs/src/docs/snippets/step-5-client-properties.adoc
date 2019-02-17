@@ -22,5 +22,6 @@ spring:
 <5> The pattern to build the required redirect URL back from authorization server to this client
 <6> The required OAuth2 scopes to use at the identity provider
 <7> Name of the identity provider (Okta identity provider service)
-<8> The issuer URI for tokens (is used to read the identity provider configuration from _https://.../.well-known/openid-configuration_)
+<8> The issuer URI for tokens (is used to read the identity provider configuration
+    from https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration[https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration])
 

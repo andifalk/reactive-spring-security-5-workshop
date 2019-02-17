@@ -1,0 +1,55 @@
+[source,options="nowrap"]
+----
+package com.example.library.server;
+
+...
+
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
+
+...
+
+/** Store initial users and books in mongodb. */
+@Component
+public class DataInitializer implements CommandLineRunner {
+
+  ...
+
+  private static final UUID ENCRYPT_UPGRADE_USER_IDENTIFIER =
+      UUID.fromString("a7365322-0aac-4602-83b6-380bccb786e2"); # <1>
+
+  ...
+
+  private void createUsers() {
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    DelegatingPasswordEncoder oldPasswordEncoder =
+        new DelegatingPasswordEncoder(
+            "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5"))); # <2>
+
+    logger.info("Creating users with USER, CURATOR and ADMIN roles...");
+    userRepository
+        .saveAll(
+            Flux.just(
+                ...,
+                new User(   # <3>
+                    ENCRYPT_UPGRADE_USER_IDENTIFIER,
+                    "old@example.com",
+                    oldPasswordEncoder.encode("user"),
+                    "Library",
+                    "OldEncryption",
+                    Collections.singletonList(Role.USER))))
+        .log()
+        .then(userRepository.count())
+        .subscribe(c -> logger.info("{} users created", c));
+  }
+
+  ...
+}
+----
+<1> We need an additional user with a password using an old encryption.
+
+<2> To encrypt a user with an _outdated_ password we have to add an additional password encoder for _MD5_ encryption.
+    Never do such a thing in production. Always use the default _PasswordEncoderFactories_ class instead
+
+<3> Here we add another user with password encrypted by added _MD5_ password encoder
