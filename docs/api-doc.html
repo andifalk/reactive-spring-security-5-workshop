@@ -629,6 +629,14 @@ response.</p></td>
 further information.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>401 Unauthorized</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The request requires authentication which is not provided correctly.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>403 Forbidden</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The authenticated is not authorized to use the requested resource.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>404 Not Found</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The requested resource did not exist.</p></td>
 </tr>
@@ -675,7 +683,7 @@ This will create a new book in the library&#8217;s collection.</p>
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
     -d '{
-  &quot;id&quot; : &quot;2b7e5ed0-2066-461f-a611-dd0e6e866cbd&quot;,
+  &quot;id&quot; : &quot;3953074a-963b-4764-97c9-e9af880347e4&quot;,
   &quot;isbn&quot; : &quot;1234566&quot;,
   &quot;title&quot; : &quot;title&quot;,
   &quot;description&quot; : &quot;description&quot;,
@@ -698,7 +706,7 @@ Content-Length: 200
 Host: localhost:8080
 
 {
-  &quot;id&quot; : &quot;2b7e5ed0-2066-461f-a611-dd0e6e866cbd&quot;,
+  &quot;id&quot; : &quot;3953074a-963b-4764-97c9-e9af880347e4&quot;,
   &quot;isbn&quot; : &quot;1234566&quot;,
   &quot;title&quot; : &quot;title&quot;,
   &quot;description&quot; : &quot;description&quot;,
@@ -714,7 +722,7 @@ Host: localhost:8080
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="bash">$ echo '{
-  &quot;id&quot; : &quot;2b7e5ed0-2066-461f-a611-dd0e6e866cbd&quot;,
+  &quot;id&quot; : &quot;3953074a-963b-4764-97c9-e9af880347e4&quot;,
   &quot;isbn&quot; : &quot;1234566&quot;,
   &quot;title&quot; : &quot;title&quot;,
   &quot;description&quot; : &quot;description&quot;,
@@ -794,7 +802,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 X-XSS-Protection: 1 ; mode=block
 
 [ {
-  &quot;id&quot; : &quot;9f3a772e-34af-4c97-b9b9-8371d1c147ca&quot;,
+  &quot;id&quot; : &quot;059976fa-c775-4c8a-9df1-d43bd3b44a97&quot;,
   &quot;isbn&quot; : &quot;1234566&quot;,
   &quot;title&quot; : &quot;title&quot;,
   &quot;description&quot; : &quot;description&quot;,
@@ -816,7 +824,7 @@ request on the book&#8217;s <code>/books/{id}</code> resource.</p>
 <h5 id="get-book_curl_request"><a class="link" href="#get-book_curl_request">Curl request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/84b7d3a2-117e-4122-84ec-81084430a5dc' -i -u 'user:secret' -X GET \
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/a517c835-ab1d-4ef7-83bf-195374133eb7' -i -u 'user:secret' -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -825,7 +833,7 @@ request on the book&#8217;s <code>/books/{id}</code> resource.</p>
 <h5 id="get-book_httpie_request"><a class="link" href="#get-book_httpie_request">HTTPie request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' GET 'http://localhost:8080/books/84b7d3a2-117e-4122-84ec-81084430a5dc' \
+<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' GET 'http://localhost:8080/books/a517c835-ab1d-4ef7-83bf-195374133eb7' \
     'Accept:application/json'</code></pre>
 </div>
 </div>
@@ -834,7 +842,7 @@ request on the book&#8217;s <code>/books/{id}</code> resource.</p>
 <h5 id="get-book_http_request"><a class="link" href="#get-book_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight nowrap"><code data-lang="http">GET /books/84b7d3a2-117e-4122-84ec-81084430a5dc HTTP/1.1
+<pre class="CodeRay highlight nowrap"><code data-lang="http">GET /books/a517c835-ab1d-4ef7-83bf-195374133eb7 HTTP/1.1
 Accept: application/json
 Authorization: Basic dXNlcjpzZWNyZXQ=
 Host: localhost:8080</code></pre>
@@ -857,7 +865,7 @@ Content-Length: 200
 X-XSS-Protection: 1 ; mode=block
 
 {
-  &quot;id&quot; : &quot;84b7d3a2-117e-4122-84ec-81084430a5dc&quot;,
+  &quot;id&quot; : &quot;a517c835-ab1d-4ef7-83bf-195374133eb7&quot;,
   &quot;isbn&quot; : &quot;1234566&quot;,
   &quot;title&quot; : &quot;title&quot;,
   &quot;description&quot; : &quot;description&quot;,
@@ -880,7 +888,7 @@ of a <code>POST</code> request on the <code>/books/{id}/borrow</code> action res
 <h5 id="borrow-book_curl_request"><a class="link" href="#borrow-book_curl_request">Curl request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/dd3e428f-790b-4181-bcb7-9ab98f69c8eb/borrow' -i -u 'user:secret' -X POST \
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/25a5328a-b1b5-46a7-870a-f503199c772c/borrow' -i -u 'user:secret' -X POST \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -889,7 +897,7 @@ of a <code>POST</code> request on the <code>/books/{id}/borrow</code> action res
 <h5 id="borrow-book_httpie_request"><a class="link" href="#borrow-book_httpie_request">HTTPie request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' POST 'http://localhost:8080/books/dd3e428f-790b-4181-bcb7-9ab98f69c8eb/borrow' \
+<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' POST 'http://localhost:8080/books/25a5328a-b1b5-46a7-870a-f503199c772c/borrow' \
     'Accept:application/json'</code></pre>
 </div>
 </div>
@@ -898,7 +906,7 @@ of a <code>POST</code> request on the <code>/books/{id}/borrow</code> action res
 <h5 id="borrow-book_http_request"><a class="link" href="#borrow-book_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight nowrap"><code data-lang="http">POST /books/dd3e428f-790b-4181-bcb7-9ab98f69c8eb/borrow HTTP/1.1
+<pre class="CodeRay highlight nowrap"><code data-lang="http">POST /books/25a5328a-b1b5-46a7-870a-f503199c772c/borrow HTTP/1.1
 Accept: application/json
 Authorization: Basic dXNlcjpzZWNyZXQ=
 Host: localhost:8080</code></pre>
@@ -936,7 +944,7 @@ A book can be returned sending an empty <code>POST</code> request to the
 <h5 id="return-book_curl_request"><a class="link" href="#return-book_curl_request">Curl request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/6ce20f63-8619-45ce-90d7-22ac53e46252/return' -i -u 'user:secret' -X POST \
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/39421091-61c0-48c3-921a-e35a3f256594/return' -i -u 'user:secret' -X POST \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -945,7 +953,7 @@ A book can be returned sending an empty <code>POST</code> request to the
 <h5 id="return-book_httpie_request"><a class="link" href="#return-book_httpie_request">HTTPie request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' POST 'http://localhost:8080/books/6ce20f63-8619-45ce-90d7-22ac53e46252/return' \
+<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' POST 'http://localhost:8080/books/39421091-61c0-48c3-921a-e35a3f256594/return' \
     'Accept:application/json'</code></pre>
 </div>
 </div>
@@ -954,7 +962,7 @@ A book can be returned sending an empty <code>POST</code> request to the
 <h5 id="return-book_http_request"><a class="link" href="#return-book_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight nowrap"><code data-lang="http">POST /books/6ce20f63-8619-45ce-90d7-22ac53e46252/return HTTP/1.1
+<pre class="CodeRay highlight nowrap"><code data-lang="http">POST /books/39421091-61c0-48c3-921a-e35a3f256594/return HTTP/1.1
 Accept: application/json
 Authorization: Basic dXNlcjpzZWNyZXQ=
 Host: localhost:8080</code></pre>
@@ -991,7 +999,7 @@ X-XSS-Protection: 1 ; mode=block</code></pre>
 <h5 id="delete-book_curl_request"><a class="link" href="#delete-book_curl_request">Curl request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/7dfd0f01-5237-4b11-84ca-7acaa4046784' -i -u 'user:secret' -X DELETE \
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/books/32748712-9598-49b4-99f8-5fd8effb901f' -i -u 'user:secret' -X DELETE \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -1000,7 +1008,7 @@ X-XSS-Protection: 1 ; mode=block</code></pre>
 <h5 id="delete-book_httpie_request"><a class="link" href="#delete-book_httpie_request">HTTPie request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' DELETE 'http://localhost:8080/books/7dfd0f01-5237-4b11-84ca-7acaa4046784' \
+<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' DELETE 'http://localhost:8080/books/32748712-9598-49b4-99f8-5fd8effb901f' \
     'Accept:application/json'</code></pre>
 </div>
 </div>
@@ -1009,7 +1017,7 @@ X-XSS-Protection: 1 ; mode=block</code></pre>
 <h5 id="delete-book_http_request"><a class="link" href="#delete-book_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight nowrap"><code data-lang="http">DELETE /books/7dfd0f01-5237-4b11-84ca-7acaa4046784 HTTP/1.1
+<pre class="CodeRay highlight nowrap"><code data-lang="http">DELETE /books/32748712-9598-49b4-99f8-5fd8effb901f HTTP/1.1
 Accept: application/json
 Authorization: Basic dXNlcjpzZWNyZXQ=
 Host: localhost:8080</code></pre>
@@ -1053,7 +1061,7 @@ This will create a new user in the user&#8217;s collection.</p>
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
     -d '{
-  &quot;id&quot; : &quot;4ed772cc-c027-4e61-a9d1-b847130bb410&quot;,
+  &quot;id&quot; : &quot;3246f6b0-8e1d-48df-bd6a-0cad921eea90&quot;,
   &quot;email&quot; : &quot;test@example.com&quot;,
   &quot;firstName&quot; : &quot;first&quot;,
   &quot;lastName&quot; : &quot;last&quot;
@@ -1066,7 +1074,7 @@ This will create a new user in the user&#8217;s collection.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="bash">$ echo '{
-  &quot;id&quot; : &quot;4ed772cc-c027-4e61-a9d1-b847130bb410&quot;,
+  &quot;id&quot; : &quot;3246f6b0-8e1d-48df-bd6a-0cad921eea90&quot;,
   &quot;email&quot; : &quot;test@example.com&quot;,
   &quot;firstName&quot; : &quot;first&quot;,
   &quot;lastName&quot; : &quot;last&quot;
@@ -1088,7 +1096,7 @@ Content-Type: application/json
 Host: localhost:8080
 
 {
-  &quot;id&quot; : &quot;4ed772cc-c027-4e61-a9d1-b847130bb410&quot;,
+  &quot;id&quot; : &quot;3246f6b0-8e1d-48df-bd6a-0cad921eea90&quot;,
   &quot;email&quot; : &quot;test@example.com&quot;,
   &quot;firstName&quot; : &quot;first&quot;,
   &quot;lastName&quot; : &quot;last&quot;
@@ -1170,7 +1178,7 @@ X-XSS-Protection: 1 ; mode=block
 Content-Length: 135
 
 [ {
-  &quot;id&quot; : &quot;190ce83f-fc1d-4be9-9db1-a361cb1a4eab&quot;,
+  &quot;id&quot; : &quot;b745f25d-e4fd-4461-83dd-762e88df0231&quot;,
   &quot;email&quot; : &quot;test@example.com&quot;,
   &quot;firstName&quot; : &quot;first&quot;,
   &quot;lastName&quot; : &quot;last&quot;
@@ -1189,7 +1197,7 @@ request on the user&#8217;s <code>/users/{id}</code> resource:</p>
 <h5 id="get-user_curl_request"><a class="link" href="#get-user_curl_request">Curl request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/users/c5bc747f-6d8f-4d06-99d6-0e5589de144b' -i -u 'user:secret' -X GET \
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/users/acb34987-1102-426c-bf7c-98a058385a89' -i -u 'user:secret' -X GET \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -1198,7 +1206,7 @@ request on the user&#8217;s <code>/users/{id}</code> resource:</p>
 <h5 id="get-user_httpie_request"><a class="link" href="#get-user_httpie_request">HTTPie request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' GET 'http://localhost:8080/users/c5bc747f-6d8f-4d06-99d6-0e5589de144b' \
+<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' GET 'http://localhost:8080/users/acb34987-1102-426c-bf7c-98a058385a89' \
     'Accept:application/json'</code></pre>
 </div>
 </div>
@@ -1207,7 +1215,7 @@ request on the user&#8217;s <code>/users/{id}</code> resource:</p>
 <h5 id="get-user_http_request"><a class="link" href="#get-user_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight nowrap"><code data-lang="http">GET /users/c5bc747f-6d8f-4d06-99d6-0e5589de144b HTTP/1.1
+<pre class="CodeRay highlight nowrap"><code data-lang="http">GET /users/acb34987-1102-426c-bf7c-98a058385a89 HTTP/1.1
 Accept: application/json
 Authorization: Basic dXNlcjpzZWNyZXQ=
 Host: localhost:8080</code></pre>
@@ -1233,7 +1241,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 X-XSS-Protection: 1 ; mode=block
 
 {
-  &quot;id&quot; : &quot;c5bc747f-6d8f-4d06-99d6-0e5589de144b&quot;,
+  &quot;id&quot; : &quot;acb34987-1102-426c-bf7c-98a058385a89&quot;,
   &quot;email&quot; : &quot;test@example.com&quot;,
   &quot;firstName&quot; : &quot;first&quot;,
   &quot;lastName&quot; : &quot;last&quot;
@@ -1252,7 +1260,7 @@ X-XSS-Protection: 1 ; mode=block
 <h5 id="delete-user_curl_request"><a class="link" href="#delete-user_curl_request">Curl request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/users/09d6f466-8d8f-46fe-9ac9-28373fa5cfcc' -i -u 'user:secret' -X DELETE \
+<pre class="CodeRay highlight"><code data-lang="bash">$ curl 'http://localhost:8080/users/a18e5d7c-b255-4b10-be98-245c73ce13ab' -i -u 'user:secret' -X DELETE \
     -H 'Accept: application/json'</code></pre>
 </div>
 </div>
@@ -1261,7 +1269,7 @@ X-XSS-Protection: 1 ; mode=block
 <h5 id="delete-user_httpie_request"><a class="link" href="#delete-user_httpie_request">HTTPie request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' DELETE 'http://localhost:8080/users/09d6f466-8d8f-46fe-9ac9-28373fa5cfcc' \
+<pre class="CodeRay highlight"><code data-lang="bash">$ http --auth 'user:secret' DELETE 'http://localhost:8080/users/a18e5d7c-b255-4b10-be98-245c73ce13ab' \
     'Accept:application/json'</code></pre>
 </div>
 </div>
@@ -1270,7 +1278,7 @@ X-XSS-Protection: 1 ; mode=block
 <h5 id="delete-user_http_request"><a class="link" href="#delete-user_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight nowrap"><code data-lang="http">DELETE /users/09d6f466-8d8f-46fe-9ac9-28373fa5cfcc HTTP/1.1
+<pre class="CodeRay highlight nowrap"><code data-lang="http">DELETE /users/a18e5d7c-b255-4b10-be98-245c73ce13ab HTTP/1.1
 Accept: application/json
 Authorization: Basic dXNlcjpzZWNyZXQ=
 Host: localhost:8080</code></pre>
@@ -1302,7 +1310,7 @@ X-XSS-Protection: 1 ; mode=block</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-17 15:02:29 CET
+Last updated 2019-02-17 20:20:29 CET
 </div>
 </div>
 </body>

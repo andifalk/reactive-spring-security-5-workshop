@@ -474,7 +474,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_tokens_in_oidc_and_oauth_2_0">5.5.3. Tokens in OIDC and OAuth 2.0</a></li>
 <li><a href="#_oauth2_oidc_in_spring_security_5">5.5.4. OAuth2/OIDC in Spring Security 5</a></li>
 <li><a href="#_what_we_will_build">5.5.5. What we will build</a></li>
-<li><a href="#identity-server">5.5.6. UAA Identity Server</a></li>
+<li><a href="#identity-server">5.5.6. Okta Identity Server</a></li>
 <li><a href="#resource-server">5.5.7. Resource Server (Library-Server)</a></li>
 <li><a href="#oauth2-login-client">5.5.8. OAuth2 Login Client</a></li>
 </ul>
@@ -694,8 +694,10 @@ The packages of the application are organized as follows:</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>For users of IntelliJ you find http scripts to test all the RESTful services in sub directory <em>http</em>
-of all projects.</p>
+<p>To call the provided REST API you can use <a href="https://curl.haxx.se">curl</a> or <a href="https://httpie.org">httpie</a>.
+For details on how to call the REST API please consult
+the <a href="https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html">REST API documentation</a>
+which also provides sample requests for <em>curl</em> and <em>httpie</em>.</p>
 </div>
 </td>
 </tr>
@@ -873,7 +875,7 @@ There is a separate project for each step:</p>
 <p><strong>04-library-server</strong>: This adds automatic integration tests for authorization</p>
 </li>
 <li>
-<p><strong>05-oauth2</strong>: This adds an OAuth2/OIDC login client and resource server for interacting with an identity server for login</p>
+<p><strong>05-oauth2</strong>: This adds an OAuth2/OIDC login client and resource server for interacting with an identity service for login</p>
 </li>
 </ul>
 </div>
@@ -2774,7 +2776,7 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>initial-library-server</strong>: The reactive version of the library server (similar to previous workshop step <em>04-library-server</em>)</p>
+<p><strong>initial-library-server</strong>: The reactive version of the library server (almost similar to workshop step <em>00-library-server</em>)</p>
 </li>
 <li>
 <p><strong>initial-oauth2-login-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client</p>
@@ -2823,16 +2825,16 @@ of Spring Security 5.1.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">URL</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Management Server (UAA)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa" class="bare">http://localhost:8090/uaa</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Management Service (OKTA)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Library Client (OAuth2 Login Client)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081" class="bare">http://localhost:8081</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081">http://localhost:8081</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library-Server (OAuth2 Resource Server)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080" class="bare">http://localhost:8080</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library Server (OAuth2 Resource Server)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080">http://localhost:8080</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -2847,11 +2849,11 @@ a OAuth2 resource server and login client based on the project.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="identity-server"><a class="anchor" href="#identity-server"></a><a class="link" href="#identity-server">5.5.6. UAA Identity Server</a></h4>
+<h4 id="identity-server"><a class="anchor" href="#identity-server"></a><a class="link" href="#identity-server">5.5.6. Okta Identity Server</a></h4>
 <div class="paragraph">
-<p>For this workshop the OpenID Connect certified <a href="https://github.com/cloudfoundry/uaa">UAA identity server</a> is provided.
-UAA is an abbreviation for CloudFoundry User Account and Authentication.
-This server is issuing OAuth2/OIDC JSON web tokens.</p>
+<p>For this workshop the OpenID Connect certified <a href="https://www.okta.com/products/customer-identity/authentication/">OKTA identity provider service</a> is used.
+This service provides solutions for authentication, authorization and user administration.
+For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2869,38 +2871,11 @@ to find a suitable identity management server for your project.</p>
 </table>
 </div>
 <div class="paragraph">
-<p>To start the UAA component you need an installed <a href="https://tomcat.apache.org/">Apache Tomcat</a> server.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Please <a href="https://tomcat.apache.org/download-80.cgi">download</a> most current version of the Apache Tomcat 8.x line and
-extract the downloaded archive in a directory of your choice.</p>
-</li>
-<li>
-<p>Open the file <em>05-oauth2/uaa/build.gradle</em> and replace the path entry for <em>tomcatHomeDir</em> with the
-directory you have extracted the Apache Tomcat files into.</p>
-</li>
-<li>
-<p>Execute <code><code>./gradlew downloadUAA</code></code> to download required war file for UAA</p>
-</li>
-<li>
-<p>Execute <code><code>./gradlew cargoRunLocal</code></code> to start the UAA server</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>Wait until the UAA server has been started.
-If you see the output <code><code>Press Ctrl-C to stop the container</code></code> then UAA is ready.
-You can also look into the file <em>05-oauth2/uaa/uaa-server.log</em> to see
-the corresponding log output for UAA.</p>
+<p>Every OpenID Connect 1.0 compliant identity server must provide a page at the endpoint <em>/&#8230;&#8203;/.well-known/openid-configuration</em></p>
 </div>
 <div class="paragraph">
 <p>To see the configuration please open the following url in your web browser:
-(Every OpenID Connect compliant identity server must provide a page at the endpoint <em>/&#8230;&#8203;/.well-known/openid-configuration</em></p>
-</div>
-<div class="paragraph">
-<p><a href="http://localhost:8090/uaa/oauth/token/.well-known/openid-configuration" class="bare">http://localhost:8090/uaa/oauth/token/.well-known/openid-configuration</a></p>
+<a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration">Well known OIDC configuration</a></p>
 </div>
 <div class="paragraph">
 <p>The important information provided by this is:</p>
@@ -2921,27 +2896,60 @@ the corresponding log output for UAA.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">issuer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Issuer url for issued tokens by this identity server</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/oauth/token" class="bare">http://localhost:8090/uaa/oauth/token</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">authorization_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Handles authorization, usually asking for credentials and returns an authorization code</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/oauth/authorize" class="bare">http://localhost:8090/uaa/oauth/authorize</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">token_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Token endpoint (exchanges given authorization code for access token)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/oauth/token" class="bare">http://localhost:8090/uaa/oauth/token</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">userinfo_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endpoint for requesting further user information</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/userinfo" class="bare">http://localhost:8090/uaa/userinfo</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jwks_uri</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Uri for loading public keys to verify signatures of JSON web tokens</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8090/uaa/token_keys" class="bare">http://localhost:8090/uaa/token_keys</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The OKTA identity service has been preconfigured with the following user credentials for login:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 7. User credentials</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Roles</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
 </tr>
 </tbody>
 </table>
@@ -3005,8 +3013,8 @@ to support for example JSON Web Token (JWT)</td>
 <td class="content">
 <div class="paragraph">
 <p>You may look into the spring security oauth2 boot reference documentation
-<a href="https://docs.spring.io/spring-boot/docs/2.1.0.RC1/reference/htmlsingle/#boot-features-security-oauth2-server">Spring Boot 2.1 Reference Documentation</a>
-and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.1.RELEASE/reference/html5/#webflux-oauth2-resource-server">Spring Security 5.1.1 Reference Documentation</a> on how to implement a resource server.</p>
+<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-server">Spring Boot 2.1 Reference Documentation</a>
+and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/#webflux-oauth2-resource-server">Spring Security 5.1 Reference Documentation</a> on how to implement a resource server.</p>
 </div>
 </td>
 </tr>
@@ -3457,13 +3465,10 @@ public class SecurityConfiguration {
 <div class="sect4">
 <h5 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">Run all the components</a></h5>
 <div class="paragraph">
-<p>Finally start all three components:</p>
+<p>Finally start the two components:</p>
 </div>
 <div class="ulist">
 <ul>
-<li>
-<p>Run <em>UAA</em> server in project <em>05-oauth2/uaa</em></p>
-</li>
 <li>
 <p>Run <em>LibraryServerApplication</em> class in project <em>05-oauth2/initial-library-server</em></p>
 </li>
@@ -3473,14 +3478,14 @@ public class SecurityConfiguration {
 </ul>
 </div>
 <div class="paragraph">
-<p>Now when you access <a href="http://localhost:8081/userinfo">localhost:8081/userinfo</a> you should be redirected to the UAA identity server.
+<p>Now when you access <a href="http://localhost:8081/userinfo">localhost:8081/userinfo</a> you should be redirected to the OKTA identity server.
 After logging in you should get the current authenticated user info back from identity server.</p>
 </div>
 <div class="paragraph">
 <p>Here you can log in using one of these predefined users:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
-<caption class="title">Table 7. User credentials</caption>
+<caption class="title">Table 8. User credentials</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -3606,13 +3611,13 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 <p><a href="https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/">Spring Boot 1.5 Reference Guide</a></p>
 </li>
 <li>
-<p><a href="https://docs.spring.io/spring-boot/docs/2.1.0.RC1/reference/htmlsingle/">Spring Boot 2.1 Reference Guide</a></p>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/">Spring Boot 2.1 Reference Guide</a></p>
 </li>
 <li>
 <p><a href="https://docs.spring.io/spring-security/site/docs/4.2.x/reference/htmlsingle/">Spring Security 4.x Reference Guide</a></p>
 </li>
 <li>
-<p><a href="https://docs.spring.io/spring-security/site/docs/5.1.1.RELEASE/reference/html5/">Spring Security 5.1.1 Reference Guide</a></p>
+<p><a href="https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/">Spring Security 5.1 Reference Guide</a></p>
 </li>
 <li>
 <p><a href="https://projects.spring.io/spring-security-oauth/docs/oauth2.html"><em>Legacy</em> Spring Security OAuth Reference Guide</a></p>
@@ -3648,7 +3653,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-17 18:31:59 CET
+Last updated 2019-02-17 21:00:47 CET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
