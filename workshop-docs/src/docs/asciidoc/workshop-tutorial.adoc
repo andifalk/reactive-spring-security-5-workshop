@@ -31,6 +31,7 @@ This will be done in following steps:
 * A Java JDK (Java 8, 9 or 11 are supported and tested)
 * Any Java IDE capable of building with https://gradle.org/[Gradle] (IntelliJ, Eclipse, VS Code, ...)
 * Basic knowledge of https://www.reactivemanifesto.org[Reactive Systems] and reactive programming using https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux] & https://projectreactor.io[Reactor]
+* https://curl.haxx.se[Curl] or https://httpie.org[Httpie] to call the REST API from command line
 
 As we are building the samples using https://gradle.org[Gradle] your Java IDE should be capable use this.
 As IntelliJ user support for https://gradle.org/[Gradle] is included by default.
@@ -71,6 +72,8 @@ We will look at:
 - A6: Security Misconfiguration
 - A10: Insufficient Logging & Monitoring
 
+.OWASP Top 10 2017
+
 image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="owasp_top_10"]
 
 The https://owasp.org[Open Web Application Security Project] has plenty of further free resources available.
@@ -89,6 +92,8 @@ You will find more sources of information about security referenced in the appen
 In this workshop you will be provided a finished but completely unsecured reactive
 web application. This library server application provides a https://martinfowler.com/articles/richardsonMaturityModel.html[RESTful service] for administering books and users.
 
+.The workshop application
+
 image::images/workshop_lab_1.png[scaledwidth="75%",alt="Library service"]
 
 The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
@@ -105,6 +110,8 @@ The packages of the application are organized as follows:
 - *business*: All the service classes (quite simple for workshop, usually containing business logic)
 - *dataaccess*: All domain models and repositories
 - *config*: All spring configuration classes
+
+.Library service stack
 
 image::images/workshop_lab_2.png[scaledwidth="75%",alt="Library service stack"]
 
@@ -168,14 +175,14 @@ an onComplete signal or an onError signal.
 
 .Mono, an Asynchronous 0-1 Result (source: projectreactor.io)
 
-image::images/mono.png[scaledwidth="60%", scaledheight="60%",alt="reactor_mono"]
+image::images/mono.png[scaledwidth="70%", scaledheight="70%",alt="reactor_mono"]
 
 A _Flux<T>_ is a standard _Publisher<T>_ representing an asynchronous sequence of 0 to N emitted items,
 optionally terminated by either a completion signal or an error.
 
 .Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)
 
-image::images/flux.png[scaledwidth="60%", scaledheight="60%",alt="reactor_flux"]
+image::images/flux.png[scaledwidth="70%", scaledheight="70%",alt="reactor_flux"]
 
 ==== Spring WebFlux
 

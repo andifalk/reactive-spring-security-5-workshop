@@ -2,9 +2,9 @@
 ----
 dependencies {
     ...
-    compile('org.springframework.boot:spring-boot-starter-security') # <1>
+    implementation('org.springframework.boot:spring-boot-starter-security') # <1>
     ...
-    testCompile('org.springframework.security:spring-security-test') # <2>
+    testImplementation('org.springframework.security:spring-security-test') # <2>
 }
 ----
 <1> The spring boot starter for spring security
