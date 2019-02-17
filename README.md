@@ -44,7 +44,7 @@ The workshop is split up into the following parts:
 * [Step 2: Customize Authentication](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html#_step_2_customize_authentication)
 * [Step 3: Add Authorization](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html#_step_3_add_authorization)
 * [Step 4: Security Testing](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html#_step_4_security_testing)
-* [Step 5: OAuth2/OpenID Connect](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html#_step_5_oauth2)
+* [Step 5: OAuth2/OpenID Connect](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html#_step_5_oauth2_openid_connect)
 
 
 ## License
