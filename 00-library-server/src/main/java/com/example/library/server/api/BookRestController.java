@@ -54,7 +54,7 @@ public class BookRestController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/books")
-    public Mono<Void> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
+    public Mono<Void> createBook(@RequestBody Mono<BookResource> bookResource) {
         return bookService.create(bookResource);
     }
 

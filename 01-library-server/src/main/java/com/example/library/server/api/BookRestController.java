@@ -16,6 +16,7 @@ import java.util.UUID;
  * REST api for books.
  */
 @RestController
+@Validated
 public class BookRestController {
 
     private static final String PATH_VARIABLE_BOOK_ID = "bookId";
@@ -53,7 +54,7 @@ public class BookRestController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/books")
-    public Mono<Void> createBook(@Validated @RequestBody Mono<BookResource> bookResource) {
+    public Mono<Void> createBook(@RequestBody Mono<BookResource> bookResource) {
         return bookService.create(bookResource);
     }
 

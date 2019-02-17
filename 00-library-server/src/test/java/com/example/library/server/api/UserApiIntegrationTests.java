@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -27,18 +26,15 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
 @Import({UserHandler.class, UserRouter.class})
 @AutoConfigureRestDocs
 @DisplayName("Verify user api")
-@WithMockUser
 class UserApiIntegrationTests {
 
   @Autowired
@@ -47,6 +43,7 @@ class UserApiIntegrationTests {
   @MockBean
   private UserService userService;
 
+  @SuppressWarnings("unused")
   @MockBean
   private BookService bookService;
 
@@ -76,7 +73,8 @@ class UserApiIntegrationTests {
         .expectBody()
         .json(
             "[{\"id\":\"" + userId + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}]")
-        .consumeWith(document("get-users"));
+        .consumeWith(document("get-users", preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -103,7 +101,8 @@ class UserApiIntegrationTests {
             .isOk()
             .expectBody()
             .json("{\"id\":\"" + userId + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}")
-            .consumeWith(document("get-user"));
+            .consumeWith(document("get-user", preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -114,15 +113,13 @@ class UserApiIntegrationTests {
     given(userService.deleteById(userId)).willReturn(Mono.empty());
 
     webClient
-            .mutateWith(csrf())
             .delete().uri("/users/{userId}", userId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk()
             .expectBody()
-            .consumeWith(document("delete-user"));
-
-    verify(userService).deleteById(eq(userId));
+            .consumeWith(document("delete-user", preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
   }
 
   @SuppressWarnings("unchecked")
@@ -132,7 +129,7 @@ class UserApiIntegrationTests {
 
     UserResource userResource =
         new UserResource(
-            null,
+            UUID.randomUUID(),
             "test@example.com",
             "test",
             "first",
@@ -147,13 +144,13 @@ class UserApiIntegrationTests {
     );
 
     webClient
-            .mutateWith(csrf())
             .post().uri("/users").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromObject(
                     new ObjectMapper().writeValueAsString(userResource)))
             .exchange()
             .expectStatus()
             .isOk()
-            .expectBody().consumeWith(document("create-user"));
+            .expectBody().consumeWith(document("create-user", preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 }

@@ -20,8 +20,8 @@ public class UserRouter {
 
         return RouterFunctions
                 .route(RequestPredicates.GET("/users")
-                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
-                        userHandler::getAllUsers)
+                        .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
+                            userHandler::getAllUsers)
                 .andRoute(RequestPredicates.GET("/users/{userId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON_UTF8)),
                         userHandler::getUser)

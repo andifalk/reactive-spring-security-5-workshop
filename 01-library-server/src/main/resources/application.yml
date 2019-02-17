@@ -1,3 +1,4 @@
+
 management:
   endpoints:
     web:
@@ -10,6 +11,8 @@ spring:
   data:
     mongodb:
       port: 40495
-
+  security:
+    user:
+      password: secret
 
 

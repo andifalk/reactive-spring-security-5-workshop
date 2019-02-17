@@ -33,17 +33,17 @@ import static org.mockito.Mockito.when;
 @SpringJUnitConfig(OAuth2LibraryServerApplication.class)
 class BookServiceTest {
 
-    @Autowired
-    private BookService bookService;
+  @Autowired
+  private BookService bookService;
 
-    @MockBean
-    private BookRepository bookRepository;
+  @MockBean
+  private BookRepository bookRepository;
 
-    @MockBean
-    private UserRepository userRepository;
+  @MockBean
+  private UserRepository userRepository;
 
-    @MockBean
-    private IdGenerator idGenerator;
+  @MockBean
+  private IdGenerator idGenerator;
 
     @MockBean
     private ReactiveJwtDecoder reactiveJwtDecoder;

@@ -28,14 +28,14 @@ import static org.mockito.Mockito.when;
 @SpringJUnitConfig(OAuth2LibraryServerApplication.class)
 class UserServiceTest {
 
-    @Autowired
-    private UserService userService;
+  @Autowired
+  private UserService userService;
 
-    @MockBean
-    private UserRepository userRepository;
+  @MockBean
+  private UserRepository userRepository;
 
-    @MockBean
-    private IdGenerator idGenerator;
+  @MockBean
+  private IdGenerator idGenerator;
 
     @MockBean
     private ReactiveJwtDecoder reactiveJwtDecoder;

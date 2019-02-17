@@ -1,4 +1,5 @@
 = Library Server API Documentation
+Andreas Falk <andreas.falk@novatec-gmbh.de>
 
 == HTTP Verbs
 
@@ -51,34 +52,76 @@ further information.
 ==== Creating a new Book
 
 In order to create a book, the consumer needs to provide an `isbn` number, a
-a `title` and a `description` for the new book and `POST` them to `/books`:
+a `title` and a `description` for the new book and `POST` them to `/books`.
+This will create a new book in the library's collection.
+
+[[create-book_curl_request]]
+===== Curl request
+
+include::{snippets}/create-book/curl-request.adoc[]
+
+[[create-book_http_request]]
+===== HTTP request
 
 include::{snippets}/create-book/http-request.adoc[]
 
-This will create a new book in the library's collection.
+[[create-book_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/create-book/httpie-request.adoc[]
+
+[[create-book_http_response]]
+===== HTTP response
 
 include::{snippets}/create-book/http-response.adoc[]
 
 ==== Listing all existing Books
 
 All existing books of the library's collection can be retrieved with a `GET`
-request on the `/books` resource:
+request on the `/books` resource.
+
+[[get-books_curl_request]]
+===== Curl request
+
+include::{snippets}/get-books/curl-request.adoc[]
+
+[[get-books_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/get-books/httpie-request.adoc[]
+
+[[get-books_http_request]]
+===== HTTP request
 
 include::{snippets}/get-books/http-request.adoc[]
 
-If there are any books in the library the response would look something like
-this:
+[[get-books_http_response]]
+===== HTTP response
 
 include::{snippets}/get-books/http-response.adoc[]
 
 ==== Getting a Book
 
 An existing book of the library's collection can be retrieved with a `GET`
-request on the book's `/books/{id}` resource:
+request on the book's `/books/{id}` resource.
+
+[[get-book_curl_request]]
+===== Curl request
+
+include::{snippets}/get-book/curl-request.adoc[]
+
+[[get-book_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/get-book/httpie-request.adoc[]
+
+[[get-book_http_request]]
+===== HTTP request
 
 include::{snippets}/get-book/http-request.adoc[]
 
-The response contains an available book like this:
+[[get-book_http_response]]
+===== HTTP response
 
 include::{snippets}/get-book/http-response.adoc[]
 
@@ -88,7 +131,23 @@ In order to borrow a book it has to (1) exist and (2) not already be borrowed
 by someone else. A book can be borrowed by providing a `borrower` as part
 of a `POST` request on the `/books/{id}/borrow` action resource:
 
+[[borrow-book_curl_request]]
+===== Curl request
+
+include::{snippets}/borrow-book/curl-request.adoc[]
+
+[[borrow-book_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/borrow-book/httpie-request.adoc[]
+
+[[borrow-book_http_request]]
+===== HTTP request
+
 include::{snippets}/borrow-book/http-request.adoc[]
+
+[[borrow-book_http_response]]
+===== HTTP response
 
 If the book was successfully borrowed, the response would be something like
 this:
@@ -99,9 +158,25 @@ include::{snippets}/borrow-book/http-response.adoc[]
 
 In order to return a book it has to (1) exist and (2) be borrowed by someone.
 A book can be returned sending an empty `POST` request to the
-`/books/{id}/return` action resource:
+`/books/{id}/return` action resource.
+
+[[return-book_curl_request]]
+===== Curl request
+
+include::{snippets}/return-book/curl-request.adoc[]
+
+[[return-book_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/return-book/httpie-request.adoc[]
+
+[[return-book_http_request]]
+===== HTTP request
 
 include::{snippets}/return-book/http-request.adoc[]
+
+[[return-book_http_response]]
+===== HTTP response
 
 If the book was successfully returned, the response would be something like
 this:
@@ -111,9 +186,25 @@ include::{snippets}/return-book/http-response.adoc[]
 ==== Deleting a Book
 
 An existing book can be deleted with a `DELETE` request on the book's
-`/books/{id}` resource:
+`/books/{id}` resource.
+
+[[delete-book_curl_request]]
+===== Curl request
+
+include::{snippets}/delete-book/curl-request.adoc[]
+
+[[delete-book_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/delete-book/httpie-request.adoc[]
+
+[[delete-book_http_request]]
+===== HTTP request
 
 include::{snippets}/delete-book/http-request.adoc[]
+
+[[delete-book_http_response]]
+===== HTTP response
 
 Successful deletion is indicated with a response like this:
 
@@ -125,11 +216,28 @@ include::{snippets}/delete-book/http-response.adoc[]
 ==== Creating a new User
 
 In order to create a user, the consumer needs to provide an `email address`, `first name` and `last name` for the new user
-and `POST` them to `/users`:
+and `POST` them to `/users`.
+This will create a new user in the user's collection.
+
+[[create-user_curl_request]]
+===== Curl request
+
+include::{snippets}/create-user/curl-request.adoc[]
+
+[[create-user_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/create-user/httpie-request.adoc[]
+
+[[create-user_http_request]]
+===== HTTP request
 
 include::{snippets}/create-user/http-request.adoc[]
 
-This will create a new user in the user's collection.
+[[create-user_http_response]]
+===== HTTP response
+
+Successful deletion is indicated with a response like this:
 
 include::{snippets}/create-user/http-response.adoc[]
 
@@ -138,7 +246,23 @@ include::{snippets}/create-user/http-response.adoc[]
 All existing users of the user's collection can be retrieved with a `GET`
 request on the `/users` resource:
 
+[[get-users_curl_request]]
+===== Curl request
+
+include::{snippets}/get-users/curl-request.adoc[]
+
+[[get-users_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/get-users/httpie-request.adoc[]
+
+[[get-users_http_request]]
+===== HTTP request
+
 include::{snippets}/get-users/http-request.adoc[]
+
+[[get-users_http_response]]
+===== HTTP response
 
 If there are any users the response would look something like
 this:
@@ -150,7 +274,23 @@ include::{snippets}/get-users/http-response.adoc[]
 An existing user of the user's collection can be retrieved with a `GET`
 request on the user's `/users/{id}` resource:
 
+[[get-user_curl_request]]
+===== Curl request
+
+include::{snippets}/get-user/curl-request.adoc[]
+
+[[get-user_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/get-user/httpie-request.adoc[]
+
+[[get-user_http_request]]
+===== HTTP request
+
 include::{snippets}/get-user/http-request.adoc[]
+
+[[get-user_http_response]]
+===== HTTP response
 
 The response contains an available user like this:
 
@@ -159,11 +299,26 @@ include::{snippets}/get-user/http-response.adoc[]
 ==== Deleting a User
 
 An existing user can be deleted with a `DELETE` request on the user's
-`/users/{id}` resource:
+`/users/{id}` resource.
+
+[[delete-user_curl_request]]
+===== Curl request
+
+include::{snippets}/delete-user/curl-request.adoc[]
+
+[[delete-user_httpie_request]]
+===== HTTPie request
+
+include::{snippets}/delete-user/httpie-request.adoc[]
+
+[[delete-user_http_request]]
+===== HTTP request
 
 include::{snippets}/delete-user/http-request.adoc[]
+
+[[delete-user_http_response]]
+===== HTTP response
 
 Successful deletion is indicated with a response like this:
 
 include::{snippets}/delete-user/http-response.adoc[]
-

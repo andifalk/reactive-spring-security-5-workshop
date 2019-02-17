@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -23,17 +22,14 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest(BookRestController.class)
 @AutoConfigureRestDocs
 @DisplayName("Verify book api")
-@WithMockUser
 class BookApiIntegrationTests {
 
   @Autowired
@@ -69,7 +65,8 @@ class BookApiIntegrationTests {
         .expectBody()
         .json(
             "[{\"id\":\"" + bookId + "\",\"isbn\":\"1234566\",\"title\":\"title\",\"description\":\"description\",\"authors\":[\"Author\"],\"borrowed\":false,\"borrowedBy\":null}]")
-        .consumeWith(document("get-books"));
+        .consumeWith(document("get-books", preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -97,7 +94,8 @@ class BookApiIntegrationTests {
             .expectBody()
             .json(
                     "{\"id\":\"" + bookId + "\",\"isbn\":\"1234566\",\"title\":\"title\",\"description\":\"description\",\"authors\":[\"Author\"],\"borrowed\":false,\"borrowedBy\":null}")
-            .consumeWith(document("get-book"));
+            .consumeWith(document("get-book", preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -108,15 +106,13 @@ class BookApiIntegrationTests {
     given(bookService.deleteById(bookId)).willReturn(Mono.empty());
 
     webClient
-            .mutateWith(csrf())
             .delete().uri("/books/{bookId}", bookId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk()
             .expectBody()
-            .consumeWith(document("delete-book"));
-
-    verify(bookService).deleteById(eq(bookId));
+            .consumeWith(document("delete-book", preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -126,15 +122,13 @@ class BookApiIntegrationTests {
     UUID bookId = UUID.randomUUID();
 
     webClient
-            .mutateWith(csrf())
             .post().uri("/books/{bookId}/borrow", bookId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk()
             .expectBody()
-            .consumeWith(document("borrow-book"));
-
-    verify(bookService).borrowById(any(), any());
+            .consumeWith(document("borrow-book", preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -144,15 +138,13 @@ class BookApiIntegrationTests {
     UUID bookId = UUID.randomUUID();
 
     webClient
-            .mutateWith(csrf())
             .post().uri("/books/{bookId}/return", bookId).accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus()
             .isOk()
             .expectBody()
-            .consumeWith(document("return-book"));
-
-    verify(bookService).returnById(any(), any());
+            .consumeWith(document("return-book", preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint())));
   }
 
   @SuppressWarnings("unchecked")
@@ -162,7 +154,7 @@ class BookApiIntegrationTests {
 
     BookResource bookResource =
         new BookResource(
-            null,
+                UUID.randomUUID(),
             "1234566",
             "title",
             "description",
@@ -178,13 +170,13 @@ class BookApiIntegrationTests {
     );
 
     webClient
-            .mutateWith(csrf())
             .post().uri("/books").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromObject(
                     new ObjectMapper().writeValueAsString(bookResource)))
             .exchange()
             .expectStatus()
             .isCreated()
-            .expectBody().consumeWith(document("create-book"));
+            .expectBody().consumeWith(document("create-book", preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 }

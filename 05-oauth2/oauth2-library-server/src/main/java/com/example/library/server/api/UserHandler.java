@@ -5,6 +5,7 @@ import com.example.library.server.business.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -19,6 +20,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
  * Reactive handler for users.
  */
 @Component
+@Validated
 public class UserHandler {
 
     private final UserService userService;

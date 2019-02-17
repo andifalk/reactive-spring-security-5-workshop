@@ -34,6 +34,7 @@ To start the workshop you need:
 * To test the RESTful services on the command line [curl](https://curl.haxx.se/download.html) would be helpful to install
 * The workshop tutorial documentation ([html](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html) or [pdf](https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf))
 * [The initial reactive application to be made secure](https://github.com/andifalk/reactive-spring-security-5-workshop/tree/master/00-library-server)
+* The [REST API documentation](https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html) of the initial reactive application
 
 ## Workshop structure
 
