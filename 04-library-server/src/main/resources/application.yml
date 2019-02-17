@@ -10,6 +10,6 @@ spring:
   data:
     mongodb:
       port: 40495
-
-
-
+server:
+  error:
+    include-stacktrace: never

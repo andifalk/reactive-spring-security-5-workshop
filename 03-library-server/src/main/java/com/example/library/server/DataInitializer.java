@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -27,6 +29,8 @@ public class DataInitializer implements CommandLineRunner {
       UUID.fromString("40c5ad0d-41f7-494b-8157-33fad16012aa");
   private static final UUID ADMIN_IDENTIFIER =
       UUID.fromString("0d2c04f1-e25f-41b5-b4cd-3566a081200f");
+  private static final UUID ENCRYPT_UPGRADE_USER_IDENTIFIER =
+      UUID.fromString("a7365322-0aac-4602-83b6-380bccb786e2");
 
   private static final UUID BOOK_CLEAN_CODE_IDENTIFIER =
       UUID.fromString("f9bf70d6-e56d-4cab-be6b-294cd05f599f");
@@ -60,6 +64,10 @@ public class DataInitializer implements CommandLineRunner {
   private void createUsers() {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    DelegatingPasswordEncoder oldPasswordEncoder =
+        new DelegatingPasswordEncoder(
+            "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5")));
+
     logger.info("Creating users with USER, CURATOR and ADMIN roles...");
     userRepository
         .saveAll(
@@ -84,7 +92,14 @@ public class DataInitializer implements CommandLineRunner {
                     passwordEncoder.encode("admin"),
                     "Library",
                     "Administrator",
-                    Arrays.asList(Role.USER, Role.CURATOR, Role.ADMIN))))
+                    Arrays.asList(Role.USER, Role.CURATOR, Role.ADMIN)),
+                new User(
+                    ENCRYPT_UPGRADE_USER_IDENTIFIER,
+                    "old@example.com",
+                    oldPasswordEncoder.encode("user"),
+                    "Library",
+                    "OldEncryption",
+                    Collections.singletonList(Role.USER))))
         .log()
         .then(userRepository.count())
         .subscribe(c -> logger.info("{} users created", c));

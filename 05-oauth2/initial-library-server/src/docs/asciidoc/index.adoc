@@ -41,6 +41,12 @@ response.
 | The request was malformed. The response body will include an error providing
 further information.
 
+| `401 Unauthorized`
+| The request requires authentication which is not provided correctly.
+
+| `403 Forbidden`
+| The authenticated is not authorized to use the requested resource.
+
 | `404 Not Found`
 | The requested resource did not exist.
 |===
@@ -209,7 +215,6 @@ include::{snippets}/delete-book/http-request.adoc[]
 Successful deletion is indicated with a response like this:
 
 include::{snippets}/delete-book/http-response.adoc[]
-
 
 === Users
 

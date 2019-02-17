@@ -47,16 +47,14 @@ further information.
 
 == Security
 
-All REST API endpoints are secured by basic authentication.
-To access the endpoints each request must include an
-_Authorization_ header of type _Basic_.
+All REST API endpoints are secured by bearer tokens in https://tools.ietf.org/html/rfc7519[JWT] format.
+To access the endpoints each request must include an _Authorization_ header of type _Bearer_.
 
 ```
-Authorization: Basic dXNlcjpzZWNyZXQ=
+Authorization: Bearer dXNlcjpzZWNyZXQuzhgngZHnhgghhggh...
 ```
 
-All POST and DELETE requests of the REST API also
-require a https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)[CSRF] token.
+To get such token you have to interact with the identity provider service.
 
 == Resources
 

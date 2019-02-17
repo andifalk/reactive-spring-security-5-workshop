@@ -106,8 +106,10 @@ The packages of the application are organized as follows:
 
 [NOTE]
 ====
-For users of IntelliJ you find http scripts to test all the RESTful services in sub directory _http_
-of all projects.
+To call the provided REST API you can use https://curl.haxx.se[curl] or https://httpie.org[httpie].
+For details on how to call the REST API please consult
+the https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html[REST API documentation]
+which also provides sample requests for _curl_ and _httpie_.
 ====
 
 There are three target user roles for this application:
@@ -195,7 +197,7 @@ There is a separate project for each step:
 * **02-library-server**: This adds a persistent user store for authentication
 * **03-library-server**: This adds custom authentication and authorization rules
 * **04-library-server**: This adds automatic integration tests for authorization
-* **05-oauth2**: This adds an OAuth2/OIDC login client and resource server for interacting with an identity server for login
+* **05-oauth2**: This adds an OAuth2/OIDC login client and resource server for interacting with an identity service for login
 
 == Workshop Steps
 
@@ -816,7 +818,7 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.
 
 In the _05-oauth2_ project you will be provided the following sub-projects:
 
-* *initial-library-server*: The reactive version of the library server (similar to previous workshop step _04-library-server_)
+* *initial-library-server*: The reactive version of the library server (almost similar to workshop step _00-library-server_)
 
 * *initial-oauth2-login-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
 
@@ -838,12 +840,12 @@ These microservices have to be configured to be reachable via the following URL 
 .Microservice URL Adresses
 |===
 |Microservice |URL
-|Identity Management Server (UAA)
-|http://localhost:8090/uaa
+|Identity Management Service (OKTA)
+|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7[https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7]
 |Library Client (OAuth2 Login Client)
-|http://localhost:8081
-|Library-Server (OAuth2 Resource Server)
-|http://localhost:8080
+|http://localhost:8081[http://localhost:8081]
+|Library Server (OAuth2 Resource Server)
+|http://localhost:8080[http://localhost:8080]
 |===
 
 So now let's start.
@@ -854,11 +856,11 @@ a OAuth2 resource server and login client based on the project.
 But first read important information about how to start the required _uaa_ identity management server.
 
 [[identity-server]]
-==== UAA Identity Server
+==== Okta Identity Server
 
-For this workshop the OpenID Connect certified https://github.com/cloudfoundry/uaa[UAA identity server] is provided.
-UAA is an abbreviation for CloudFoundry User Account and Authentication.
-This server is issuing OAuth2/OIDC JSON web tokens.
+For this workshop the OpenID Connect certified https://www.okta.com/products/customer-identity/authentication/[OKTA identity provider service] is used.
+This service provides solutions for authentication, authorization and user administration.
+For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens.
 
 [TIP]
 ====
@@ -866,24 +868,10 @@ You may look into https://openid.net/certification/[OpenID Connect certified pro
 to find a suitable identity management server for your project.
 ====
 
-To start the UAA component you need an installed https://tomcat.apache.org/[Apache Tomcat] server.
-
-1. Please https://tomcat.apache.org/download-80.cgi[download] most current version of the Apache Tomcat 8.x line and
-extract the downloaded archive in a directory of your choice.
-2. Open the file _05-oauth2/uaa/build.gradle_ and replace the path entry for _tomcatHomeDir_ with the
-directory you have extracted the Apache Tomcat files into.
-3. Execute ```./gradlew downloadUAA``` to download required war file for UAA
-4. Execute ```./gradlew cargoRunLocal``` to start the UAA server
-
-Wait until the UAA server has been started.
-If you see the output ```Press Ctrl-C to stop the container``` then UAA is ready.
-You can also look into the file _05-oauth2/uaa/uaa-server.log_ to see
-the corresponding log output for UAA.
+Every OpenID Connect 1.0 compliant identity server must provide a page at the endpoint _/.../.well-known/openid-configuration_
 
 To see the configuration please open the following url in your web browser:
-(Every OpenID Connect compliant identity server must provide a page at the endpoint _/.../.well-known/openid-configuration_
-
-http://localhost:8090/uaa/oauth/token/.well-known/openid-configuration
+https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration[Well known OIDC configuration]
 
 The important information provided by this is:
 
@@ -892,19 +880,35 @@ The important information provided by this is:
 |Entry |Description |Value
 |issuer
 |Issuer url for issued tokens by this identity server
-|http://localhost:8090/uaa/oauth/token
+|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7
 |authorization_endpoint
 |Handles authorization, usually asking for credentials and returns an authorization code
-|http://localhost:8090/uaa/oauth/authorize
+|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize
 |token_endpoint
 |Token endpoint (exchanges given authorization code for access token)
-|http://localhost:8090/uaa/oauth/token
+|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token
 |userinfo_endpoint
 |Endpoint for requesting further user information
-|http://localhost:8090/uaa/userinfo
+|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo
 |jwks_uri
 |Uri for loading public keys to verify signatures of JSON web tokens
-|http://localhost:8090/uaa/token_keys
+|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys
+|===
+
+The OKTA identity service has been preconfigured with the following user credentials for login:
+
+.User credentials
+|===
+|User |Password |Roles
+|user@example.com
+|Library_access#1
+|USER
+|admin@example.com
+|Library_access#2
+|USER, CURATOR, ADMIN
+|curator@example.com
+|Library_access#3
+|USER, CURATOR
 |===
 
 [[resource-server]]
@@ -931,8 +935,8 @@ These dependencies already have been added to the initial project.
 [TIP]
 ====
 You may look into the spring security oauth2 boot reference documentation
-https://docs.spring.io/spring-boot/docs/2.1.0.RC1/reference/htmlsingle/#boot-features-security-oauth2-server[Spring Boot 2.1 Reference Documentation]
-and the https://docs.spring.io/spring-security/site/docs/5.1.1.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1.1 Reference Documentation] on how to implement a resource server.
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-server[Spring Boot 2.1 Reference Documentation]
+and the https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1 Reference Documentation] on how to implement a resource server.
 ====
 
 ===== Implementation steps
@@ -1029,13 +1033,12 @@ include::{snippets}/step-5-client-security-configuration.adoc[]
 
 ===== Run all the components
 
-Finally start all three components:
+Finally start the two components:
 
-* Run _UAA_ server in project _05-oauth2/uaa_
 * Run _LibraryServerApplication_ class in project _05-oauth2/initial-library-server_
 * Run _OAuth2LoginClientApplication_ class in project _05-oauth2/initial-oauth2-login-client_
 
-Now when you access http://localhost:8081/userinfo[localhost:8081/userinfo] you should be redirected to the UAA identity server.
+Now when you access http://localhost:8081/userinfo[localhost:8081/userinfo] you should be redirected to the OKTA identity server.
 After logging in you should get the current authenticated user info back from identity server.
 
 Here you can log in using one of these predefined users:
@@ -1093,9 +1096,9 @@ Thank YOU very much for being part of this workshop :-)
 * https://oauth.net/2/[OAuth2 Specifications]
 * https://openid.net/specs/openid-connect-core-1_0.html[OpenID Connect 1.0 Specification]
 * https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/[Spring Boot 1.5 Reference Guide]
-* https://docs.spring.io/spring-boot/docs/2.1.0.RC1/reference/htmlsingle/[Spring Boot 2.1 Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/[Spring Boot 2.1 Reference Guide]
 * https://docs.spring.io/spring-security/site/docs/4.2.x/reference/htmlsingle/[Spring Security 4.x Reference Guide]
-* https://docs.spring.io/spring-security/site/docs/5.1.1.RELEASE/reference/html5/[Spring Security 5.1.1 Reference Guide]
+* https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/[Spring Security 5.1 Reference Guide]
 * https://projects.spring.io/spring-security-oauth/docs/oauth2.html[_Legacy_ Spring Security OAuth Reference Guide]
 * https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/[_Legacy_ Spring Security OAuth2 Boot Reference Guide]
 * https://github.com/andifalk/reactive-spring-security-5-workshop[Reactive Spring Security 5 Workshop Code]
