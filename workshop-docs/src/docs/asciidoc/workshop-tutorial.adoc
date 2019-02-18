@@ -15,7 +15,6 @@ Andreas Falk <andreas.falk@novatec-gmbh.de>
 
 image::images/entwicklertag_frankfurt.jpg[scaledwidth="40%", scaledheight="40%",alt="novatec"]
 
-
 == Introduction
 
 .Welcome to the **Reactive Spring Security 5.1 Hands-On Workshop**.
@@ -96,7 +95,7 @@ To help getting all security requirements right for your project and how to test
 
 [NOTE]
 ====
-You will find more sources of information about security referenced in the <<appendix>> section.
+You will find more sources of information about security referenced in the <<References>> section.
 ====
 
 == The workshop application
@@ -1155,12 +1154,6 @@ conduct this workshop somewhere else please do not hesitate to contact me via
 
 Thank YOU very much for being part of this workshop :-)
 
-[appendix]
-== Copyright and License
-
-Copyright (C) 2019 {author}. +
-Free use of this software is granted under the terms of the Apache 2.0 License.
-
 [bibliography]
 == References
 
@@ -1180,3 +1173,8 @@ Free use of this software is granted under the terms of the Apache 2.0 License.
 * https://www.manning.com/books/oauth-2-in-action[OAuth 2 in Action (Manning Publications, ISBN: 978-1617293276)]
 * https://www.manning.com/books/spring-in-action-fifth-edition[Spring in Action 5th Edition (Manning Publications, ISBN: 978-1617294945]
 
+[appendix]
+== Copyright and License
+
+Copyright (C) 2019 {author}. +
+Free use of this software is granted under the terms of the Apache 2.0 License.
