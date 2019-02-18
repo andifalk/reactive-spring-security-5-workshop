@@ -8,15 +8,15 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.jruby:jruby-complete:9.1.17.0'
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.7'
+        classpath 'org.jruby:jruby-complete:9.2.5.0'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.10'
         classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16'
     }
 }
 
 plugins {
     id 'java'
-    id("org.asciidoctor.convert") version "1.5.7"
+    id("org.asciidoctor.convert") version "1.5.10"
 }
 
 group 'com.example'
