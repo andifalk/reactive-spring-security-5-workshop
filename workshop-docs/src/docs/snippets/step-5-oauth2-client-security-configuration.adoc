@@ -1,3 +1,5 @@
+[source,options="nowrap"]
+----
 package com.example.oauth2loginclient.config;
 
 import org.springframework.context.annotation.Bean;
@@ -12,7 +14,10 @@ public class SecurityConfiguration {
 
   @Bean
   SecurityWebFilterChain configure(ServerHttpSecurity http) {
-    http.authorizeExchange().anyExchange().authenticated().and().oauth2Login().and().oauth2Client();
+    http.authorizeExchange().anyExchange().authenticated().and().oauth2Login().and().oauth2Client(); # <1>
     return http.build();
   }
 }
+----
+<1> Configure library client app as a OAuth2/OIDC client
+

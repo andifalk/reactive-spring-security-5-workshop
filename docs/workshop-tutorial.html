@@ -2585,6 +2585,21 @@ class UserServiceTest {
 </tr>
 </table>
 </div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Make sure you always add positive and negative authorization tests. Otherwise you may miss
+authorization endpoint leaks.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>The testing part is the last part of adding simple username/password based security to the reactive style of the <em>library-server</em> project.
 The next step will dive into the world of token-based authentication.</p>
@@ -3187,12 +3202,19 @@ identity server/authorization server to use.</p>
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The web security configuration looks like the ones we have seen before with all that authorization
+rule settings. The addition here is just for replacing the basic authentication with bearer token authentication
+(expected in the http header). Additionally there are two possible alternative JWT converters referenced there.</p>
+</div>
 <div class="listingblock">
 <div class="title">WebSecurityConfiguration.java file</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>package com.example.library.server.config;
 
 import com.example.library.server.common.Role;
+import com.example.library.server.security.LibraryReactiveUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -3200,34 +3222,60 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
 
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                .csrf().disable()
-                .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .matchers(EndpointRequest.to("health")).permitAll()
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name()) <i class="conum" data-value="1"></i><b>(1)</b>
-                .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers(HttpMethod.DELETE, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers("/users/**").hasAuthority("SCOPE_admin")
-                .pathMatchers("/books/**").hasAuthority("SCOPE_user")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2ResourceServer() <i class="conum" data-value="2"></i><b>(2)</b>
-                .jwt() <i class="conum" data-value="3"></i><b>(3)</b>
-                .jwtAuthenticationConverter(new ReactiveJwtAuthenticationConverterAdapter(
-                        new GrantedAuthoritiesGroupExtractor())); <i class="conum" data-value="4"></i><b>(4)</b>
-        return http.build();
-    }
+  private final LibraryReactiveUserDetailsService libraryReactiveUserDetailsService;
+
+  @Autowired
+  public WebSecurityConfiguration(
+      LibraryReactiveUserDetailsService libraryReactiveUserDetailsService) {
+    this.libraryReactiveUserDetailsService = libraryReactiveUserDetailsService;
+  }
+
+  @Bean
+  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http.csrf()
+        .disable()
+        .authorizeExchange()
+        .matchers(PathRequest.toStaticResources().atCommonLocations())
+        .permitAll()
+        .matchers(EndpointRequest.to("health"))
+        .permitAll()
+        .matchers(EndpointRequest.to("info"))
+        .permitAll()
+        .matchers(EndpointRequest.toAnyEndpoint())
+        .hasRole(Role.ADMIN.name()) <i class="conum" data-value="1"></i><b>(1)</b>
+        .pathMatchers(HttpMethod.POST, "/books")
+        .hasRole(Role.CURATOR.name())
+        .pathMatchers(HttpMethod.DELETE, "/books")
+        .hasRole(Role.CURATOR.name())
+        .pathMatchers("/users/**")
+        .hasRole(Role.ADMIN.name())
+        .pathMatchers("/books/**")
+        .hasRole(Role.USER.name())
+        .anyExchange()
+        .authenticated()
+        .and()
+        .oauth2ResourceServer() <i class="conum" data-value="2"></i><b>(2)</b>
+        .jwt() <i class="conum" data-value="3"></i><b>(3)</b>
+        .jwtAuthenticationConverter(libraryUserJwtAuthenticationConverter()); <i class="conum" data-value="4"></i><b>(4)</b>
+    // .jwtAuthenticationConverter(libraryUserRolesJwtAuthenticationConverter());
+    return http.build();
+  }
+
+  @Bean
+  public LibraryUserJwtAuthenticationConverter libraryUserJwtAuthenticationConverter() {
+    return new LibraryUserJwtAuthenticationConverter(libraryReactiveUserDetailsService);
+  }
+
+  @Bean
+  public LibraryUserRolesJwtAuthenticationConverter libraryUserRolesJwtAuthenticationConverter() {
+    return new LibraryUserRolesJwtAuthenticationConverter(libraryReactiveUserDetailsService);
+  }
 }</code></pre>
 </div>
 </div>
@@ -3235,11 +3283,11 @@ public class WebSecurityConfiguration {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>OAuth2 scopes are automatically mapped to <em>SCOPE_xxx</em> authorities (like the standard <em>ROLE_xxx</em> ones)</td>
+<td>Actuator endpoints are only accessible with 'ADMIN' roles except 'health' and 'info'</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Autoconfiguration for an OAuth2 resource server</td>
+<td>Auto configuration for an OAuth2 resource server</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -3247,7 +3295,140 @@ public class WebSecurityConfiguration {
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Configures a JWT authentication converter acting as authorities extractor</td>
+<td>Configures a JWT authentication converter to map JWT to an Authentication object</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With mapping user information like roles you always have the choice between</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Getting the roles information from the JWT token payload</p>
+</li>
+<li>
+<p>Getting the roles information from the mapped local persistent user</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The converter for getting roles from JWT token looks like the following:</p>
+</div>
+<div class="listingblock">
+<div class="title">LibraryUserJwtAuthenticationConverter.java file</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.config;
+
+import com.example.library.server.security.LibraryReactiveUserDetailsService;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import reactor.core.publisher.Mono;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
+/** JWT converter that takes the roles from 'groups' claim of JWT token. */
+public class LibraryUserJwtAuthenticationConverter
+    implements Converter&lt;Jwt, Mono&lt;AbstractAuthenticationToken&gt;&gt; {
+  private static final String GROUPS_CLAIM = "groups";
+  private static final String ROLE_PREFIX = "ROLE_";
+
+  private final LibraryReactiveUserDetailsService libraryReactiveUserDetailsService;
+
+  public LibraryUserJwtAuthenticationConverter(
+      LibraryReactiveUserDetailsService libraryReactiveUserDetailsService) {
+    this.libraryReactiveUserDetailsService = libraryReactiveUserDetailsService;
+  }
+
+  @Override
+  public Mono&lt;AbstractAuthenticationToken&gt; convert(Jwt jwt) { <i class="conum" data-value="1"></i><b>(1)</b>
+    Collection&lt;GrantedAuthority&gt; authorities = extractAuthorities(jwt);
+    return libraryReactiveUserDetailsService
+        .findByUsername(jwt.getSubject())
+        .map(u -&gt; new UsernamePasswordAuthenticationToken(u, "n/a", authorities));
+  }
+
+  private Collection&lt;GrantedAuthority&gt; extractAuthorities(Jwt jwt) { <i class="conum" data-value="2"></i><b>(2)</b>
+    return this.getScopes(jwt).stream()
+        .map(authority -&gt; ROLE_PREFIX + authority.toUpperCase())
+        .map(SimpleGrantedAuthority::new)
+        .collect(Collectors.toList());
+  }
+
+  @SuppressWarnings("unchecked")
+  private Collection&lt;String&gt; getScopes(Jwt jwt) { <i class="conum" data-value="3"></i><b>(3)</b>
+    Object scopes = jwt.getClaims().get(GROUPS_CLAIM);
+    if (scopes instanceof Collection) {
+      return (Collection&lt;String&gt;) scopes;
+    }
+
+    return Collections.emptyList();
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Map JWT to Authentication object with matching user and roles (Authorities) from JWT token</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Extract the scopes from JWT and map these to roles</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Get scopes from 'groups' claim</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The converter for using the roles from the mapped local user looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">LibraryUserRolesJwtAuthenticationConverter.java file</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.config;
+
+import com.example.library.server.security.LibraryReactiveUserDetailsService;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.oauth2.jwt.Jwt;
+import reactor.core.publisher.Mono;
+
+/** JWT converter that takes the roles from persistent user roles. */
+public class LibraryUserRolesJwtAuthenticationConverter
+    implements Converter&lt;Jwt, Mono&lt;AbstractAuthenticationToken&gt;&gt; {
+
+  private final LibraryReactiveUserDetailsService libraryReactiveUserDetailsService;
+
+  public LibraryUserRolesJwtAuthenticationConverter(
+      LibraryReactiveUserDetailsService libraryReactiveUserDetailsService) {
+    this.libraryReactiveUserDetailsService = libraryReactiveUserDetailsService;
+  }
+
+  @Override
+  public Mono&lt;AbstractAuthenticationToken&gt; convert(Jwt jwt) { <i class="conum" data-value="1"></i><b>(1)</b>
+    return libraryReactiveUserDetailsService
+        .findByUsername(jwt.getSubject())
+        .map(u -&gt; new UsernamePasswordAuthenticationToken(u, "n/a", u.getAuthorities()));
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Map JWT to Authentication object with matching user and roles (Authorities) from user as well</td>
 </tr>
 </table>
 </div>
@@ -3256,8 +3437,7 @@ public class WebSecurityConfiguration {
 project <em>05-oauth2-client/initial-library-server</em>.</p>
 </div>
 <div class="paragraph">
-<p>In the following paragraphs we now proceed to the workshop part where your interaction is required again:
-The OAuth2 login client.</p>
+<p>In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.</p>
 </div>
 </div>
 </div>
@@ -3397,62 +3577,40 @@ public enum CommonOAuth2Provider {
 </table>
 </div>
 <div class="paragraph">
-<p>But in this workshop we will focus on the second possibility and use our own local authorization server.<br>
+<p>But in this workshop we will focus on the second possibility and use our own custom identity provider service.<br>
 To achieve this we add the following sections to the <em>application.yml</em> file.</p>
 </div>
 <div class="listingblock">
 <div class="title">application.yml client configuration</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code>spring:
+<pre class="highlightjs highlight nowrap"><code>server:
+  port: 8081
+
+spring:
   security:
     oauth2:
       client:
         registration:
           library-client: <i class="conum" data-value="1"></i><b>(1)</b>
-            provider: okta <i class="conum" data-value="2"></i><b>(2)</b>
-            client-id: 0oajbryix1d8ABX1i0h7 <i class="conum" data-value="3"></i><b>(3)</b>
-            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl <i class="conum" data-value="4"></i><b>(4)</b>
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" <i class="conum" data-value="5"></i><b>(5)</b>
-            scope: openid, profile, email, offline_access <i class="conum" data-value="6"></i><b>(6)</b>
+            provider: okta
+            client-id: 0oajbryix1d8ABX1i0h7
+            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email, offline_access
         provider:
-          okta: <i class="conum" data-value="7"></i><b>(7)</b>
-            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 <i class="conum" data-value="8"></i><b>(8)</b></code></pre>
+          okta:
+            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The registration id for the client</td>
+<td>Client configuration like client-id and client-secret credentials and where to redirect to</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>References the registered identity provider to use for this OAuth2 client</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The client id to use at the identity provider</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The client secret to use at the identity provider</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>The pattern to build the required redirect URL back from authorization server to this client</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>The required OAuth2 scopes to use at the identity provider</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Name of the identity provider (Okta identity provider service)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>The issuer URI for tokens (is used to read the identity provider configuration
-from <a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration</a>)</td>
+<td>The issuer url is used to look up the well known configuration page to get all required configuration settings to set up a client</td>
 </tr>
 </table>
 </div>
@@ -3532,16 +3690,11 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 public class SecurityConfiguration {
 
-    @Bean
-    SecurityWebFilterChain configure(ServerHttpSecurity http) throws Exception {
-        http.authorizeExchange() <i class="conum" data-value="1"></i><b>(1)</b>
-                .anyExchange().authenticated() <i class="conum" data-value="2"></i><b>(2)</b>
-                .and()
-                .oauth2Login() <i class="conum" data-value="3"></i><b>(3)</b>
-                .and()
-                .oauth2Client(); <i class="conum" data-value="4"></i><b>(4)</b>
-        return http.build();
-    }
+  @Bean
+  SecurityWebFilterChain configure(ServerHttpSecurity http) {
+    http.authorizeExchange().anyExchange().authenticated().and().oauth2Login().and().oauth2Client(); <i class="conum" data-value="1"></i><b>(1)</b>
+    return http.build();
+  }
 }</code></pre>
 </div>
 </div>
@@ -3549,19 +3702,156 @@ public class SecurityConfiguration {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Starting point for authorization rules (analogous to authorizeRequests in servlet world)</td>
+<td>Configure library client app as a OAuth2/OIDC client</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The client is build as a Thymeleaf web client. Thymeleaf basically works with HTML template files with some
+specials tags to connect the template with Spring beans.</p>
+</div>
+<div class="paragraph">
+<p>In our case there are already 3 HTML templates:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>index.html: The main template that is displayed initially</p>
+</li>
+<li>
+<p>books.html: This shows the list of books retrieved from the library server</p>
+</li>
+<li>
+<p>users.html: This shows the list of users retrieved from the library server</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To map these HTML template files to the web request paths and also map the content (the 'model' as it is called
+in Spring MVC) a controller class (annotated with <em>@Controller</em>) is required.</p>
+</div>
+<div class="paragraph">
+<p>The corresponding class for the '/books' request is shown here.</p>
+</div>
+<div class="listingblock">
+<div class="title">BookController class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.api;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+
+@Controller
+@RequestMapping("/books")
+public class BookController { <i class="conum" data-value="1"></i><b>(1)</b>
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
+
+  private final WebClient webClient;
+
+  public BookController(WebClient webClient) {
+    this.webClient = webClient;
+  }
+
+  @GetMapping
+  public String books() { <i class="conum" data-value="2"></i><b>(2)</b>
+    return "books";
+  }
+
+  @ModelAttribute("allBooks")
+  Flux&lt;BookResource&gt; allBooks() { <i class="conum" data-value="3"></i><b>(3)</b>
+    return webClient
+        .get()
+        .uri("http://localhost:8080/books")
+        .attributes(clientRegistrationId("library-client"))
+        .retrieve()
+        .onStatus(
+            httpStatus -&gt; HttpStatus.FORBIDDEN.value() == httpStatus.value(),
+            clientResponse -&gt; Mono.error(new AccessDeniedException("No access for this resource")))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            clientResponse -&gt; Mono.error(new IllegalStateException("Internal error occurred")))
+        .bodyToFlux(BookResource.class);
+  }
+
+  @ExceptionHandler(WebClientResponseException.class) <i class="conum" data-value="4"></i><b>(4)</b>
+  public ResponseEntity&lt;String&gt; handleWebClientResponseException(WebClientResponseException ex) {
+    LOGGER.error(
+        "Error from WebClient - Status {}, Body {}",
+        ex.getRawStatusCode(),
+        ex.getResponseBodyAsString(),
+        ex);
+    return ResponseEntity.status(ex.getRawStatusCode()).body(ex.getResponseBodyAsString());
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Thymeleaf web controller for Books</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Secure all client side endpoints</td>
+<td>Map '/books' GET request to 'books.html' template</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Add OAuth2/OIDC login feature</td>
+<td>Use reactive webclient to call 'books' endpoint on library resource server</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Add OAuth2/OIDC standard client feature</td>
+<td>Exception handler to log and show errors on screen</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the client you can see the contents of the ID JWT token as well using the '/userinfo' endpoint.
+This endpoint is mapped to a <em>@RestController</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">UserInfoRestController class</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.api;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
+
+@RestController
+public class UserInfoRestController {
+
+  @GetMapping("/userinfo")
+  Mono&lt;Map&lt;String, Object&gt;&gt; userInfo(@AuthenticationPrincipal OAuth2User oauth2User) {
+    return Mono.just(oauth2User.getAttributes()); <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Retrieve all attributes of ID JWT token of current authenticated user</td>
 </tr>
 </table>
 </div>
@@ -3758,7 +4048,7 @@ Free use of this software is granted under the terms of the Apache 2.0 License.<
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0-SNAPSHOT<br>
-Last updated 2019-02-18 17:30:37 +0100
+Last updated 2019-02-19 19:40:27 +0100
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">

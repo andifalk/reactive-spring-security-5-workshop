@@ -3,6 +3,8 @@
 package com.example.library.server.config;
 
 import com.example.library.server.common.Role;
+import com.example.library.server.security.LibraryReactiveUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -10,38 +12,64 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 public class WebSecurityConfiguration {
 
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                .csrf().disable()
-                .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .matchers(EndpointRequest.to("health")).permitAll()
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name()) # <1>
-                .pathMatchers(HttpMethod.POST, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers(HttpMethod.DELETE, "/books").hasAuthority("SCOPE_curator")
-                .pathMatchers("/users/**").hasAuthority("SCOPE_admin")
-                .pathMatchers("/books/**").hasAuthority("SCOPE_user")
-                .anyExchange().authenticated()
-                .and()
-                .oauth2ResourceServer() # <2>
-                .jwt() # <3>
-                .jwtAuthenticationConverter(new ReactiveJwtAuthenticationConverterAdapter(
-                        new GrantedAuthoritiesGroupExtractor())); # <4>
-        return http.build();
-    }
+  private final LibraryReactiveUserDetailsService libraryReactiveUserDetailsService;
+
+  @Autowired
+  public WebSecurityConfiguration(
+      LibraryReactiveUserDetailsService libraryReactiveUserDetailsService) {
+    this.libraryReactiveUserDetailsService = libraryReactiveUserDetailsService;
+  }
+
+  @Bean
+  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http.csrf()
+        .disable()
+        .authorizeExchange()
+        .matchers(PathRequest.toStaticResources().atCommonLocations())
+        .permitAll()
+        .matchers(EndpointRequest.to("health"))
+        .permitAll()
+        .matchers(EndpointRequest.to("info"))
+        .permitAll()
+        .matchers(EndpointRequest.toAnyEndpoint())
+        .hasRole(Role.ADMIN.name()) # <1>
+        .pathMatchers(HttpMethod.POST, "/books")
+        .hasRole(Role.CURATOR.name())
+        .pathMatchers(HttpMethod.DELETE, "/books")
+        .hasRole(Role.CURATOR.name())
+        .pathMatchers("/users/**")
+        .hasRole(Role.ADMIN.name())
+        .pathMatchers("/books/**")
+        .hasRole(Role.USER.name())
+        .anyExchange()
+        .authenticated()
+        .and()
+        .oauth2ResourceServer() # <2>
+        .jwt() # <3>
+        .jwtAuthenticationConverter(libraryUserJwtAuthenticationConverter()); # <4>
+    // .jwtAuthenticationConverter(libraryUserRolesJwtAuthenticationConverter());
+    return http.build();
+  }
+
+  @Bean
+  public LibraryUserJwtAuthenticationConverter libraryUserJwtAuthenticationConverter() {
+    return new LibraryUserJwtAuthenticationConverter(libraryReactiveUserDetailsService);
+  }
+
+  @Bean
+  public LibraryUserRolesJwtAuthenticationConverter libraryUserRolesJwtAuthenticationConverter() {
+    return new LibraryUserRolesJwtAuthenticationConverter(libraryReactiveUserDetailsService);
+  }
 }
 ----
-<1> OAuth2 scopes are automatically mapped to _SCOPE_xxx_ authorities (like the standard _ROLE_xxx_ ones)
-<2> Autoconfiguration for an OAuth2 resource server
+<1> Actuator endpoints are only accessible with 'ADMIN' roles except 'health' and 'info'
+<2> Auto configuration for an OAuth2 resource server
 <3> Configures JSON web token (JWT) handling for this resource server
-<4> Configures a JWT authentication converter acting as authorities extractor
+<4> Configures a JWT authentication converter to map JWT to an Authentication object
 

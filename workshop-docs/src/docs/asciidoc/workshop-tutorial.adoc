@@ -719,6 +719,12 @@ For sure you have to add similar tests as well for the user part.
 
 include::{snippets}/step-4-user-authorization-test.adoc[]
 
+[CAUTION]
+====
+Make sure you always add positive and negative authorization tests. Otherwise you may miss
+authorization endpoint leaks.
+====
+
 The testing part is the last part of adding simple username/password based security to the reactive style of the _library-server_ project.
 The next step will dive into the world of token-based authentication.
 
@@ -1021,15 +1027,35 @@ The issuer URI is used to retrieve the well known OpenID Connect configuration.
 
 include::{snippets}/step-5-well-known-oidc-config.adoc[]
 
+The web security configuration looks like the ones we have seen before with all that authorization
+rule settings. The addition here is just for replacing the basic authentication with bearer token authentication
+(expected in the http header). Additionally there are two possible alternative JWT converters referenced there.
+
 .WebSecurityConfiguration.java file
 
 include::{snippets}/step-5-oauth2-resource-server-websecurity.adoc[]
 
+With mapping user information like roles you always have the choice between
+
+* Getting the roles information from the JWT token payload
+* Getting the roles information from the mapped local persistent user
+
+The converter for getting roles from JWT token looks like the following:
+
+.LibraryUserJwtAuthenticationConverter.java file
+
+include::{snippets}/step-5-library-user-jwt-converter.adoc[]
+
+The converter for using the roles from the mapped local user looks like this:
+
+.LibraryUserRolesJwtAuthenticationConverter.java file
+
+include::{snippets}/step-5-library-user-roles-jwt-converter.adoc[]
+
 To start the resource server simply run the class _LibraryServerApplication_ in
 project _05-oauth2-client/initial-library-server_.
 
-In the following paragraphs we now proceed to the workshop part where your interaction is required again:
-The OAuth2 login client.
+In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.
 
 [[oauth2-login-client]]
 ==== OAuth2 Login Client
@@ -1071,12 +1097,12 @@ To use one of these providers is quite easy. Just reference the enumeration cons
 
 include::{snippets}/step-5-google-oauth2-provider-properties.adoc[]
 
-But in this workshop we will focus on the second possibility and use our own local authorization server. +
+But in this workshop we will focus on the second possibility and use our own custom identity provider service. +
 To achieve this we add the following sections to the _application.yml_ file.
 
 .application.yml client configuration
 
-include::{snippets}/step-5-client-properties.adoc[]
+include::{snippets}/step-5-oauth2-client-properties.adoc[]
 
 As the library-server is now configured as an OAuth2 resource server it requires
 a valid JWT token to successfully call the _/books_ endpoint now.
@@ -1096,7 +1122,32 @@ client endpoints and enable the OAuth2 client features:
 
 .SecurityConfiguration class
 
-include::{snippets}/step-5-client-security-configuration.adoc[]
+include::{snippets}/step-5-oauth2-client-security-configuration.adoc[]
+
+The client is build as a Thymeleaf web client. Thymeleaf basically works with HTML template files with some
+specials tags to connect the template with Spring beans.
+
+In our case there are already 3 HTML templates:
+
+* index.html: The main template that is displayed initially
+* books.html: This shows the list of books retrieved from the library server
+* users.html: This shows the list of users retrieved from the library server
+
+To map these HTML template files to the web request paths and also map the content (the 'model' as it is called
+in Spring MVC) a controller class (annotated with _@Controller_) is required.
+
+The corresponding class for the '/books' request is shown here.
+
+.BookController class
+
+include::{snippets}/step-5-oauth2-client-book-controller.adoc[]
+
+In the client you can see the contents of the ID JWT token as well using the '/userinfo' endpoint.
+This endpoint is mapped to a _@RestController_.
+
+.UserInfoRestController class
+
+include::{snippets}/step-5-oauth2-client-user-info-rest-controller.adoc[]
 
 ===== Run all the components
 
