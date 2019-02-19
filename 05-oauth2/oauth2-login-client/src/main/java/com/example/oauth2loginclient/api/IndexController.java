@@ -1,4 +1,4 @@
-package com.example.oauth2loginclient;
+package com.example.oauth2loginclient.api;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

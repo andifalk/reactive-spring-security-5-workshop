@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
-@PreAuthorize("hasAnyAuthority('SCOPE_user', 'SCOPE_curator', 'SCOPE_admin')")
+@PreAuthorize("hasAnyRole('USER', 'CURATOR', 'ADMIN')")
 public class BookService {
 
   private final BookRepository bookRepository;
@@ -35,7 +35,7 @@ public class BookService {
     this.modelMapper = modelMapper;
   }
 
-  @PreAuthorize("hasAuthority('SCOPE_curator')")
+  @PreAuthorize("hasRole('CURATOR')")
   public Mono<Void> create(Mono<BookResource> bookResource) {
     return bookRepository.insert(bookResource.map(this::convert)).then();
   }
@@ -44,7 +44,7 @@ public class BookService {
     return bookRepository.findById(uuid).map(this::convert);
   }
 
-  @PreAuthorize("hasAuthority('SCOPE_user')")
+  @PreAuthorize("hasRole('USER')")
   public Mono<Void> borrowById(UUID uuid, UUID userId) {
 
     if (uuid == null || userId == null) {
@@ -67,7 +67,7 @@ public class BookService {
         .switchIfEmpty(Mono.empty());
   }
 
-  @PreAuthorize("hasAuthority('SCOPE_user')")
+  @PreAuthorize("hasRole('USER')")
   public Mono<Void> returnById(UUID uuid, UUID userId) {
 
     if (uuid == null || userId == null) {
@@ -94,7 +94,7 @@ public class BookService {
     return bookRepository.findAll().map(this::convert);
   }
 
-  @PreAuthorize("hasAuthority('SCOPE_curator')")
+  @PreAuthorize("hasRole('CURATOR')")
   public Mono<Void> deleteById(UUID uuid) {
     return bookRepository.deleteById(uuid).then();
   }

@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
-@PreAuthorize("hasAuthority('SCOPE_admin')")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserService {
 
   private final UserRepository userRepository;

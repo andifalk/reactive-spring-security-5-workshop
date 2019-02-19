@@ -13,7 +13,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -31,8 +30,6 @@ class UserServiceTest {
   @Autowired private UserService userService;
 
   @MockBean private UserRepository userRepository;
-
-  @MockBean private IdGenerator idGenerator;
 
   @MockBean private ReactiveJwtDecoder reactiveJwtDecoder;
 
@@ -55,7 +52,7 @@ class UserServiceTest {
 
   @DisplayName("grants access to find one user by email for roles 'USER', 'CURATOR' and 'ADMIN'")
   @Test
-  @WithMockUser(authorities = {"SCOPE_user", "SCOPE_curator", "SCOPE_admin"})
+  @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
   void verifyFindOneByEmailAccessIsGrantedForAllRoles() {
     when(userRepository.findOneByEmail(any()))
         .thenReturn(
@@ -73,7 +70,7 @@ class UserServiceTest {
 
   @DisplayName("grants access to create a user for role 'ADMIN'")
   @Test
-  @WithMockUser(authorities = "SCOPE_admin")
+  @WithMockUser(roles = "ADMIN")
   void verifyCreateAccessIsGrantedForAdmin() {
     when(userRepository.insert(Mockito.<Mono<User>>any()))
         .thenReturn(
@@ -98,7 +95,7 @@ class UserServiceTest {
 
   @DisplayName("denies access to create a user for roles 'USER' and 'CURATOR'")
   @Test
-  @WithMockUser(authorities = {"SCOPE_user", "SCOPE_curator"})
+  @WithMockUser(roles = {"USER", "CURATOR"})
   void verifyCreateAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(
             userService.create(
@@ -129,7 +126,7 @@ class UserServiceTest {
 
   @DisplayName("grants access to find a user by id for role 'ADMIN'")
   @Test
-  @WithMockUser(authorities = "SCOPE_admin")
+  @WithMockUser(roles = "ADMIN")
   void verifyFindByIdAccessIsGrantedForAdmin() {
     when(userRepository.findById(any(UUID.class)))
         .thenReturn(
@@ -147,7 +144,7 @@ class UserServiceTest {
 
   @DisplayName("denies access to find a user by id for roles 'USER' and 'CURATOR'")
   @Test
-  @WithMockUser(authorities = {"SCOPE_user", "SCOPE_curator"})
+  @WithMockUser(roles = {"USER", "CURATOR"})
   void verifyFindByIdAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(userService.findById(UUID.randomUUID()))
         .verifyError(AccessDeniedException.class);
@@ -162,7 +159,7 @@ class UserServiceTest {
 
   @DisplayName("grants access to find all users for role 'ADMIN'")
   @Test
-  @WithMockUser(authorities = "SCOPE_admin")
+  @WithMockUser(roles = "ADMIN")
   void verifyFindAllAccessIsGrantedForAdmin() {
     when(userRepository.findAll())
         .thenReturn(
@@ -178,7 +175,7 @@ class UserServiceTest {
 
   @DisplayName("denies access to find all users for roles 'USER' and 'CURATOR'")
   @Test
-  @WithMockUser(authorities = {"SCOPE_user", "SCOPE_curator"})
+  @WithMockUser(roles = {"USER", "CURATOR"})
   void verifyFindAllAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(userService.findAll()).verifyError(AccessDeniedException.class);
   }
@@ -191,7 +188,7 @@ class UserServiceTest {
 
   @DisplayName("grants access to delete a user for role 'ADMIN'")
   @Test
-  @WithMockUser(authorities = "SCOPE_admin")
+  @WithMockUser(roles = "ADMIN")
   void verifyDeleteByIdAccessIsGrantedForAdmin() {
     when(userRepository.deleteById(any(UUID.class))).thenReturn(Mono.empty());
     StepVerifier.create(userService.deleteById(UUID.randomUUID())).verifyComplete();
@@ -199,7 +196,7 @@ class UserServiceTest {
 
   @DisplayName("denies access to delete a user for roles 'USER' and 'CURATOR'")
   @Test
-  @WithMockUser(authorities = {"SCOPE_user", "SCOPE_curator"})
+  @WithMockUser(roles = {"USER", "CURATOR"})
   void verifyDeleteByIdAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(userService.deleteById(UUID.randomUUID()))
         .verifyError(AccessDeniedException.class);

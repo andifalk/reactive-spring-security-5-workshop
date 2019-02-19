@@ -2,7 +2,7 @@ package com.example.library.server.security;
 
 import com.example.library.server.dataaccess.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -10,14 +10,20 @@ import java.util.stream.Collectors;
 
 public class LibraryUser extends User implements UserDetails {
 
-  public LibraryUser(User user) {
+  private static final String ROLE_PREFIX = "ROLE_";
+
+  LibraryUser(User user) {
     super(user);
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return AuthorityUtils.commaSeparatedStringToAuthorityList(
-        getRoles().stream().map(rn -> "ROLE_" + rn.name()).collect(Collectors.joining(",")));
+    return getRoles().stream()
+        .map(Enum::name)
+        .map(String::toUpperCase)
+        .map(rn -> ROLE_PREFIX + rn)
+        .map(SimpleGrantedAuthority::new)
+        .collect(Collectors.toList());
   }
 
   @Override

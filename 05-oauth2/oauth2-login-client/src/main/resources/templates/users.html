@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <title>OIDC Library Client: Users</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<a th:href="@{/}">Home</a>
+
+<h2>Books</h2>
+<div class="userlist" th:unless="${#lists.isEmpty(allUsers)}">
+
+    <table>
+        <thead>
+        <tr>
+            <th>Email</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${allUsers}">
+            <td th:text="${user.email}">email</td>
+            <td th:text="${user.firstName}">firstname</td>
+            <td th:text="${user.lastName}">lastname</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
