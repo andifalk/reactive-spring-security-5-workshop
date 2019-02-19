@@ -6,6 +6,7 @@ import com.example.library.server.dataaccess.User;
 import com.example.library.server.dataaccess.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
+@PreAuthorize("hasAnyRole('USER', 'CURATOR', 'ADMIN')")
 public class BookService {
 
   private final BookRepository bookRepository;
@@ -33,6 +35,7 @@ public class BookService {
     this.modelMapper = modelMapper;
   }
 
+  @PreAuthorize("hasRole('CURATOR')")
   public Mono<Void> create(Mono<BookResource> bookResource) {
     return bookRepository.insert(bookResource.map(this::convert)).then();
   }
@@ -41,6 +44,7 @@ public class BookService {
     return bookRepository.findById(uuid).map(this::convert);
   }
 
+  @PreAuthorize("hasRole('USER')")
   public Mono<Void> borrowById(UUID uuid, UUID userId) {
 
     if (uuid == null || userId == null) {
@@ -63,6 +67,7 @@ public class BookService {
         .switchIfEmpty(Mono.empty());
   }
 
+  @PreAuthorize("hasRole('USER')")
   public Mono<Void> returnById(UUID uuid, UUID userId) {
 
     if (uuid == null || userId == null) {
@@ -89,6 +94,7 @@ public class BookService {
     return bookRepository.findAll().map(this::convert);
   }
 
+  @PreAuthorize("hasRole('CURATOR')")
   public Mono<Void> deleteById(UUID uuid) {
     return bookRepository.deleteById(uuid).then();
   }

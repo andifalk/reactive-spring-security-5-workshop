@@ -2,10 +2,11 @@ package com.example.library.server.api;
 
 import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
-import com.example.library.server.dataaccess.User;
+import com.example.library.server.security.LibraryUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,12 +51,14 @@ public class BookRestController {
   }
 
   @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
-  public Mono<Void> borrowBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, User user) {
+  public Mono<Void> borrowBookById(
+      @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) {
     return bookService.borrowById(bookId, user != null ? user.getId() : null);
   }
 
   @PostMapping("/books/" + PATH_BOOK_ID + "/return")
-  public Mono<Void> returnBookById(@PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, User user) {
+  public Mono<Void> returnBookById(
+      @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) {
     return bookService.returnById(bookId, user != null ? user.getId() : null);
   }
 

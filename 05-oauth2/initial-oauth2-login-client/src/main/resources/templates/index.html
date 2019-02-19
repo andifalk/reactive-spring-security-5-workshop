@@ -2,24 +2,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <title>OAuth2 WebClient</title>
+    <title>OIDC Library Client</title>
     <meta charset="utf-8"/>
 </head>
 <body>
 <a th:href="@{/logout}">Log Out</a>
-<h1>Examples</h1>
+<h1>OpenID Connect Library Client</h1>
 
-<h2>User</h2>
-<p>
-    Examples on RegisteredOAuth2AuthorizedClientController
-<h3>Authenticated</h3>
+<h2>Authenticated User</h2>
 <a th:href="@{/userinfo}">User Infos</a>
 
-<h3>Library Services</h3>
+<h2>Library Services</h2>
 <ul>
-    <li><a th:href="@{/books}">Books</a></li>
+    <li><a th:href="@{/books}">List of Books</a></li>
     <li>
-        <a th:href="@{/users}">Users</a>
+        <a th:href="@{/users}">List of Users</a>
     </li>
 </ul>
 

@@ -16,43 +16,37 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Base64;
 import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
 @Import({UserHandler.class, UserRouter.class})
 @AutoConfigureRestDocs
 @DisplayName("Verify user api")
+@WithMockUser
 class UserApiIntegrationTests {
 
   @Autowired private WebTestClient webClient;
 
   @MockBean private UserService userService;
 
-  @SuppressWarnings("unused")
-  @MockBean
-  private BookService bookService;
-
-  // Base 64 encoded authorization header for credentials 'user:secret'
-  private String authorization =
-      "Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes());
+  @MockBean private BookService bookService;
 
   @Test
   @DisplayName("to get list of users")
@@ -73,7 +67,6 @@ class UserApiIntegrationTests {
         .get()
         .uri("/users")
         .accept(MediaType.APPLICATION_JSON)
-        .header("Authorization", authorization)
         .exchange()
         .expectStatus()
         .isOk()
@@ -84,11 +77,7 @@ class UserApiIntegrationTests {
                 + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}]")
         .consumeWith(
             document(
-                "get-users",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName("Authorization").description("Basic auth credentials"))));
+                "get-users", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -111,7 +100,6 @@ class UserApiIntegrationTests {
         .get()
         .uri("/users/{userId}", userId)
         .accept(MediaType.APPLICATION_JSON)
-        .header("Authorization", authorization)
         .exchange()
         .expectStatus()
         .isOk()
@@ -122,11 +110,7 @@ class UserApiIntegrationTests {
                 + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}")
         .consumeWith(
             document(
-                "get-user",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName("Authorization").description("Basic auth credentials"))));
+                "get-user", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -137,10 +121,10 @@ class UserApiIntegrationTests {
     given(userService.deleteById(userId)).willReturn(Mono.empty());
 
     webClient
+        .mutateWith(csrf())
         .delete()
         .uri("/users/{userId}", userId)
         .accept(MediaType.APPLICATION_JSON)
-        .header("Authorization", authorization)
         .exchange()
         .expectStatus()
         .isOk()
@@ -149,9 +133,7 @@ class UserApiIntegrationTests {
             document(
                 "delete-user",
                 preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName("Authorization").description("Basic auth credentials"))));
+                preprocessResponse(prettyPrint())));
   }
 
   @SuppressWarnings("unchecked")
@@ -175,12 +157,12 @@ class UserApiIntegrationTests {
             });
 
     webClient
+        .mutateWith(csrf())
         .post()
         .uri("/users")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(new ObjectMapper().writeValueAsString(userResource)))
-        .header("Authorization", authorization)
         .exchange()
         .expectStatus()
         .isOk()
@@ -189,8 +171,6 @@ class UserApiIntegrationTests {
             document(
                 "create-user",
                 preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName("Authorization").description("Basic auth credentials"))));
+                preprocessResponse(prettyPrint())));
   }
 }

@@ -4,6 +4,7 @@ import com.example.library.server.dataaccess.User;
 import com.example.library.server.dataaccess.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
+@PreAuthorize("hasRole('ADMIN')")
 public class UserService {
 
   private final UserRepository userRepository;
@@ -26,6 +28,7 @@ public class UserService {
     this.modelMapper = modelMapper;
   }
 
+  @PreAuthorize("isAnonymous() or isAuthenticated()")
   public Mono<User> findOneByEmail(String email) {
     return userRepository.findOneByEmail(email);
   }

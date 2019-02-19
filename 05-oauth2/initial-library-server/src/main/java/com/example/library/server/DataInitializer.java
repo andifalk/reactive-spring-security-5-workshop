@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
@@ -39,14 +38,11 @@ public class DataInitializer implements CommandLineRunner {
 
   private final BookRepository bookRepository;
   private final UserRepository userRepository;
-  private final IdGenerator idGenerator;
 
   @Autowired
-  public DataInitializer(
-      BookRepository bookRepository, UserRepository userRepository, IdGenerator idGenerator) {
+  public DataInitializer(BookRepository bookRepository, UserRepository userRepository) {
     this.bookRepository = bookRepository;
     this.userRepository = userRepository;
-    this.idGenerator = idGenerator;
   }
 
   @Override

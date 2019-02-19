@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <title>OIDC Library Client: Books</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<a th:href="@{/}">Home</a>
+
+<h2>Books</h2>
+<div class="booklist" th:unless="${#lists.isEmpty(allBooks)}">
+
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>ISBN</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${allBooks}">
+            <td th:text="${book.title}">title</td>
+            <td th:text="${book.description}">description</td>
+            <td th:text="${book.isbn}">isbn</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
