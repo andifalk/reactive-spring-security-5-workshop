@@ -1561,7 +1561,7 @@ authentication manager.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>package com.example.library.server.security;
 
-import com.example.library.server.business.UserResource;
+import com.example.library.server.dataaccess.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -1569,56 +1569,42 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class LibraryUser implements UserDetails { <i class="conum" data-value="1"></i><b>(1)</b>
+public class LibraryUser extends User implements UserDetails { <i class="conum" data-value="1"></i><b>(1)</b>
 
-    private final UserResource userResource; <i class="conum" data-value="2"></i><b>(2)</b>
+  public LibraryUser(User user) { <i class="conum" data-value="2"></i><b>(2)</b>
+    super(user);
+  }
 
-    public LibraryUser(UserResource userResource) {
-        this.userResource = userResource;
-    }
+  @Override
+  public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+    return AuthorityUtils.commaSeparatedStringToAuthorityList(
+        getRoles().stream().map(rn -&gt; "ROLE_" + rn.name()).collect(Collectors.joining(",")));
+  }
 
-    @Override
-    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
-        return AuthorityUtils
-                .commaSeparatedStringToAuthorityList(
-                        userResource.getRoles().stream()
-                                .map(rn -&gt; "ROLE_" + rn.name())
-                                .collect(Collectors.joining(",")));
-    }
+  @Override
+  public String getUsername() {
+    return getEmail();
+  }
 
-    @Override
-    public String getPassword() {
-        return userResource.getPassword();
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public String getUsername() {
-        return userResource.getEmail();
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public UserResource getUserResource() {
-        return userResource;
-    }
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }</code></pre>
 </div>
 </div>
@@ -1630,7 +1616,7 @@ public class LibraryUser implements UserDetails { <i class="conum" data-value="1
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The implementation for <em>UserDetails</em> is backed up by our existing <em>UserResource</em> value object</td>
+<td>The implementation for <em>UserDetails</em> is backed up by our existing <em>User</em> model</td>
 </tr>
 </table>
 </div>
@@ -2324,7 +2310,7 @@ X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1 ; mode=block
 
-CSRF Token has been associated to this client
+No CSRF Token has been associated to this client
 
 Response code: 403 (Forbidden)</code></pre>
 </div>

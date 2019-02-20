@@ -12,7 +12,7 @@ X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1 ; mode=block
 
-CSRF Token has been associated to this client
+No CSRF Token has been associated to this client
 
 Response code: 403 (Forbidden)
 ----
