@@ -11,12 +11,12 @@ repositories {
 }
 
 dependencies {
-    implementation('io.projectreactor:reactor-core:3.2.5.RELEASE')
-    implementation('io.projectreactor:reactor-test:3.2.5.RELEASE')
-    testImplementation('org.assertj:assertj-core:3.11.1')
-    testImplementation('org.mockito:mockito-core:2.23.0')
-    testImplementation('org.mockito:mockito-junit-jupiter:2.23.0')
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
-    testImplementation('org.junit.jupiter:junit-jupiter-params:5.3.2')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.3.2')
+    implementation('io.projectreactor:reactor-core:3.2.9.RELEASE')
+    implementation('io.projectreactor:reactor-test:3.2.9.RELEASE')
+    testImplementation('org.assertj:assertj-core:3.12.2')
+    testImplementation('org.mockito:mockito-core:2.26.0')
+    testImplementation('org.mockito:mockito-junit-jupiter:2.27.0')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-params:5.4.2')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
 }
