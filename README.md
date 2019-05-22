@@ -4,7 +4,7 @@
 
 # Reactive Spring Security 5 Workshop
 
-This is a hands-on workshop on securing a reactive Spring Boot 2.0 based web application using Spring Security 5.0.
+This is a hands-on workshop on securing a reactive Spring Boot 2.x based web application using Spring Security 5.x.
 
 ## Topics
 
@@ -31,7 +31,7 @@ To start the workshop you need:
 
 * [Java JDK version 8, 9 or 11](https://openjdk.java.net/install/)
 * A Java IDE ([Eclipse](https://www.eclipse.org/), [STS](https://spring.io/tools), [IntelliJ](https://www.jetbrains.com/idea/), [VS Code](https://code.visualstudio.com/), [NetBeans](https://netbeans.org/), ...)
-* To test the RESTful services on the command line [curl](https://curl.haxx.se/download.html) would be helpful to install
+* To test the RESTful services on the command line [curl](https://curl.haxx.se/download.html) or [httpie](https://httpie.org/) would be helpful to install
 * The workshop tutorial documentation ([html](https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html) or [pdf](https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf))
 * [The initial reactive application to be made secure](https://github.com/andifalk/reactive-spring-security-5-workshop/tree/master/00-library-server)
 * The [REST API documentation](https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html) of the initial reactive application
