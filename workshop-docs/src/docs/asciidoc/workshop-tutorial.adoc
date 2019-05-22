@@ -971,8 +971,11 @@ The OKTA identity service has been preconfigured with the following user credent
 |USER, CURATOR
 |===
 
+[[auth-code-demo]]
+=== Intro-Lab: Authorization Code Demo Client
+
 [[resource-server]]
-=== Lab 1: OpenID Connect Resource Server
+=== Lab 5: OpenID Connect Resource Server
 
 For this workshop part the well-known library-server application is used and will be extended to act
  as a OAuth2 resource server.
@@ -1045,7 +1048,7 @@ project _05-oauth2-client/initial-library-server_.
 In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.
 
 [[oauth2-login-client]]
-=== Lab 2: OpenID Connect Client
+=== Lab 6: OpenID Connect Client
 
 [[client-gradle-dependencies]]
 ==== Gradle dependencies

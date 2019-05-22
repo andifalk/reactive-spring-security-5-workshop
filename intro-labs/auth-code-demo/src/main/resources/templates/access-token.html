@@ -1,0 +1,55 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>OAuth 2.0 Client</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+    <link href="../static/css/bootstrap-grid.css" rel="stylesheet" th:href="@{/css/bootstrap-grid.css}"/>
+</head>
+<body>
+<div class="container-fluid">
+    <h1>OAuth 2.0 Client</h1>
+
+    <div class="progress" style="height: 50px;">
+        <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+             aria-valuemax="100"><strong>Step 3: Use retrieved access token</strong></div>
+    </div>
+
+    <hr>
+
+    <div class="jumbotron">
+        <h3>Access Token</h3>
+
+        <p style="word-break: break-all" th:text="'Access Token: ' + ${access_token}"></p>
+
+        <p th:text="'Expires in: ' + ${expires_in} + ' seconds'"></p>
+
+        <p th:text="'Token Type: ' + ${token_type}"></p>
+
+        <p th:text="'Scope: ' + ${scope}"></p>
+        <h3>Access Token (decoded JWT)</h3>
+
+        <p th:text="'JWT Header: ' + ${jwt_header}"></p>
+        <p th:utext="'JWT Payload: ' + ${jwt_payload}"></p>
+        <p th:text="'JWT Signature: ' + ${jwt_signature}"></p>
+
+        <h3>Refresh Token</h3>
+
+        <p style="word-break: break-all" th:text="${refresh_token}"></p>
+    </div>
+    <hr>
+    <div class="jumbotron">
+        <a class="btn btn-primary" role="button" th:href="@{/}" href="#">Start over</a>
+        <a class="btn btn-primary" role="button" th:href="@{'/refreshtoken?refresh_token=' + ${refresh_token}}"
+           href="#">Refresh Access Token</a>
+        <a class="btn btn-primary" role="button" th:href="@{'/introspection?access_token=' + ${access_token}}"
+           href="#">Token Introspection</a>
+    </div>
+
+</div>
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/popper.min.js"></script>
+<script src="../static/js/bootstrap.bundle.js" th:href="@{/js/bootstrap.bundle.js}"></script>
+
+</body>
+</html>

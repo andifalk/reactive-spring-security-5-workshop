@@ -1,0 +1,32 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>OAuth 2.0 Client</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <div class="jumbotron">
+
+        <h1>OAuth 2.0 Client</h1>
+
+        <h2>Token Introspection</h2>
+
+        <h3>Result</h3>
+
+        <p th:text="${introspection_response}"></p>
+
+        <a class="btn btn-primary" role="button" th:href="@{/}" href="#">Home</a>
+
+    </div>
+</div>
+
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/popper.min.js"></script>
+<script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+
+</body>
+</html>

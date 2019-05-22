@@ -1,0 +1,32 @@
+server:
+  servlet:
+    context-path: /client
+  port: 9095
+
+spring:
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        web: info
+
+democlient:
+  authorization:
+    endpoint: http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth
+    clientid: demo-client
+    response-type: code
+    redirect-uri: http://localhost:9095/client/callback
+    scope: offline_access
+  token:
+    endpoint: http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token
+    clientid: demo-client
+    client-secret: b3ec9d3f-d1ee-4a18-b4ba-05d832c15293
+    redirect-uri: http://localhost:9095/client/callback
+  introspection:
+    endpoint: http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token/introspect
+
+

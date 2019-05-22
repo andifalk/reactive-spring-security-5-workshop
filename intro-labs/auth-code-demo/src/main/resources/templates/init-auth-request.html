@@ -1,0 +1,54 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>OAuth 2.0 Client</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+</head>
+<body>
+
+<div class="container-fluid">
+
+
+    <h1>OAuth 2.0 Client</h1>
+
+    <p>Demo of OAuth 2.0 Authorization Code Grant Flow</p>
+
+    <div class="progress" style="height: 50px;">
+        <div class="progress-bar" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0"
+             aria-valuemax="100"><strong>Step 1: Authorize to retrieve authorization code</strong></div>
+    </div>
+
+    <hr>
+
+    <div class="jumbotron">
+
+        <ul>
+            <li th:text="'Authorization-Endpoint:' + ${authorization_endpoint}"></li>
+            <li th:text="'client_id:' + ${client_id}"></li>
+            <li th:text="'response_type:' + ${response_type}"></li>
+            <li th:text="'redirect_uri:' + ${redirect_uri}"></li>
+            <li th:text="'scope:' + ${scope}"></li>
+            <li th:text="'state:' + ${state}"></li>
+        </ul>
+
+    </div>
+    <hr>
+
+    <div class="jumbotron">
+        <h2>Authorization Request:</h2>
+        <em><p class="text-justify" style="word-break: break-all" th:text="${authorizationrequest}"></p></em>
+
+        <a class="btn btn-primary" role="button" th:href="${authorizationrequest}" href="#">Initiate Authorization
+            Request</a>
+
+    </div>
+
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/popper.min.js"></script>
+    <script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+
+</div>
+
+</body>
+</html>

@@ -1,6 +1,0 @@
-rootProject.name = '05-oauth2'
-include 'oauth2-login-client'
-include 'oauth2-library-server'
-include 'initial-oauth2-login-client'
-include 'initial-library-server'
-
