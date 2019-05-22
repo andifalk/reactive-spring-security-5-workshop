@@ -11,11 +11,9 @@ Andreas Falk <andreas.falk@novatec-gmbh.de>
 :numbered: ''
 :docinfo:
 
-.Frankfurter Entwicklertag 2019
+.Karlsruher Entwicklertag 2019
 
-image::images/entwicklertag_frankfurt.jpg[scaledwidth="40%", scaledheight="40%",alt="novatec"]
-
-== Introduction
+image::images/entwicklertag-karlsruhe.jpeg[scaledwidth="40%", scaledheight="40%",alt="novatec"]
 
 .Welcome to the **Reactive Spring Security 5.1 Hands-On Workshop**.
 
@@ -34,7 +32,7 @@ You will make your hands dirty in code in the following steps:
 4. Implement automated security integration tests
 5. Experiment with new OAuth2 Login Client and Resource Server of Spring Security 5.1
 
-=== Requirements for this workshop
+== Requirements for this workshop
 
 * Git
 * A Java JDK (Java 8, 9 or 11 are supported and tested)
@@ -98,6 +96,71 @@ To help getting all security requirements right for your project and how to test
 You will find more sources of information about security referenced in the <<References>> section.
 ====
 
+== Reactive Systems & Streams
+
+[quote, https://www.reactivemanifesto.org]
+Reactive Systems are Responsive, Resilient, Elastic and Message Driven (Asynchronous).
+
+* *Responsiveness* means the system responds in a timely manner and is the cornerstone of usability
+* *Resilience* means the system stays responsive in the face of failure
+* *Elasticity* means that the throughput of a system scales up or down automatically to
+meet varying demand as resource is proportionally added or removed
+* *Message Driven* systems rely on asynchronous message-passing to establish a boundary between components
+that ensures loose coupling
+
+[quote, http://www.reactive-streams.org/]
+Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure..
+
+* *Back-Pressure*: When one component is struggling to keep-up, the system as a whole needs to respond in a sensible way.
+Back-pressure is an important feedback mechanism that allows systems to gracefully respond to load rather than
+collapse under it.
+
+=== Project Reactor
+
+The project https://projectreactor.io[Reactor] is a Reactive library for building non-blocking applications on
+the JVM based on the http://www.reactive-streams.org[Reactive Streams Specification] and can help to build
+Reactive Systems.
+
+Reactor is a fully non-blocking foundation and offers backpressure-ready
+network engines for HTTP (including Websockets), TCP and UDP.
+
+Reactor introduces composable reactive types that implement Publisher but also provide a rich vocabulary of operators,
+most notably _Flux_ and _Mono_.
+
+A _Mono<T>_ is a specialized _Publisher<T>_ that emits at most one item and then optionally terminates with
+an onComplete signal or an onError signal.
+
+.Mono, an Asynchronous 0-1 Result (source: projectreactor.io)
+
+image::images/mono.png[scaledwidth="80%", scaledheight="80%",alt="reactor_mono"]
+
+A _Flux<T>_ is a standard _Publisher<T>_ representing an asynchronous sequence of 0 to N emitted items,
+optionally terminated by either a completion signal or an error.
+
+.Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)
+
+image::images/flux.png[scaledwidth="80%", scaledheight="80%",alt="reactor_flux"]
+
+=== Spring WebFlux
+
+https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux]
+was added in Spring Framework 5.0. It is fully non-blocking, supports Reactive Streams back pressure, and runs
+on servers such as Netty, Undertow, and Servlet 3.1+ containers.
+
+Spring Webflux depends on Reactor and uses it internally to compose asynchronous logic
+and to provide Reactive Streams support.
+It provides two programming models:
+
+* Annotated Controllers: This is uses the same annotations as in the Spring MVC part
+* Functional Endpoints:  This provides a lambda-based, lightweight, functional programming model
+
+== Lab: Reactive Programming
+
+Before we dive into the world of security, you have the chance to get a first glimpse on the difference between
+imperative and reactive programming style.
+
+To do this we can use the project **00-reactive-playground**.
+
 == The workshop application
 
 In this workshop you will be provided a finished but completely unsecured reactive
@@ -150,85 +213,7 @@ The following subsections give a very condensed introduction to the basics of Re
 the Project Reactor and Spring WebFlux. +
 This might help to better understand the sample application for beginners of Reactive.
 
-=== Reactive Systems & Streams
-
-[quote, https://www.reactivemanifesto.org]
-Reactive Systems are Responsive, Resilient, Elastic and Message Driven (Asynchronous).
-
-* *Responsiveness* means the system responds in a timely manner and is the cornerstone of usability
-* *Resilience* means the system stays responsive in the face of failure
-* *Elasticity* means that the throughput of a system scales up or down automatically to
-meet varying demand as resource is proportionally added or removed
-* *Message Driven* systems rely on asynchronous message-passing to establish a boundary between components
-that ensures loose coupling
-
-[quote, http://www.reactive-streams.org/]
-Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure..
-
-* *Back-Pressure*: When one component is struggling to keep-up, the system as a whole needs to respond in a sensible way.
-Back-pressure is an important feedback mechanism that allows systems to gracefully respond to load rather than
-collapse under it.
-
-==== Project Reactor
-
-The project https://projectreactor.io[Reactor] is a Reactive library for building non-blocking applications on
-the JVM based on the http://www.reactive-streams.org[Reactive Streams Specification] and can help to build
-Reactive Systems.
-
-Reactor is a fully non-blocking foundation and offers backpressure-ready
-network engines for HTTP (including Websockets), TCP and UDP.
-
-Reactor introduces composable reactive types that implement Publisher but also provide a rich vocabulary of operators,
-most notably _Flux_ and _Mono_.
-
-A _Mono<T>_ is a specialized _Publisher<T>_ that emits at most one item and then optionally terminates with
-an onComplete signal or an onError signal.
-
-.Mono, an Asynchronous 0-1 Result (source: projectreactor.io)
-
-image::images/mono.png[scaledwidth="80%", scaledheight="80%",alt="reactor_mono"]
-
-A _Flux<T>_ is a standard _Publisher<T>_ representing an asynchronous sequence of 0 to N emitted items,
-optionally terminated by either a completion signal or an error.
-
-.Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)
-
-image::images/flux.png[scaledwidth="80%", scaledheight="80%",alt="reactor_flux"]
-
-==== Spring WebFlux
-
-https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux]
-was added in Spring Framework 5.0. It is fully non-blocking, supports Reactive Streams back pressure, and runs
-on servers such as Netty, Undertow, and Servlet 3.1+ containers.
-
-Spring Webflux depends on Reactor and uses it internally to compose asynchronous logic
-and to provide Reactive Streams support.
-It provides two programming models:
-
-* Annotated Controllers: This is uses the same annotations as in the Spring MVC part
-* Functional Endpoints:  This provides a lambda-based, lightweight, functional programming model
-
-== Workshop Organization
-
-This interactive hands-on workshop is organized into several step with one step building upon each other.
-There is a separate project for each step:
-
-* **00-reactive-playground**: This project provides a playground to try reactive streams with project reactor
-* **00-library-server**: This contains the initial unsecured application
-* **01-library-server**: This has just added the spring boot starter dependencies for spring security
-* **02-library-server**: This adds a persistent user store for authentication
-* **03-library-server**: This adds custom authentication and authorization rules
-* **04-library-server**: This adds automatic integration tests for authorization
-* **05-oauth2**: This adds an OAuth2/OIDC login client and resource server for interacting with an identity service for login
-
-== Introduction Lab
-
-Before we dive into the world of security, you have the chance to get a first glimpse on the difference between
-imperative and reactive programming style.
-
-To do this we can use the project **00-reactive-playground**.
-
-== Workshop Steps
+== Basic Security Labs
 
 To start the workshop please begin by adapting the _00-library-server_ application.
 
@@ -241,7 +226,7 @@ For example if you could not manage to complete the tutorial based on _01-librar
 just continue using _02-library-server_.
 ====
 
-=== Step 1: Auto Configuration
+=== Lab 1: Auto Configuration
 
 .In the first step we start quite easy by just adding the spring boot starter dependency for spring security.
 
@@ -334,7 +319,7 @@ You find the completed code in project _01-library-server_.
 
 Now let's proceed to next step and start with customizing the authentication part.
 
-=== Step 2: Customize Authentication
+=== Lab 2: Customize Authentication
 
 .Now it is time to start customizing the auto-configuration.
 
@@ -401,7 +386,7 @@ These are handled centrally by the _WebFilterChainProxy_ class.
 
 include::{snippets}/step-2-web-filter-chain-proxy.adoc[]
 
-==== Encrypting Passwords
+==== Step 1: Encrypting Passwords
 
 We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
@@ -442,7 +427,7 @@ _PasswordEncoder_ we just have configured.
 
 include::{snippets}/step-2-data-initializer.adoc[]
 
-==== Persistent User Storage
+==== Step 2: Persistent User Storage
 
 Now that we already have configured the encrypting part for passwords of our user storage
 we need to connect our own user store (the users already stored in the MongoDB) with spring security's
@@ -481,7 +466,7 @@ If you restart the application now you have to use the following user credential
 |USER, CURATOR, ADMIN
 |===
 
-==== Automatic Password Encryption Updates
+=== Automatic Password Encryption Updates
 
 We already looked into the _DelegatingPasswordEncoder_ and _PasswordEncoderFactories_. As these classes have knowledge
 about all encryption algorithms that are supported in spring security, the framework can detect
@@ -531,7 +516,7 @@ You find the completed code in project _02-library-server_.
 In the next workshop part we also adapt the _SecurityWebFilterChain_ to our needs and add authorization rules (in web and method layer)
 for our application.
 
-=== Step 3: Add Authorization
+=== Lab 3: Add Authorization
 
 .In this part of the workshop we want to add our customized authorization rules for our application.
 
@@ -690,7 +675,7 @@ for your RESTful API? Or you may change some authorizations later by accident?
 To be on a safer side here you need automatic testing. Yes, this can also be done for security!
 We will see how this works in the next workshop part.
 
-=== Step 4: Security Testing
+=== Lab 4: Security Testing
 
 .Now it is time to prove that we have implemented these authorization rules correctly with automatic testing.
 
@@ -733,9 +718,11 @@ The next step will dive into the world of token-based authentication.
 You find the completed code in project _04-library-server_.
 ====
 
-=== Step 5: OAuth2/OpenID Connect
+== OAuth2/OpenID Connect Labs
 
 .In the last workshop part we will look at the new OAuth2 login client and resource server introduced in Spring Security 5.0 and 5.1.
+
+=== Introduction
 
 ==== OAuth 2.0
 
@@ -929,7 +916,7 @@ a OAuth2 resource server and login client based on the project.
 But first read important information about how to start the required _uaa_ identity management server.
 
 [[identity-server]]
-==== Okta Identity Server
+=== Setup: Keycloak Identity Server
 
 For this workshop the OpenID Connect certified https://www.okta.com/products/customer-identity/authentication/[OKTA identity provider service] is used.
 This service provides solutions for authentication, authorization and user administration.
@@ -985,13 +972,13 @@ The OKTA identity service has been preconfigured with the following user credent
 |===
 
 [[resource-server]]
-==== Resource Server (Library-Server)
+=== Lab 1: OpenID Connect Resource Server
 
 For this workshop part the well-known library-server application is used and will be extended to act
  as a OAuth2 resource server.
 
 [[resource-server-gradle-dependencies]]
-===== Gradle dependencies
+==== Gradle dependencies
 
 To use the new OAuth2 resource server support of Spring Security 5.1 you have to add the
 following required dependencies to the existing gradle build file.
@@ -1012,7 +999,7 @@ https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-featu
 and the https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1 Reference Documentation] on how to implement a resource server.
 ====
 
-===== Implementation steps
+==== Implementation steps
 
 First step is to configure an OAuth2 resource server. For this you have to register the corresponding
 identity server/authorization server to use.
@@ -1058,10 +1045,10 @@ project _05-oauth2-client/initial-library-server_.
 In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.
 
 [[oauth2-login-client]]
-==== OAuth2 Login Client
+=== Lab 2: OpenID Connect Client
 
 [[client-gradle-dependencies]]
-===== Gradle dependencies
+==== Gradle dependencies
 
 To use the new OAuth2 client support of Spring Security 5.0 you have to add the
 following required dependencies to the existing gradle build file.
@@ -1075,7 +1062,7 @@ include::{snippets}/step-5-oauth2-client-gradle-build.adoc[]
 These dependencies already have been added to the initial project.
 ====
 
-===== Implementation steps
+==== Implementation steps
 
 First step is to configure an OAuth2 login client. For this you have to register the corresponding
 identity server/authorization server to use.
@@ -1149,7 +1136,7 @@ This endpoint is mapped to a _@RestController_.
 
 include::{snippets}/step-5-oauth2-client-user-info-rest-controller.adoc[]
 
-===== Run all the components
+==== Run all the components
 
 Finally start the two components:
 
@@ -1221,8 +1208,8 @@ Thank YOU very much for being part of this workshop :-)
 * https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle/[_Legacy_ Spring Security OAuth2 Boot Reference Guide]
 * https://github.com/andifalk/reactive-spring-security-5-workshop[Reactive Spring Security 5 Workshop Code]
 * [[[man]]] Jim Manico. https://www.amazon.com/Iron-Clad-Java-Building-Secure-Applications/dp/0071835881/ref=sr_1_1?ie=UTF8&qid=1526999159&sr=8-1&keywords=ironclad+java[Iron-Clad Java: Building Secure Web Applications]
-* https://www.manning.com/books/oauth-2-in-action[OAuth 2 in Action (Manning Publications, ISBN: 978-1617293276)]
-* https://www.manning.com/books/spring-in-action-fifth-edition[Spring in Action 5th Edition (Manning Publications, ISBN: 978-1617294945]
+* [[[richer]]] https://www.manning.com/books/oauth-2-in-action[OAuth 2 in Action (Manning Publications, ISBN: 978-1617293276)]
+* [[[walls]]] https://www.manning.com/books/spring-in-action-fifth-edition[Spring in Action 5th Edition (Manning Publications, ISBN: 978-1617294945]
 
 [appendix]
 == Copyright and License
