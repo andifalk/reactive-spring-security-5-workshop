@@ -3,6 +3,8 @@ package com.example;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.ParallelFlux;
 import reactor.core.scheduler.Schedulers;
@@ -11,12 +13,11 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
-@DisplayName("Reactive playground")
-class ReactiveTest {
+@DisplayName("Person Reactive Playground")
+class PersonReactivePlayground {
 
-  private static final Logger LOGGER = Logger.getLogger(ReactiveTest.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(PersonReactivePlayground.class.getName());
 
   private Set<Person> personSet;
 
