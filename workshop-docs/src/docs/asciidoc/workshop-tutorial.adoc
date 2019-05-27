@@ -154,12 +154,12 @@ It provides two programming models:
 * Annotated Controllers: This is uses the same annotations as in the Spring MVC part
 * Functional Endpoints:  This provides a lambda-based, lightweight, functional programming model
 
-== Lab: Reactive Programming
+== Intro-Lab: Reactive Programming
 
 Before we dive into the world of security, you have the chance to get a first glimpse on the difference between
 imperative and reactive programming style.
 
-To do this we can use the project **00-reactive-playground**.
+To do this we will look into the project **intro-labs/reactive-playground**.
 
 == The workshop application
 
@@ -215,15 +215,15 @@ This might help to better understand the sample application for beginners of Rea
 
 == Basic Security Labs
 
-To start the workshop please begin by adapting the _00-library-server_ application.
+To start the workshop please begin by adapting the **lab-1/initial-library-server**
 
 [NOTE]
 ====
 If you are not able to keep up with completing a particular step you
 always can just start over with the existing application of next step.
 
-For example if you could not manage to complete the tutorial based on _01-library-server_
-just continue using _02-library-server_.
+For example if you could not manage to complete the tutorial based on **lab-1/initial-library-server**
+just continue using **lab-1/complete-library-server**.
 ====
 
 === Lab 1: Auto Configuration
@@ -452,18 +452,35 @@ replaced the default user with our own users from our MongoDB persistent storage
 
 If you restart the application now you have to use the following user credentials to log in:
 
+===== Users and roles
+
+There are three target user roles for this application:
+
+* LIBRARY_USER: Standard library user who can list, borrow and return his currently borrowed books
+* LIBRARY_CURATOR: A curator user who can add, edit or delete books
+* LIBRARY_ADMIN: An administrator user who can list, add or remove users
+
+__Important:__ We will use the following users in all subsequent labs from now on:
+
 .User credentials
 |===
-|User |Password |Roles
-|user@example.com
-|user
-|USER
-|curator@example.com
-|curator
-|USER, CURATOR
-|admin@example.com
-|admin
-|USER, CURATOR, ADMIN
+| Username | Email | Password | Roles
+|bwayne
+|bruce.wayne@example.com
+|wayne
+|LIBRARY_USER
+|bbanner
+|bruce.banner@example.com
+|banner
+|LIBRARY_USER
+|pparker
+|peter.parker@example.com
+|parker
+|LIBRARY_CURATOR
+|ckent
+|clark.kent@example.com
+|kent
+|LIBRARY_ADMIN
 |===
 
 === Automatic Password Encryption Updates
@@ -506,11 +523,11 @@ into your version control. And never let error details reach the client (via RES
 Make sure you disable stacktraces in client error messages using property _server.error.include-stacktrace=never_
 ====
 
-This is the end of step 2 of the workshop.
+This is the end of lab 2 of the workshop.
 
 [NOTE]
 ====
-You find the completed code in project _02-library-server_.
+You find the completed code in project **lab-2/complete-library-server**.
 ====
 
 In the next workshop part we also adapt the _SecurityWebFilterChain_ to our needs and add authorization rules (in web and method layer)
@@ -546,15 +563,15 @@ Our required authorization rule matrix looks like this:
 |/books
 |POST
 |Yes
-|CURATOR
+|LIBRARY_CURATOR
 |/books
 |DELETE
 |Yes
-|CURATOR
+|LIBRARY_CURATOR
 |/users
 |All
 |Yes
-|ADMIN
+|LIBRARY_ADMIN
 |/actuator/health
 |GET
 |No
@@ -566,7 +583,7 @@ Our required authorization rule matrix looks like this:
 |/actuator/*
 |GET
 |Yes
-|ADMIN
+|LIBRARY_ADMIN
 |/*
 |All
 |Yes
@@ -666,7 +683,7 @@ permitted to users with special roles.
 
 [NOTE]
 ====
-You find the completed code in project _03-library-server_.
+You find the completed code in project **lab-3/complete-library-server**.
 ====
 
 But how do you know that you have implemented all the authorization rules and did not leave a big security leak
@@ -715,7 +732,7 @@ The next step will dive into the world of token-based authentication.
 
 [NOTE]
 ====
-You find the completed code in project _04-library-server_.
+You find the completed code in project **lab-4/complete-library-server**.
 ====
 
 == OAuth2/OpenID Connect Labs
@@ -750,7 +767,7 @@ The following picture shows the mechanics of the _Authorization Code Grant Flow_
 
 image::images/authorization_code_1.png[scaledwidth="50%", scaledheight="50%",alt="auth_code_grant"]
 
-==== OpenID Connect 1.0
+==== OpenID Connect 1.0 (OIDC)
 
 https://openid.net/specs/openid-connect-core-1_0.html[OpenID Connect 1.0 (OIDC)] is build upon https://tools.ietf.org/html/rfc6749[OAuth2] and provides additional identity information
 to OAuth2. For common enterprise applications that typically require authentication OpenID Connect should be used.
@@ -874,15 +891,17 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.
 
 ==== What we will build
 
-In the _05-oauth2_ project you will be provided the following sub-projects:
+In **lab-5** you will be provided the following sub-projects:
 
-* *initial-library-server*: The reactive version of the library server (almost similar to workshop step _00-library-server_)
+* *initial-resource-server*: The initial library server (almost similar to workshop step **lab-1/initial-library-server**)
 
-* *initial-oauth2-login-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
+* *complete-resource-server*: The completed OIDC resource server (as reference)
 
-* *oauth2-login-client*: Complete code of the new OAuth2 Login Client (for reference)
+In *lab-6* you will be provided the following sub-projects:
 
-* *oauth2-library-server*: Complete code of the reactive library OAuth2 resource server
+* *initial-oidc-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
+
+* *complete-oidc-client*: Complete code of the new OIDC Client (as reference)
 
 [NOTE]
 ====
@@ -895,32 +914,32 @@ of Spring Security 5.1.
 
 image::images/workshop_lab_7.png[scaledwidth="75%",alt="OAuth2 spring roles"]
 
-These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).
+These micro-services have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).
 
-.Microservice URL Adresses
+.Microservice & Identity Provider URL Adresses
 |===
-|Microservice |URL
-|Identity Management Service (OKTA)
-|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7[https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7]
-|Library Client (OAuth2 Login Client)
-|http://localhost:8081[http://localhost:8081]
-|Library Server (OAuth2 Resource Server)
-|http://localhost:8080[http://localhost:8080]
+|Service |URL
+|Identity Management Service (Keycloak)
+|http://localhost:8080/auth[http://localhost:8080/auth]
+|Library Client (OIDC Client)
+|http://localhost:8081[http://localhost:9090]
+|Library Server (OIDC Resource Server)
+|http://localhost:8080[http://localhost:9092]
 |===
 
 So now let's start.
-Again, you will just use the provided _uaa_ identity management server, the _initial-library-server_
-and the _initial-oauth2-login-client_ as starting point and implement
-a OAuth2 resource server and login client based on the project.
+Again, you will just use the provided _keycloak_ identity management server, the *lab-5/initial-resource-server*
+and the *lab-6/initial-oidc-client* as starting point and implement
+an OAuth2/OIDC resource server and client based on the project.
 
-But first read important information about how to start the required _uaa_ identity management server.
+But first read important information about how to setup and start the required _keycloak_ identity management server.
 
 [[identity-server]]
 === Setup: Keycloak Identity Server
 
-For this workshop the OpenID Connect certified https://www.okta.com/products/customer-identity/authentication/[OKTA identity provider service] is used.
-This service provides solutions for authentication, authorization and user administration.
-For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens.
+For this workshop the OpenID Connect certified https://www.keycloak.org/[Keycloak identity provider server] is used.
+This provider supports solutions for authentication, authorization and user administration.
+For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens (JWT).
 
 [TIP]
 ====
@@ -931,7 +950,7 @@ to find a suitable identity management server for your project.
 Every OpenID Connect 1.0 compliant identity server must provide a page at the endpoint _/.../.well-known/openid-configuration_
 
 To see the configuration please open the following url in your web browser:
-https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration[Well known OIDC configuration]
+http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration[Well known OIDC configuration]
 
 The important information provided by this is:
 
@@ -940,35 +959,48 @@ The important information provided by this is:
 |Entry |Description |Value
 |issuer
 |Issuer url for issued tokens by this identity server
-|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7
+|http://localhost:8080/auth/realms/workshop
 |authorization_endpoint
 |Handles authorization, usually asking for credentials and returns an authorization code
-|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth
 |token_endpoint
 |Token endpoint (exchanges given authorization code for access token)
-|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token
 |userinfo_endpoint
 |Endpoint for requesting further user information
-|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo
 |jwks_uri
 |Uri for loading public keys to verify signatures of JSON web tokens
-|https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs
 |===
 
-The OKTA identity service has been preconfigured with the following user credentials for login:
+To login into your local keycloak use the following user credentials:
+
+* Username: admin
+* Password: admin
+
+The keycloak identity service has been preconfigured with the following user credentials
+for the workshop application:
 
 .User credentials
 |===
-|User |Password |Roles
-|user@example.com
-|Library_access#1
-|USER
-|admin@example.com
-|Library_access#2
-|USER, CURATOR, ADMIN
-|curator@example.com
-|Library_access#3
-|USER, CURATOR
+| Username | Email | Password | Roles
+|bwayne
+|bruce.wayne@example.com
+|wayne
+|LIBRARY_USER
+|bbanner
+|bruce.banner@example.com
+|banner
+|LIBRARY_USER
+|pparker
+|peter.parker@example.com
+|parker
+|LIBRARY_CURATOR
+|ckent
+|clark.kent@example.com
+|kent
+|LIBRARY_ADMIN
 |===
 
 [[auth-code-demo]]
@@ -1043,7 +1075,7 @@ The converter for using the roles from the mapped local user looks like this:
 include::{snippets}/step-5-library-user-roles-jwt-converter.adoc[]
 
 To start the resource server simply run the class _LibraryServerApplication_ in
-project _05-oauth2-client/initial-library-server_.
+project *lab-5/complete-resource-server*.
 
 In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.
 
@@ -1170,8 +1202,7 @@ This returns the book list from the library-server (resource server).
 
 [NOTE]
 ====
-You find the completed code in project _05-oauth2/oauth2-login-client_
-and _05-oauth2/oauth2-library-server_.
+You find the completed code in project *lab-6/complete_oidc_client*.
 ====
 
 This concludes our Spring Security 5.1 hands-on workshop.
@@ -1181,7 +1212,7 @@ I hope you learned a lot regarding security and especially Spring Security 5.1.
 Please provide feedback for this workshop directly to organization of the Frankfurter Entwicklertag
 using the provided QR code.
 
-image::images/qr_code_frankfurter_entwicklertag.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+image::images/feedback_qr_code_entwicklertag_karlsruhe.jpg[scaledwidth="50%", scaledheight="50%",alt="novatec"]
 
 [IMPORTANT]
 ====
@@ -1217,5 +1248,5 @@ Thank YOU very much for being part of this workshop :-)
 [appendix]
 == Copyright and License
 
-Copyright (C) 2019 {author}. +
+Copyright (C) 2019 by {author}. +
 Free use of this software is granted under the terms of the Apache 2.0 License.

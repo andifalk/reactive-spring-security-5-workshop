@@ -452,7 +452,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_spring_webflux">3.2. Spring WebFlux</a></li>
 </ul>
 </li>
-<li><a href="#_lab_reactive_programming">4. Lab: Reactive Programming</a></li>
+<li><a href="#_intro_lab_reactive_programming">4. Intro-Lab: Reactive Programming</a></li>
 <li><a href="#_the_workshop_application">5. The workshop application</a></li>
 <li><a href="#_basic_security_labs">6. Basic Security Labs</a>
 <ul class="sectlevel2">
@@ -481,24 +481,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_introduction">7.1. Introduction</a>
 <ul class="sectlevel3">
 <li><a href="#_oauth_2_0">7.1.1. OAuth 2.0</a></li>
-<li><a href="#_openid_connect_1_0">7.1.2. OpenID Connect 1.0</a></li>
+<li><a href="#_openid_connect_1_0_oidc">7.1.2. OpenID Connect 1.0 (OIDC)</a></li>
 <li><a href="#_tokens_in_oidc_and_oauth_2_0">7.1.3. Tokens in OIDC and OAuth 2.0</a></li>
 <li><a href="#_oauth2oidc_in_spring_security_5">7.1.4. OAuth2/OIDC in Spring Security 5</a></li>
 <li><a href="#_what_we_will_build">7.1.5. What we will build</a></li>
 </ul>
 </li>
 <li><a href="#identity-server">7.2. Setup: Keycloak Identity Server</a></li>
-<li><a href="#resource-server">7.3. Lab 1: OpenID Connect Resource Server</a>
+<li><a href="#auth-code-demo">7.3. Intro-Lab: Authorization Code Demo Client</a></li>
+<li><a href="#resource-server">7.4. Lab 5: OpenID Connect Resource Server</a>
 <ul class="sectlevel3">
-<li><a href="#resource-server-gradle-dependencies">7.3.1. Gradle dependencies</a></li>
-<li><a href="#_implementation_steps">7.3.2. Implementation steps</a></li>
+<li><a href="#resource-server-gradle-dependencies">7.4.1. Gradle dependencies</a></li>
+<li><a href="#_implementation_steps">7.4.2. Implementation steps</a></li>
 </ul>
 </li>
-<li><a href="#oauth2-login-client">7.4. Lab 2: OpenID Connect Client</a>
+<li><a href="#oauth2-login-client">7.5. Lab 6: OpenID Connect Client</a>
 <ul class="sectlevel3">
-<li><a href="#client-gradle-dependencies">7.4.1. Gradle dependencies</a></li>
-<li><a href="#_implementation_steps_2">7.4.2. Implementation steps</a></li>
-<li><a href="#_run_all_the_components">7.4.3. Run all the components</a></li>
+<li><a href="#client-gradle-dependencies">7.5.1. Gradle dependencies</a></li>
+<li><a href="#_implementation_steps_2">7.5.2. Implementation steps</a></li>
+<li><a href="#_run_all_the_components">7.5.3. Run all the components</a></li>
 </ul>
 </li>
 </ul>
@@ -793,14 +794,14 @@ It provides two programming models:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_lab_reactive_programming"><a class="anchor" href="#_lab_reactive_programming"></a><a class="link" href="#_lab_reactive_programming">4. Lab: Reactive Programming</a></h2>
+<h2 id="_intro_lab_reactive_programming"><a class="anchor" href="#_intro_lab_reactive_programming"></a><a class="link" href="#_intro_lab_reactive_programming">4. Intro-Lab: Reactive Programming</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Before we dive into the world of security, you have the chance to get a first glimpse on the difference between
 imperative and reactive programming style.</p>
 </div>
 <div class="paragraph">
-<p>To do this we can use the project <strong>00-reactive-playground</strong>.</p>
+<p>To do this we will look into the project <strong>intro-labs/reactive-playground</strong>.</p>
 </div>
 </div>
 </div>
@@ -912,7 +913,7 @@ This might help to better understand the sample application for beginners of Rea
 <h2 id="_basic_security_labs"><a class="anchor" href="#_basic_security_labs"></a><a class="link" href="#_basic_security_labs">6. Basic Security Labs</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To start the workshop please begin by adapting the <em>00-library-server</em> application.</p>
+<p>To start the workshop please begin by adapting the <strong>lab-1/initial-library-server</strong></p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -926,8 +927,8 @@ This might help to better understand the sample application for beginners of Rea
 always can just start over with the existing application of next step.</p>
 </div>
 <div class="paragraph">
-<p>For example if you could not manage to complete the tutorial based on <em>01-library-server</em>
-just continue using <em>02-library-server</em>.</p>
+<p>For example if you could not manage to complete the tutorial based on <strong>lab-1/initial-library-server</strong>
+just continue using <strong>lab-1/complete-library-server</strong>.</p>
 </div>
 </td>
 </tr>
@@ -1647,36 +1648,69 @@ replaced the default user with our own users from our MongoDB persistent storage
 <div class="paragraph">
 <p>If you restart the application now you have to use the following user credentials to log in:</p>
 </div>
+<div class="sect4">
+<h5 id="_users_and_roles"><a class="anchor" href="#_users_and_roles"></a><a class="link" href="#_users_and_roles">Users and roles</a></h5>
+<div class="paragraph">
+<p>There are three target user roles for this application:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>LIBRARY_USER: Standard library user who can list, borrow and return his currently borrowed books</p>
+</li>
+<li>
+<p>LIBRARY_CURATOR: A curator user who can add, edit or delete books</p>
+</li>
+<li>
+<p>LIBRARY_ADMIN: An administrator user who can list, add or remove users</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><em>Important:</em> We will use the following users in all subsequent labs from now on:</p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 2. User credentials</caption>
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Email</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Roles</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bwayne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:bruce.wayne@example.com">bruce.wayne@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">wayne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">curator</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bbanner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:bruce.banner@example.com">bruce.banner@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">banner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">admin</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pparker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:peter.parker@example.com">peter.parker@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">parker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ckent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:clark.kent@example.com">clark.kent@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_ADMIN</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1868,7 +1902,7 @@ Make sure you disable stacktraces in client error messages using property <em>se
 </table>
 </div>
 <div class="paragraph">
-<p>This is the end of step 2 of the workshop.</p>
+<p>This is the end of lab 2 of the workshop.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1878,7 +1912,7 @@ Make sure you disable stacktraces in client error messages using property <em>se
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <em>02-library-server</em>.</p>
+<p>You find the completed code in project <strong>lab-2/complete-library-server</strong>.</p>
 </div>
 </td>
 </tr>
@@ -1939,19 +1973,19 @@ by playing around with manipulated URL&#8217;s.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/books</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CURATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_CURATOR</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/books</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">DELETE</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CURATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_CURATOR</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/users</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_ADMIN</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/actuator/health</p></td>
@@ -1969,7 +2003,7 @@ by playing around with manipulated URL&#8217;s.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/actuator/*</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GET</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_ADMIN</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/*</p></td>
@@ -2348,7 +2382,7 @@ permitted to users with special roles.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <em>03-library-server</em>.</p>
+<p>You find the completed code in project <strong>lab-3/complete-library-server</strong>.</p>
 </div>
 </td>
 </tr>
@@ -2570,7 +2604,7 @@ The next step will dive into the world of token-based authentication.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <em>04-library-server</em>.</p>
+<p>You find the completed code in project <strong>lab-4/complete-library-server</strong>.</p>
 </div>
 </td>
 </tr>
@@ -2634,7 +2668,7 @@ using the requested service.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_openid_connect_1_0"><a class="anchor" href="#_openid_connect_1_0"></a><a class="link" href="#_openid_connect_1_0">7.1.2. OpenID Connect 1.0</a></h4>
+<h4 id="_openid_connect_1_0_oidc"><a class="anchor" href="#_openid_connect_1_0_oidc"></a><a class="link" href="#_openid_connect_1_0_oidc">7.1.2. OpenID Connect 1.0 (OIDC)</a></h4>
 <div class="paragraph">
 <p><a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect 1.0 (OIDC)</a> is build upon <a href="https://tools.ietf.org/html/rfc6749">OAuth2</a> and provides additional identity information
 to OAuth2. For common enterprise applications that typically require authentication OpenID Connect should be used.
@@ -2848,21 +2882,28 @@ OAuth2/OIDC Login Client and Resource Server - In a reactive way.</p>
 <div class="sect3">
 <h4 id="_what_we_will_build"><a class="anchor" href="#_what_we_will_build"></a><a class="link" href="#_what_we_will_build">7.1.5. What we will build</a></h4>
 <div class="paragraph">
-<p>In the <em>05-oauth2</em> project you will be provided the following sub-projects:</p>
+<p>In <strong>lab-5</strong> you will be provided the following sub-projects:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>initial-library-server</strong>: The reactive version of the library server (almost similar to workshop step <em>00-library-server</em>)</p>
+<p><strong>initial-resource-server</strong>: The initial library server (almost similar to workshop step <strong>lab-1/initial-library-server</strong>)</p>
 </li>
 <li>
-<p><strong>initial-oauth2-login-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client</p>
+<p><strong>complete-resource-server</strong>: The completed OIDC resource server (as reference)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In <strong>lab-6</strong> you will be provided the following sub-projects:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>initial-oidc-client</strong>: Initial code for this workshop part to implement the new OAuth2 Login Client</p>
 </li>
 <li>
-<p><strong>oauth2-login-client</strong>: Complete code of the new OAuth2 Login Client (for reference)</p>
-</li>
-<li>
-<p><strong>oauth2-library-server</strong>: Complete code of the reactive library OAuth2 resource server</p>
+<p><strong>complete-oidc-client</strong>: Complete code of the new OIDC Client (as reference)</p>
 </li>
 </ul>
 </div>
@@ -2889,50 +2930,50 @@ of Spring Security 5.1.</p>
 <div class="title">Figure 19. Library client, service and identity provider service</div>
 </div>
 <div class="paragraph">
-<p>These microservices have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
+<p>These micro-services have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Microservice URL Adresses</caption>
+<caption class="title">Table 5. Microservice &amp; Identity Provider URL Adresses</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Microservice</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">URL</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Management Service (OKTA)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Management Service (Keycloak)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080/auth">http://localhost:8080/auth</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library Client (OAuth2 Login Client)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081">http://localhost:8081</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library Client (OIDC Client)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081">http://localhost:9090</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library Server (OAuth2 Resource Server)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080">http://localhost:8080</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Library Server (OIDC Resource Server)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080">http://localhost:9092</a></p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
 <p>So now let&#8217;s start.
-Again, you will just use the provided <em>uaa</em> identity management server, the <em>initial-library-server</em>
-and the <em>initial-oauth2-login-client</em> as starting point and implement
-a OAuth2 resource server and login client based on the project.</p>
+Again, you will just use the provided <em>keycloak</em> identity management server, the <strong>lab-5/initial-resource-server</strong>
+and the <strong>lab-6/initial-oidc-client</strong> as starting point and implement
+an OAuth2/OIDC resource server and client based on the project.</p>
 </div>
 <div class="paragraph">
-<p>But first read important information about how to start the required <em>uaa</em> identity management server.</p>
+<p>But first read important information about how to setup and start the required <em>keycloak</em> identity management server.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="identity-server"><a class="anchor" href="#identity-server"></a><a class="link" href="#identity-server">7.2. Setup: Keycloak Identity Server</a></h3>
 <div class="paragraph">
-<p>For this workshop the OpenID Connect certified <a href="https://www.okta.com/products/customer-identity/authentication/">OKTA identity provider service</a> is used.
-This service provides solutions for authentication, authorization and user administration.
-For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens.</p>
+<p>For this workshop the OpenID Connect certified <a href="https://www.keycloak.org/">Keycloak identity provider server</a> is used.
+This provider supports solutions for authentication, authorization and user administration.
+For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens (JWT).</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2954,7 +2995,7 @@ to find a suitable identity management server for your project.</p>
 </div>
 <div class="paragraph">
 <p>To see the configuration please open the following url in your web browser:
-<a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration">Well known OIDC configuration</a></p>
+<a href="http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration">Well known OIDC configuration</a></p>
 </div>
 <div class="paragraph">
 <p>The important information provided by this is:</p>
@@ -2975,72 +3016,101 @@ to find a suitable identity management server for your project.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">issuer</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Issuer url for issued tokens by this identity server</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080/auth/realms/workshop" class="bare">http://localhost:8080/auth/realms/workshop</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">authorization_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Handles authorization, usually asking for credentials and returns an authorization code</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth" class="bare">http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">token_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Token endpoint (exchanges given authorization code for access token)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token" class="bare">http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">userinfo_endpoint</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Endpoint for requesting further user information</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo" class="bare">http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">jwks_uri</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Uri for loading public keys to verify signatures of JSON web tokens</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs" class="bare">http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs</a></p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>The OKTA identity service has been preconfigured with the following user credentials for login:</p>
+<p>To login into your local keycloak use the following user credentials:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Username: admin</p>
+</li>
+<li>
+<p>Password: admin</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The keycloak identity service has been preconfigured with the following user credentials
+for the workshop application:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 7. User credentials</caption>
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Email</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Roles</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bwayne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:bruce.wayne@example.com">bruce.wayne@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">wayne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bbanner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:bruce.banner@example.com">bruce.banner@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">banner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pparker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:peter.parker@example.com">peter.parker@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">parker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ckent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:clark.kent@example.com">clark.kent@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_ADMIN</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="sect2">
-<h3 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">7.3. Lab 1: OpenID Connect Resource Server</a></h3>
+<h3 id="auth-code-demo"><a class="anchor" href="#auth-code-demo"></a><a class="link" href="#auth-code-demo">7.3. Intro-Lab: Authorization Code Demo Client</a></h3>
+
+</div>
+<div class="sect2">
+<h3 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">7.4. Lab 5: OpenID Connect Resource Server</a></h3>
 <div class="paragraph">
 <p>For this workshop part the well-known library-server application is used and will be extended to act
  as a OAuth2 resource server.</p>
 </div>
 <div class="sect3">
-<h4 id="resource-server-gradle-dependencies"><a class="anchor" href="#resource-server-gradle-dependencies"></a><a class="link" href="#resource-server-gradle-dependencies">7.3.1. Gradle dependencies</a></h4>
+<h4 id="resource-server-gradle-dependencies"><a class="anchor" href="#resource-server-gradle-dependencies"></a><a class="link" href="#resource-server-gradle-dependencies">7.4.1. Gradle dependencies</a></h4>
 <div class="paragraph">
 <p>To use the new OAuth2 resource server support of Spring Security 5.1 you have to add the
 following required dependencies to the existing gradle build file.</p>
@@ -3105,7 +3175,7 @@ and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/
 </div>
 </div>
 <div class="sect3">
-<h4 id="_implementation_steps"><a class="anchor" href="#_implementation_steps"></a><a class="link" href="#_implementation_steps">7.3.2. Implementation steps</a></h4>
+<h4 id="_implementation_steps"><a class="anchor" href="#_implementation_steps"></a><a class="link" href="#_implementation_steps">7.4.2. Implementation steps</a></h4>
 <div class="paragraph">
 <p>First step is to configure an OAuth2 resource server. For this you have to register the corresponding
 identity server/authorization server to use.</p>
@@ -3398,7 +3468,7 @@ public class LibraryUserRolesJwtAuthenticationConverter
 </div>
 <div class="paragraph">
 <p>To start the resource server simply run the class <em>LibraryServerApplication</em> in
-project <em>05-oauth2-client/initial-library-server</em>.</p>
+project <strong>lab-5/complete-resource-server</strong>.</p>
 </div>
 <div class="paragraph">
 <p>In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.</p>
@@ -3406,9 +3476,9 @@ project <em>05-oauth2-client/initial-library-server</em>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="oauth2-login-client"><a class="anchor" href="#oauth2-login-client"></a><a class="link" href="#oauth2-login-client">7.4. Lab 2: OpenID Connect Client</a></h3>
+<h3 id="oauth2-login-client"><a class="anchor" href="#oauth2-login-client"></a><a class="link" href="#oauth2-login-client">7.5. Lab 6: OpenID Connect Client</a></h3>
 <div class="sect3">
-<h4 id="client-gradle-dependencies"><a class="anchor" href="#client-gradle-dependencies"></a><a class="link" href="#client-gradle-dependencies">7.4.1. Gradle dependencies</a></h4>
+<h4 id="client-gradle-dependencies"><a class="anchor" href="#client-gradle-dependencies"></a><a class="link" href="#client-gradle-dependencies">7.5.1. Gradle dependencies</a></h4>
 <div class="paragraph">
 <p>To use the new OAuth2 client support of Spring Security 5.0 you have to add the
 following required dependencies to the existing gradle build file.</p>
@@ -3448,7 +3518,7 @@ framework to support for example JSON Web Token (JWT)</td>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_implementation_steps_2"><a class="anchor" href="#_implementation_steps_2"></a><a class="link" href="#_implementation_steps_2">7.4.2. Implementation steps</a></h4>
+<h4 id="_implementation_steps_2"><a class="anchor" href="#_implementation_steps_2"></a><a class="link" href="#_implementation_steps_2">7.5.2. Implementation steps</a></h4>
 <div class="paragraph">
 <p>First step is to configure an OAuth2 login client. For this you have to register the corresponding
 identity server/authorization server to use.
@@ -3821,7 +3891,7 @@ public class UserInfoRestController {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">7.4.3. Run all the components</a></h4>
+<h4 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">7.5.3. Run all the components</a></h4>
 <div class="paragraph">
 <p>Finally start the two components:</p>
 </div>
@@ -3884,8 +3954,7 @@ This returns the book list from the library-server (resource server).</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <em>05-oauth2/oauth2-login-client</em>
-and <em>05-oauth2/oauth2-library-server</em>.</p>
+<p>You find the completed code in project <strong>lab-6/complete_oidc_client</strong>.</p>
 </div>
 </td>
 </tr>
@@ -3908,7 +3977,7 @@ using the provided QR code.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/qr_code_frankfurter_entwicklertag.png" alt="novatec">
+<img src="images/feedback_qr_code_entwicklertag_karlsruhe.jpg" alt="novatec">
 </div>
 </div>
 <div class="admonitionblock important">
@@ -4002,7 +4071,7 @@ conduct this workshop somewhere else please do not hesitate to contact me via</p
 <h2 id="_copyright_and_license"><a class="anchor" href="#_copyright_and_license"></a><a class="link" href="#_copyright_and_license">Appendix A: Copyright and License</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Copyright &#169; 2019 Andreas Falk.<br>
+<p>Copyright &#169; 2019 by Andreas Falk.<br>
 Free use of this software is granted under the terms of the Apache 2.0 License.</p>
 </div>
 </div>
@@ -4011,7 +4080,7 @@ Free use of this software is granted under the terms of the Apache 2.0 License.<
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0-SNAPSHOT<br>
-Last updated 2019-05-22 17:12:18 +0200
+Last updated 2019-05-27 18:41:44 +0200
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">
