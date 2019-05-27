@@ -4,7 +4,10 @@ import com.example.library.server.business.BookService;
 import com.example.library.server.business.UserResource;
 import com.example.library.server.business.UserService;
 import com.example.library.server.common.Role;
+import com.example.library.server.config.IdGeneratorConfiguration;
+import com.example.library.server.config.ModelMapperConfiguration;
 import com.example.library.server.config.UserRouter;
+import com.example.library.server.dataaccess.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +37,14 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
 
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
-@Import({UserHandler.class, UserRouter.class})
+@Import({
+  UserHandler.class,
+  UserRouter.class,
+  UserResourceAssembler.class,
+  BookResourceAssembler.class,
+  ModelMapperConfiguration.class,
+  IdGeneratorConfiguration.class
+})
 @AutoConfigureRestDocs
 @DisplayName("Verify user api")
 class UserApiIntegrationTests {
@@ -55,13 +65,13 @@ class UserApiIntegrationTests {
     given(userService.findAll())
         .willReturn(
             Flux.just(
-                new UserResource(
+                new User(
                     userId,
                     "test@example.com",
                     "test",
                     "first",
                     "last",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
 
     webClient
         .get()
@@ -89,13 +99,13 @@ class UserApiIntegrationTests {
     given(userService.findById(userId))
         .willReturn(
             Mono.just(
-                new UserResource(
+                new User(
                     userId,
                     "test@example.com",
                     "test",
                     "first",
                     "last",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
 
     webClient
         .get()
@@ -148,7 +158,7 @@ class UserApiIntegrationTests {
             "test",
             "first",
             "last",
-            Collections.singletonList(Role.USER));
+            Collections.singletonList(Role.LIBRARY_USER));
 
     given(userService.create(any()))
         .willAnswer(
