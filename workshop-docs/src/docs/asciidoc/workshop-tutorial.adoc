@@ -1039,13 +1039,50 @@ and the https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference
 First step is to configure an OAuth2 resource server. For this you have to register the corresponding
 identity server/authorization server to use.
 
+Spring security 5 uses the
+[OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig) specification
+to completely configure the resource server to use our keycloak instance.
+
+Navigate your web browser to the url [localhost:8080/auth/realms/workshop/.well-known/openid-configuration](http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration).
+Then you should see the public discovery information that keycloak provides
+(like the following that only shows partial information).
+
+```
+{
+  "issuer": "http://localhost:8080/auth/realms/workshop",
+  "authorization_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth",
+  "token_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token",
+  "userinfo_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo",
+  "jwks_uri": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs"
+}
+```
+
+For configuring a resource server the important entries are _issuer_ and _jwks_uri_.
+Spring Security 5 automatically configures a resource server by just specifying the _issuer_ uri value
+as part of the predefined spring property _spring.security.oauth2.resourceserver.jwt.issuer-uri_
+
+
 .application.yml file
 
 include::{snippets}/step-5-oauth2-resource-server-properties.adoc[]
 
+[NOTE]
+====
+An error you get very often with files in yaml format is that the indents are not correct.
+This can lead to unexpected errors later when you try to run all this stuff.
+====
+
+With this configuration in place we have already a working resource server
+that can handle JWt access tokens transmitted via http bearer token header.
+Spring Security also validates by default:
+
+* the JWT signature against the queried public key(s) from jwks_url
+* the JWT _iss_ claim against the configured issuer uri
+* that the JWT is not expired
+
 The issuer URI is used to retrieve the well known OpenID Connect configuration.
 
-.https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration
+.http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration
 
 include::{snippets}/step-5-well-known-oidc-config.adoc[]
 
@@ -1053,9 +1090,26 @@ The web security configuration looks like the ones we have seen before with all 
 rule settings. The addition here is just for replacing the basic authentication with bearer token authentication
 (expected in the http header). Additionally there are two possible alternative JWT converters referenced there.
 
+Usually this configuration would be sufficient but as we also want to make sure that
+our resource server is working with stateless token authentication we have to configure stateless
+sessions (i.e. prevent _JSESSION_ cookies).
+Starting with Spring Boot 2 you always have to configure Spring Security
+yourself as soon as you introduce a class that extends _WebSecurityConfigurerAdapter_.
+
 .WebSecurityConfiguration.java file
 
 include::{snippets}/step-5-oauth2-resource-server-websecurity.adoc[]
+
+This configuration above...
+
+* configures stateless sessions (i.e. no _JSESSION_ cookies)
+
+* disables CSRF protection (without session cookies we do not need this any more)
+  (which also makes it possible to make post requests on the command line)
+
+* protects any request (i.e. requires authentication)
+
+* enables this as a resource server with expecting access tokens in JWT format
 
 With mapping user information like roles you always have the choice between
 
@@ -1085,7 +1139,7 @@ In the following paragraphs we now proceed to the client side of the OAuth2/OIDC
 [[client-gradle-dependencies]]
 ==== Gradle dependencies
 
-To use the new OAuth2 client support of Spring Security 5.0 you have to add the
+To use the new OAuth2 client support of Spring Security 5.1 you have to add the
 following required dependencies to the existing gradle build file.
 
 .gradle.build file
@@ -1099,7 +1153,7 @@ These dependencies already have been added to the initial project.
 
 ==== Implementation steps
 
-First step is to configure an OAuth2 login client. For this you have to register the corresponding
+First step is to configure an OAuth2/OIDC client. For this you have to register the corresponding
 identity server/authorization server to use.
 Here you have two possibilities:
 
@@ -1119,8 +1173,28 @@ To use one of these providers is quite easy. Just reference the enumeration cons
 
 include::{snippets}/step-5-google-oauth2-provider-properties.adoc[]
 
+[NOTE]
+====
+You can find a sample application using the common provider for GitHub in project *intro-labs/github-client*.
+====
+
 But in this workshop we will focus on the second possibility and use our own custom identity provider service. +
 To achieve this we add the following sections to the _application.yml_ file.
+
+Spring security 5 uses the
+[OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig) specification
+to completely configure the client to use our keycloak instance.
+
+For configuring an OAuth2 client the important entries are _issuer_, _authorization_endpoint_,
+_token_endpoint_, _userinfo_endpoint_ and _jwks_uri_.
+Spring Security 5 automatically configures an OAuth2 client by just specifying the _issuer_ uri value
+as part of the predefined spring property _spring.security.oauth2.client.provider.[id].issuer-uri_.
+
+For OAuth2 clients you always have to specify the client registration (with client id, client secret,
+authorization grant type, redirect uri to your client callback and optionally the scope).
+The client registration requires an OAuth2 provider. If you want to use your own provider you have to configure
+at least the _issuer uri_. We want to change the default user name mapping for the user identity as well (
+using the user name instead of the default value 'sub').
 
 .application.yml client configuration
 
@@ -1129,15 +1203,22 @@ include::{snippets}/step-5-oauth2-client-properties.adoc[]
 As the library-server is now configured as an OAuth2 resource server it requires
 a valid JWT token to successfully call the _/books_ endpoint now.
 
-From client side we use the new _WebClient_ for calls to the RESTful service.
+For all requests to the resource server we use the reactive web client, that was introduced by Spring 5.
 WebClient is the successor of _RestTemplate_ and works for both worlds (Servlet-based and reactive).
 
-To support JWT tokens in calls we have to add a client interceptor to the _RestTemplate_.
+The next required step is to make this web client aware of transmitting the required bearer access tokens
+in the _Authorization_ header.
+
+To support JWT tokens in calls we have to add a client interceptor to the _WebClient_.
 The following code snippet shows how this is done:
 
 .WebClientConfiguration class
 
 include::{snippets}/step-5-webclient-configuration.adoc[]
+
+With this additions we add a filter function to the web client that automatically adds the
+access token to all requests and also initiates the authorization grant flow if no valid
+access token is available.
 
 Finally we need an updated client side security configuration to allow
 client endpoints and enable the OAuth2 client features:
@@ -1171,12 +1252,144 @@ This endpoint is mapped to a _@RestController_.
 
 include::{snippets}/step-5-oauth2-client-user-info-rest-controller.adoc[]
 
-==== Run all the components
+===== Configure web client authorities
+
+Same as on resource server side we don't want to use the automatic _SCOPE_xxx_ authorities but instead want to
+map again the _groups_ claim we get from the automatically called _userinfo_ endpoint to the expected _ROLE_xxx_
+authorities.
+
+To achieve this we have to extend the class _com.example.library.client.config.WebSecurityConfiguration_:
+
+```java
+package com.example.library.client.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Configuration
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+        .anyRequest()
+        .fullyAuthenticated()
+        .and()
+        .oauth2Client()
+        .and()
+        .oauth2Login()
+        .userInfoEndpoint()
+        .userAuthoritiesMapper(userAuthoritiesMapper());
+  }
+
+  private GrantedAuthoritiesMapper userAuthoritiesMapper() {
+    return (authorities) -> {
+      Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+
+      authorities.forEach(
+          authority -> {
+            if (authority instanceof OidcUserAuthority) {
+              OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
+
+              OidcIdToken idToken = oidcUserAuthority.getIdToken();
+              OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
+
+              List<SimpleGrantedAuthority> groupAuthorities =
+                  userInfo.getClaimAsStringList("groups").stream()
+                      .map(g -> new SimpleGrantedAuthority("ROLE_" + g.toUpperCase()))
+                      .collect(Collectors.toList());
+              mappedAuthorities.addAll(groupAuthorities);
+            }
+          });
+
+      return mappedAuthorities;
+    };
+  }
+}
+```
+
+With the snippet
+
+```
+...
+.oauth2Client()
+        .and()
+        .oauth2Login()
+        .userInfoEndpoint()
+        .userAuthoritiesMapper(userAuthoritiesMapper());
+```
+we configure an OAuth2 client and an OIDC login client and reconfigure the _userinfo_ endpoint user mapping
+to map authorities different as the standard one. The custom mapping is done in the implementation
+of the _GrantedAuthoritiesMapper_ interface that maps entries of the _groups_ claim to authority roles .
+
+<hr>
+
+===== Change authentication principal
+
+The final required step is to change the authentication principal from _org.springframework.security.core.userdetails.User_
+to _org.springframework.security.oauth2.core.oidc.user.OidcUser_.
+
+We have to change this in class _com.example.library.client.web.BookResource_:
+
+```
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+...
+public boolean isReturnBookAllowed() {
+    if (!isBorrowed()) {
+      return false;
+    }
+
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof OidcUser) {
+      OidcUser oidcUser =
+          (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      return borrowedBy != null && borrowedBy.getEmail().equals(oidcUser.getEmail());
+    } else {
+      // Always fail secure
+      return false;
+    }
+  }
+...
+```
+
+and We have to change this in class _com.example.library.client.web.BooksController_:
+
+    ```
+    import net.minidev.json.JSONArray;
+    import org.springframework.security.oauth2.core.user.OAuth2User;
+    ...
+    @GetMapping("/")
+      Mono<String> index(@AuthenticationPrincipal OAuth2User oauth2User, Model model) {
+
+        model.addAttribute("fullname", oauth2User.getName());
+        model.addAttribute(
+            "isCurator",
+            ((JSONArray) oauth2User.getAttributes().get("groups")).get(0).equals("library_curator"));
+        ...
+    }
+    ...
+    ```
+
+<hr>
+
+===== Run all the components
 
 Finally start the two components:
 
-* Run _LibraryServerApplication_ class in project _05-oauth2/initial-library-server_
-* Run _OAuth2LoginClientApplication_ class in project _05-oauth2/initial-oauth2-login-client_
+* Run _LibraryServerApplication_ class in project *lab-5/complete-resource-server*
+* Run _OAuth2LoginClientApplication_ class in project *lab-6/initial-oidc-client*
 
 Now when you access http://localhost:8081/userinfo[localhost:8081/userinfo] you should be redirected to the OKTA identity server.
 After logging in you should get the current authenticated user info back from identity server.
@@ -1185,20 +1398,51 @@ Here you can log in using one of these predefined users:
 
 .User credentials
 |===
-|User |Password |Roles
-|user@example.com
-|Library_access#1
-|USER
-|admin@example.com
-|Library_access#2
-|USER, CURATOR, ADMIN
-|curator@example.com
-|Library_access#3
-|USER, CURATOR
+| Username | Email | Password | Roles
+|bwayne
+|bruce.wayne@example.com
+|wayne
+|LIBRARY_USER
+|bbanner
+|bruce.banner@example.com
+|banner
+|LIBRARY_USER
+|pparker
+|peter.parker@example.com
+|parker
+|LIBRARY_CURATOR
+|ckent
+|clark.kent@example.com
+|kent
+|LIBRARY_ADMIN
 |===
 
 You can now access http://localhost:8081/books[localhost:8081/books] as well.
 This returns the book list from the library-server (resource server).
+
+===== Logout Users
+
+After you have logged in into the library client using keycloak your session will remain valid until
+the access token has expired or the session at keycloak is invalidated.
+
+As the library client does not have a logout functionality, you have to follow the following steps to actually log out
+users:
+
+* Login to keycloak http://localhost:8080/auth/admin[admin console] and navigate on the left to menu item _session_
+  Here you'll see all user sessions (active/offline ones). By clicking on button _Logout all_ you can revocate
+  all active sessions.
+
+image::images/keycloak_sessions.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+
+
+* After you have revocated sessions in keycloak you have to delete the current JSESSION cookie
+  for the library client. You can do this by opening the application tab in the developer tools of chrome.
+  Navigate to the cookies entry on the left and select the url of the library client, then delete the cookie
+  on the right hand side
+
+image::images/devtools_cookies.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+
+Now when you refresh the library client in the browser you should be redirected again to the login page of keycloak.
 
 [NOTE]
 ====

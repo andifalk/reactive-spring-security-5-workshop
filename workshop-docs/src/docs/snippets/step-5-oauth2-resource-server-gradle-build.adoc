@@ -2,13 +2,11 @@
 ----
 dependencies {
     ...
-    implementation('org.springframework.boot:spring-boot-starter-security') # <1>
-    implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server') # <2>
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server') # <1>
     testImplementation('org.springframework.security:spring-security-test') # <3>
 	...
 }
 ----
-<1> This contains all code for core components of spring security
-<2> This contains all code to build an OAuth 2.0/OIDC resource server (incl. support for JOSE (Javascript Object Signing and Encryption)
-<3> Testing support for spring security
+<1> This contains all code to build an OAuth 2.0/OIDC resource server (incl. support for JOSE (Javascript Object Signing and Encryption)
+<2> Testing support for spring security
 
