@@ -499,7 +499,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#client-gradle-dependencies">7.5.1. Gradle dependencies</a></li>
 <li><a href="#_implementation_steps_2">7.5.2. Implementation steps</a></li>
-<li><a href="#_run_all_the_components">7.5.3. Run all the components</a></li>
 </ul>
 </li>
 </ul>
@@ -3120,9 +3119,8 @@ following required dependencies to the existing gradle build file.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>dependencies {
     ...
-    implementation('org.springframework.boot:spring-boot-starter-security') <i class="conum" data-value="1"></i><b>(1)</b>
-    implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server') <i class="conum" data-value="2"></i><b>(2)</b>
-    testImplementation('org.springframework.security:spring-security-test') <i class="conum" data-value="3"></i><b>(3)</b>
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server') <i class="conum" data-value="1"></i><b>(1)</b>
+    testImplementation('org.springframework.security:spring-security-test') <i class="conum" data-value="2"></i><b>(2)</b>
 	...
 }</code></pre>
 </div>
@@ -3131,14 +3129,10 @@ following required dependencies to the existing gradle build file.</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This contains all code for core components of spring security</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>This contains all code to build an OAuth 2.0/OIDC resource server (incl. support for JOSE (Javascript Object Signing and Encryption)</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Testing support for spring security</td>
 </tr>
 </table>
@@ -3180,6 +3174,32 @@ and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/
 <p>First step is to configure an OAuth2 resource server. For this you have to register the corresponding
 identity server/authorization server to use.</p>
 </div>
+<div class="paragraph">
+<p>Spring security 5 uses the
+[OpenID Connect Discovery](<a href="https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig" class="bare">https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig</a>) specification
+to completely configure the resource server to use our keycloak instance.</p>
+</div>
+<div class="paragraph">
+<p>Navigate your web browser to the url [localhost:8080/auth/realms/workshop/.well-known/openid-configuration](<a href="http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration" class="bare">http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration</a>).
+Then you should see the public discovery information that keycloak provides
+(like the following that only shows partial information).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>{
+  "issuer": "http://localhost:8080/auth/realms/workshop",
+  "authorization_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth",
+  "token_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token",
+  "userinfo_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo",
+  "jwks_uri": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For configuring a resource server the important entries are <em>issuer</em> and <em>jwks_uri</em>.
+Spring Security 5 automatically configures a resource server by just specifying the <em>issuer</em> uri value
+as part of the predefined spring property <em>spring.security.oauth2.resourceserver.jwt.issuer-uri</em></p>
+</div>
 <div class="listingblock">
 <div class="title">application.yml file</div>
 <div class="content">
@@ -3199,11 +3219,44 @@ identity server/authorization server to use.</p>
 </tr>
 </table>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>An error you get very often with files in yaml format is that the indents are not correct.
+This can lead to unexpected errors later when you try to run all this stuff.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With this configuration in place we have already a working resource server
+that can handle JWt access tokens transmitted via http bearer token header.
+Spring Security also validates by default:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the JWT signature against the queried public key(s) from jwks_url</p>
+</li>
+<li>
+<p>the JWT <em>iss</em> claim against the configured issuer uri</p>
+</li>
+<li>
+<p>that the JWT is not expired</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
 <p>The issuer URI is used to retrieve the well known OpenID Connect configuration.</p>
 </div>
 <div class="listingblock">
-<div class="title"><a href="https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration" class="bare">https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration</a></div>
+<div class="title"><a href="http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration" class="bare">http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration</a></div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>{
   "issuer": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7",
@@ -3241,6 +3294,13 @@ identity server/authorization server to use.</p>
 rule settings. The addition here is just for replacing the basic authentication with bearer token authentication
 (expected in the http header). Additionally there are two possible alternative JWT converters referenced there.</p>
 </div>
+<div class="paragraph">
+<p>Usually this configuration would be sufficient but as we also want to make sure that
+our resource server is working with stateless token authentication we have to configure stateless
+sessions (i.e. prevent <em>JSESSION</em> cookies).
+Starting with Spring Boot 2 you always have to configure Spring Security
+yourself as soon as you introduce a class that extends <em>WebSecurityConfigurerAdapter</em>.</p>
+</div>
 <div class="listingblock">
 <div class="title">WebSecurityConfiguration.java file</div>
 <div class="content">
@@ -3255,6 +3315,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -3272,7 +3333,11 @@ public class WebSecurityConfiguration {
 
   @Bean
   public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-    http.csrf()
+        http
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .csrf()
         .disable()
         .authorizeExchange()
         .matchers(PathRequest.toStaticResources().atCommonLocations())
@@ -3332,6 +3397,26 @@ public class WebSecurityConfiguration {
 <td>Configures a JWT authentication converter to map JWT to an Authentication object</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>This configuration above&#8230;&#8203;</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>configures stateless sessions (i.e. no <em>JSESSION</em> cookies)</p>
+</li>
+<li>
+<p>disables CSRF protection (without session cookies we do not need this any more)
+(which also makes it possible to make post requests on the command line)</p>
+</li>
+<li>
+<p>protects any request (i.e. requires authentication)</p>
+</li>
+<li>
+<p>enables this as a resource server with expecting access tokens in JWT format</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>With mapping user information like roles you always have the choice between</p>
@@ -3480,7 +3565,7 @@ project <strong>lab-5/complete-resource-server</strong>.</p>
 <div class="sect3">
 <h4 id="client-gradle-dependencies"><a class="anchor" href="#client-gradle-dependencies"></a><a class="link" href="#client-gradle-dependencies">7.5.1. Gradle dependencies</a></h4>
 <div class="paragraph">
-<p>To use the new OAuth2 client support of Spring Security 5.0 you have to add the
+<p>To use the new OAuth2 client support of Spring Security 5.1 you have to add the
 following required dependencies to the existing gradle build file.</p>
 </div>
 <div class="listingblock">
@@ -3520,7 +3605,7 @@ framework to support for example JSON Web Token (JWT)</td>
 <div class="sect3">
 <h4 id="_implementation_steps_2"><a class="anchor" href="#_implementation_steps_2"></a><a class="link" href="#_implementation_steps_2">7.5.2. Implementation steps</a></h4>
 <div class="paragraph">
-<p>First step is to configure an OAuth2 login client. For this you have to register the corresponding
+<p>First step is to configure an OAuth2/OIDC client. For this you have to register the corresponding
 identity server/authorization server to use.
 Here you have two possibilities:</p>
 </div>
@@ -3610,9 +3695,41 @@ public enum CommonOAuth2Provider {
 </tr>
 </table>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can find a sample application using the common provider for GitHub in project <strong>intro-labs/github-client</strong>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>But in this workshop we will focus on the second possibility and use our own custom identity provider service.<br>
 To achieve this we add the following sections to the <em>application.yml</em> file.</p>
+</div>
+<div class="paragraph">
+<p>Spring security 5 uses the
+[OpenID Connect Discovery](<a href="https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig" class="bare">https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig</a>) specification
+to completely configure the client to use our keycloak instance.</p>
+</div>
+<div class="paragraph">
+<p>For configuring an OAuth2 client the important entries are <em>issuer</em>, <em>authorization_endpoint</em>,
+<em>token_endpoint</em>, <em>userinfo_endpoint</em> and <em>jwks_uri</em>.
+Spring Security 5 automatically configures an OAuth2 client by just specifying the <em>issuer</em> uri value
+as part of the predefined spring property <em>spring.security.oauth2.client.provider.[id].issuer-uri</em>.</p>
+</div>
+<div class="paragraph">
+<p>For OAuth2 clients you always have to specify the client registration (with client id, client secret,
+authorization grant type, redirect uri to your client callback and optionally the scope).
+The client registration requires an OAuth2 provider. If you want to use your own provider you have to configure
+at least the <em>issuer uri</em>. We want to change the default user name mapping for the user identity as well (
+using the user name instead of the default value 'sub').</p>
 </div>
 <div class="listingblock">
 <div class="title">application.yml client configuration</div>
@@ -3653,11 +3770,15 @@ spring:
 a valid JWT token to successfully call the <em>/books</em> endpoint now.</p>
 </div>
 <div class="paragraph">
-<p>From client side we use the new <em>WebClient</em> for calls to the RESTful service.
+<p>For all requests to the resource server we use the reactive web client, that was introduced by Spring 5.
 WebClient is the successor of <em>RestTemplate</em> and works for both worlds (Servlet-based and reactive).</p>
 </div>
 <div class="paragraph">
-<p>To support JWT tokens in calls we have to add a client interceptor to the <em>RestTemplate</em>.
+<p>The next required step is to make this web client aware of transmitting the required bearer access tokens
+in the <em>Authorization</em> header.</p>
+</div>
+<div class="paragraph">
+<p>To support JWT tokens in calls we have to add a client interceptor to the <em>WebClient</em>.
 The following code snippet shows how this is done:</p>
 </div>
 <div class="listingblock">
@@ -3704,6 +3825,11 @@ public class WebClientConfiguration {
 <td>Add the filter to webclient</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>With this additions we add a filter function to the web client that automatically adds the
+access token to all requests and also initiates the authorization grant flow if no valid
+access token is available.</p>
 </div>
 <div class="paragraph">
 <p>Finally we need an updated client side security configuration to allow
@@ -3889,19 +4015,171 @@ public class UserInfoRestController {
 </tr>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_configure_web_client_authorities"><a class="anchor" href="#_configure_web_client_authorities"></a><a class="link" href="#_configure_web_client_authorities">Configure web client authorities</a></h5>
+<div class="paragraph">
+<p>Same as on resource server side we don&#8217;t want to use the automatic <em>SCOPE_xxx</em> authorities but instead want to
+map again the <em>groups</em> claim we get from the automatically called <em>userinfo</em> endpoint to the expected <em>ROLE_xxx</em>
+authorities.</p>
 </div>
-<div class="sect3">
-<h4 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">7.5.3. Run all the components</a></h4>
+<div class="paragraph">
+<p>To achieve this we have to extend the class <em>com.example.library.client.config.WebSecurityConfiguration</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.example.library.client.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Configuration
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+        .anyRequest()
+        .fullyAuthenticated()
+        .and()
+        .oauth2Client()
+        .and()
+        .oauth2Login()
+        .userInfoEndpoint()
+        .userAuthoritiesMapper(userAuthoritiesMapper());
+  }
+
+  private GrantedAuthoritiesMapper userAuthoritiesMapper() {
+    return (authorities) -&gt; {
+      Set&lt;GrantedAuthority&gt; mappedAuthorities = new HashSet&lt;&gt;();
+
+      authorities.forEach(
+          authority -&gt; {
+            if (authority instanceof OidcUserAuthority) {
+              OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
+
+              OidcIdToken idToken = oidcUserAuthority.getIdToken();
+              OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
+
+              List&lt;SimpleGrantedAuthority&gt; groupAuthorities =
+                  userInfo.getClaimAsStringList("groups").stream()
+                      .map(g -&gt; new SimpleGrantedAuthority("ROLE_" + g.toUpperCase()))
+                      .collect(Collectors.toList());
+              mappedAuthorities.addAll(groupAuthorities);
+            }
+          });
+
+      return mappedAuthorities;
+    };
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With the snippet</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>...
+.oauth2Client()
+        .and()
+        .oauth2Login()
+        .userInfoEndpoint()
+        .userAuthoritiesMapper(userAuthoritiesMapper());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>we configure an OAuth2 client and an OIDC login client and reconfigure the <em>userinfo</em> endpoint user mapping
+to map authorities different as the standard one. The custom mapping is done in the implementation
+of the <em>GrantedAuthoritiesMapper</em> interface that maps entries of the <em>groups</em> claim to authority roles .</p>
+</div>
+<div class="paragraph">
+<p>&lt;hr&gt;</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_change_authentication_principal"><a class="anchor" href="#_change_authentication_principal"></a><a class="link" href="#_change_authentication_principal">Change authentication principal</a></h5>
+<div class="paragraph">
+<p>The final required step is to change the authentication principal from <em>org.springframework.security.core.userdetails.User</em>
+to <em>org.springframework.security.oauth2.core.oidc.user.OidcUser</em>.</p>
+</div>
+<div class="paragraph">
+<p>We have to change this in class <em>com.example.library.client.web.BookResource</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+...
+public boolean isReturnBookAllowed() {
+    if (!isBorrowed()) {
+      return false;
+    }
+
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof OidcUser) {
+      OidcUser oidcUser =
+          (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      return borrowedBy != null &amp;&amp; borrowedBy.getEmail().equals(oidcUser.getEmail());
+    } else {
+      // Always fail secure
+      return false;
+    }
+  }
+...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and We have to change this in class <em>com.example.library.client.web.BooksController</em>:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>```
+import net.minidev.json.JSONArray;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+...
+@GetMapping("/")
+  Mono&lt;String&gt; index(@AuthenticationPrincipal OAuth2User oauth2User, Model model) {</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    model.addAttribute("fullname", oauth2User.getName());
+    model.addAttribute(
+        "isCurator",
+        ((JSONArray) oauth2User.getAttributes().get("groups")).get(0).equals("library_curator"));
+    ...
+}
+...
+```</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>&lt;hr&gt;</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">Run all the components</a></h5>
 <div class="paragraph">
 <p>Finally start the two components:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Run <em>LibraryServerApplication</em> class in project <em>05-oauth2/initial-library-server</em></p>
+<p>Run <em>LibraryServerApplication</em> class in project <strong>lab-5/complete-resource-server</strong></p>
 </li>
 <li>
-<p>Run <em>OAuth2LoginClientApplication</em> class in project <em>05-oauth2/initial-oauth2-login-client</em></p>
+<p>Run <em>OAuth2LoginClientApplication</em> class in project <strong>lab-6/initial-oidc-client</strong></p>
 </li>
 </ul>
 </div>
@@ -3915,36 +4193,90 @@ After logging in you should get the current authenticated user info back from id
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 8. User credentials</caption>
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Email</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Roles</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:user@example.com">user@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bwayne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:bruce.wayne@example.com">bruce.wayne@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">wayne</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:admin@example.com">admin@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR, ADMIN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bbanner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:bruce.banner@example.com">bruce.banner@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">banner</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:curator@example.com">curator@example.com</a></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Library_access#3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">USER, CURATOR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">pparker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:peter.parker@example.com">peter.parker@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">parker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_CURATOR</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ckent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="mailto:clark.kent@example.com">clark.kent@example.com</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">kent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_ADMIN</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
 <p>You can now access <a href="http://localhost:8081/books">localhost:8081/books</a> as well.
 This returns the book list from the library-server (resource server).</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_logout_users"><a class="anchor" href="#_logout_users"></a><a class="link" href="#_logout_users">Logout Users</a></h5>
+<div class="paragraph">
+<p>After you have logged in into the library client using keycloak your session will remain valid until
+the access token has expired or the session at keycloak is invalidated.</p>
+</div>
+<div class="paragraph">
+<p>As the library client does not have a logout functionality, you have to follow the following steps to actually log out
+users:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Login to keycloak <a href="http://localhost:8080/auth/admin">admin console</a> and navigate on the left to menu item <em>session</em>
+Here you&#8217;ll see all user sessions (active/offline ones). By clicking on button <em>Logout all</em> you can revocate
+all active sessions.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/keycloak_sessions.png" alt="novatec">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>After you have revocated sessions in keycloak you have to delete the current JSESSION cookie
+for the library client. You can do this by opening the application tab in the developer tools of chrome.
+Navigate to the cookies entry on the left and select the url of the library client, then delete the cookie
+on the right hand side</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/devtools_cookies.png" alt="novatec">
+</div>
+</div>
+<div class="paragraph">
+<p>Now when you refresh the library client in the browser you should be redirected again to the login page of keycloak.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -3963,6 +4295,7 @@ This returns the book list from the library-server (resource server).</p>
 <div class="paragraph">
 <p>This concludes our Spring Security 5.1 hands-on workshop.
 I hope you learned a lot regarding security and especially Spring Security 5.1.</p>
+</div>
 </div>
 </div>
 </div>
@@ -4080,7 +4413,7 @@ Free use of this software is granted under the terms of the Apache 2.0 License.<
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0-SNAPSHOT<br>
-Last updated 2019-05-27 18:41:44 +0200
+Last updated 2019-05-27 23:11:19 +0200
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">

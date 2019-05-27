@@ -3,7 +3,7 @@
 dependencies {
     ...
     implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server') # <1>
-    testImplementation('org.springframework.security:spring-security-test') # <3>
+    testImplementation('org.springframework.security:spring-security-test') # <2>
 	...
 }
 ----
