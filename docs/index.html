@@ -1,6 +1,933 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Refresh" content="0; url=https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html" />
-</head>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Reactive Spring Security 5 Workshop</title>
+        <meta name="description" content="Reactive Spring Security 5 Workshop">
+        <meta name="author" content="Andreas Falk">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="icon" href="images/cropped-novatec-favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" href="images/cropped-novatec-favicon-192x192.png" sizes="192x192" />
+
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/novatec.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+                <!-- Introduction -->
+                <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h2 style="color: white">Reactive</h2>
+                        <h2 style="color: white">Spring Security 5</h2>
+                        <h2 style="color: white">Workshop</h2>
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop">https://andifalk.github.io/reactive-spring-security-5-workshop</a></small></p>
+                    </section>
+                    <section data-background-color="white">
+                        <img class="plain" src="images/andreas_falk.jpg" width="40%">
+                        <h4>Andreas Falk</h4>
+                        <p><strong>Novatec Consulting GmbH</strong></p>
+                        <p><small>
+                            <a href="https://www.novatec-gmbh.de/">https://www.novatec-gmbh.de</a><br>
+                            andreas.falk@novatec-gmbh.de / @andifalk<br>
+                        </small></p>
+                        <p><img class="plain" src="images/novatec_logo_big.png" width="40%"></p>
+                    </section>
+                    <section data-background="images/novatec_at_glance.png">
+                    </section>
+                    <section>
+                        <img src="images/novatec_challenges.png" class="plain" width="100%">
+                    </section>
+                </section>
+
+                <!-- Why Security ? -->
+
+                <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h1 style="color: white">Why Security ?</h1>
+                    </section>
+                    <section data-background="images/agile_security_attacks.svg" data-background-size="85%">
+                    </section>
+                    <section>
+                        <iframe width="800" height="600" src="https://www.youtube.com/embed/M7qMP3C5bkU?start=919"
+                                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                    </section>
+                    <section>
+                        <img alt="manico_tweet" src="images/jim_manico_tweet_developer_security.png" class="plain" width="100%">
+                    </section>
+                    <section>
+                        <img alt="maslow" src="images/software-quality-maslow.png" class="plain" width="82%">
+                        <p><small><a href="https://gojko.net/2012/05/08/redefining-software-quality/">https://gojko.net/2012/05/08/redefining-software-quality/</a></small></p>
+                    </section>
+                    <section>
+                        <img alt="big picture" src="images/big_picture_security.png" class="plain" width="100%">
+                    </section>
+                    <section>
+                        <h4>OWASP Top 10 2017</h4>
+                        <img alt="owasp top 10" src="images/owasp_top_10_2017_changes.png" class="plain">
+                        <p><small><a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">https://www.owasp.org/index.php/Top_10-2017_Top_10</a></small></p>
+                    </section>
+                </section>
+
+                <section>
+                    <section data-background-color="white">
+                        <h2>The</h2>
+                        <h2>Reactive Spring Security Workshop</h2>
+                        <p>
+                            <small>
+                                <a href="https://andifalk.github.io/reactive-spring-security-5-workshop">https://andifalk.github.io/reactive-spring-security-5-workshop</a>
+                            </small>
+                        </p>
+                        <img src="images/reactor_spring.png" class="plain" width="30%">
+                    </section>
+                    <section data-background="images/novatec_agenda_back.png">
+                        <div style="text-align: left; margin-left: -2em; margin-top: 2em">
+                            <h3>Part 1</h3>
+                            <ol>
+                                <li>Introduction to Reactive Programming</li>
+                                <li>Spring Security Basics (Hands-On)</li>
+                                <ul>
+                                    <li>Authentication</li>
+                                    <li>Password Security & Upgrades</li>
+                                    <li>Authorization</li>
+                                    <li>Automated Security Tests</li>
+                                </ul>
+                                <li>Lunch-Break</li>
+                            </ol>
+                        </div>
+                    </section>
+                    <section data-background="images/novatec_agenda_back.png">
+                        <div style="text-align: left; margin-left: -2em; margin-top: 2em">
+                            <h3>Part 2</h3>
+                            <ol>
+                                <li>Introduction into OAuth 2</li>
+                                <li>Introduction into OpenID Connect</li>
+                                <li>Spring Security OAuth2/OIDC (Hands-On)</li>
+                                <ul>
+                                    <li>Authorization Code Flow Demo</li>
+                                    <li>Resource Server</li>
+                                    <li>OIDC Client</li>
+                                </ul>
+                                <li>What's new in Spring Security 5.2 and 5.3</li>
+                            </ol>
+                        </div>
+                    </section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">In the meantime...</h2>
+                        <p style="color: white">&ldquo;git clone https://tinyurl.com/yylensdd security_workshop&rdquo;</p>
+                        <p style="color: white">import as gradle project into your Java IDE</p>
+                    </section>
+                    <section>
+                        <h3>Target Application:</h3>
+                        <h3>An online books library</h3>
+                        <p>Create Books</p>
+                        <p>Delete Books</p>
+                        <p>List Books</p>
+                        <p>Get Book Details</p>
+                        <p>Borrow Books</p>
+                        <p>Return Books</p>
+                    </section>
+                    <section data-background="images/workshop_lab_1.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_2.png" data-background-size="75%">
+                    </section>
+                    <section>
+                        <img src="images/library_app_api.png" class="plain">
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html">https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html</a></small></p>
+                    </section>
+                    <section>
+                        <h1>Workshop Steps</h1>
+                        <img src="images/steps-388914_1920.jpg" class="plain" width="75%">
+                    </section>
+                    <section data-background="images/workshop_lab_3.png" data-background-size="90%">
+                    </section>
+                    <section data-background="images/workshop_lab_4.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_5.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_6.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_7.png" data-background-size="80%">
+                    </section>
+                </section>
+
+                <section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">Let's start...</h2>
+                    </section>
+                    <section>
+                        <h2>Requirements</h2>
+                        <p>Internet Access</p>
+                        <p>Java JDK version 8, 9 or 11</p>
+                        <p>A Java IDE (Eclipse, STS, IntelliJ, VS Code, NetBeans, ...)</p>
+                    </section>
+                    <section>
+                        <h2>Workshop Code</h2>
+                        <p>Get via <em>git clone</em> or download as zip file:</p>
+                        <p><a href="https://github.com/andifalk/reactive-spring-security-5-workshop">https://github.com/andifalk/reactive-spring-security-5-workshop</a></p>
+                    </section>
+                    <section>
+                        <h2>Workshop Tutorial</h2>
+                        <p><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html</a></p>
+                        <p><a href="https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf">https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf</a></p>
+                    </section>
+                    <section data-background="images/workshop_lab_3.png" data-background-size="90%">
+                    </section>
+                    <section data-background="images/basic_auth.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/session_auth.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_4.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_5.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_6.png" data-background-size="80%">
+                    </section>
+                    <section data-background="images/workshop_lab_7.png" data-background-size="80%">
+                    </section>
+                </section>
+
+                <section>
+                    <section data-background="images/novatec_agenda_back.png">
+                        <div style="text-align: left; margin-left: -2em; margin-top: 2em">
+                            <h3>Part 2</h3>
+                            <ol>
+                                <li>Introduction into OAuth 2</li>
+                                <li>Introduction into OpenID Connect</li>
+                                <li>Spring Security OAuth2/OIDC (Hands-On)</li>
+                                <ul>
+                                    <li>Authorization Code Flow Demo</li>
+                                    <li>Resource Server</li>
+                                    <li>OIDC Client</li>
+                                </ul>
+                                <li>What's new in Spring Security 5.2 and 5.3</li>
+                            </ol>
+                        </div>
+                    </section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">In the meantime...</h2>
+                        <p style="color: white">git clone https://tinyurl.com/yylensdd oidc_workshop</p>
+                        <p style="color: white">import as gradle project into your Java IDE</p>
+                        <p style="color: white">AND</p>
+                        <p style="color: white">copy/extract keycloak.zip from provided USB sticks</p>
+                        <p style="color: white">OR follow setup instructions at https://tinyurl.com/y3rgohqo</p>
+                    </section>
+                </section>
+
+                <!-- Introduction into OAuth 2.0 and OpenID Connect 1.0 -->
+                <section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h1 style="color: white">OAuth 2.0</h1>
+                        <h2 style="color: white">101</h2>
+                        <p>
+                            <small>
+                                <a href="https://tools.ietf.org/html/rfc6749">RFC 6749: The OAuth 2.0 Authorization Framework</a><br>
+                                <a href="https://tools.ietf.org/html/rfc6750">RFC 6750: OAuth 2.0 Bearer Token Usage</a><br>
+                                <a href="https://tools.ietf.org/html/rfc6819">RFC 6819: OAuth 2.0 Threat Model and Security Considerations</a>
+                            </small>
+                        </p>
+                    </section>
+                    <section>
+                        <h2>What is OAuth 2.0?</h2>
+                        <p>
+                            OAuth 2.0 is an authorization delegation framework<br>
+                        </p>
+                        <img src="images/Valet_Ferrari.png" class="plain" width="70%">
+                    </section>
+                    <section>
+                        <h3>OAuth 2.0 Model</h3>
+                        <img src="images/oauth2_protocol.png" class="plain">
+                    </section>
+                    <section>
+                        <h3>OAuth 2.0 Grant Flows</h3>
+                        <table style="font-size: smaller">
+                            <thead>
+                            <tr>
+                                <th>Client Type</th>
+                                <th>Flow</th>
+                                <th>Refresh Tokens</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Confidential</td>
+                                <td>Authorization Code</td>
+                                <td>X</td>
+                            </tr>
+                            <tr>
+                                <td>Public (Native)</td>
+                                <td>Authorization Code (PKCE)</td>
+                                <td>X</td>
+                            </tr>
+                            <tr>
+                                <td>Public (SPA)</td>
+                                <td>Implicit</td>
+                                <td>--</td>
+                            </tr>
+                            <tr>
+                                <td>Trusted</td>
+                                <td>RO Password Creds</td>
+                                <td>X</td>
+                            </tr>
+                            <tr>
+                                <td>No Resource Owner</td>
+                                <td>Client Credentials</td>
+                                <td>--</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section>
+                        <h4>Authorization Code Grant Flow</h4>
+                        <img src="images/authorization_code_schema.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_1.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_2.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_3.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_4.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_5.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_6.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_7.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_8.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_9.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_10.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_11.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_12.png" class="plain" width="100%">
+                    </section>
+                    <section data-transition="none">
+                        <h4>Authorization code grant flow</h4>
+                        <img src="images/authorization_code_13.png" class="plain" width="100%">
+                    </section>
+                    <section data-background="images/title_image.png">
+                        <h4 style="color: white">We'll see</h4>
+                        <h3 style="color: white">Authorization Code Grant Flow</h3>
+                        <p style="color: white">in action as part of <a href="https://github.com/andifalk/oidc-workshop-spring-io-2019/tree/master/intro-labs/auth-code-demo">Intro Lab</a></p>
+                    </section>
+                    <section>
+                        <h3>Implicit Flow Attacks</h3>
+                        <img class="plain" src="images/oauth_implicit_grant_attacks_d_fett.png" width="100%">
+                        <br><small>Source: Torsten Lodderstedt and Daniel Fett</small>
+                        <p><small><a href="https://tools.ietf.org/html/draft-ietf-oauth-security-topics">OAuth 2.0 Security Best Current Practice</a></small></p>
+                    </section>
+                    <section>
+                        <h3>&ldquo;OAuth 2.1&rdquo; Grant Flows</h3>
+                        <table style="font-size: smaller">
+                            <thead>
+                            <tr>
+                                <th>Client Type</th>
+                                <th>Flow</th>
+                                <th>Refresh Tokens</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Confidential</td>
+                                <td style="font-weight: bold">Authorization Code (PKCE)</td>
+                                <td>X</td>
+                            </tr>
+                            <tr>
+                                <td>Public (Native)</td>
+                                <td>Authorization Code (PKCE)</td>
+                                <td>X</td>
+                            </tr>
+                            <tr>
+                                <td>Public (SPA)</td>
+                                <td style="font-weight: bold">Authorization Code (PKCE)</td>
+                                <td>--</td>
+                            </tr>
+                            <tr style="text-decoration: line-through;">
+                                <td>Trusted</td>
+                                <td>RO Password Creds</td>
+                                <td>X</td>
+                            </tr>
+                            <tr>
+                                <td>No Resource Owner</td>
+                                <td>Client Credentials</td>
+                                <td>--</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section>
+                        <h2>Proof Key for Code Exchange by OAuth Public Clients (PKCE)</h2>
+                        <p>(&ldquo;Pixy&rdquo;)</p>
+                        <p>Mitigates authorization code attacks</p>
+                        <p>Mitigates token leakage in SPAs</p>
+                        <p>
+                            <small>
+                                <a href="https://tools.ietf.org/html/rfc7636">Proof Key for Code Exchange by OAuth Public Clients</a>
+                            </small>
+                        </p>
+                    </section>
+                    <section>
+                        <h4>PKCE - Authorization Request</h4>
+                        <p style="text-align: left">GET https://authserver.example.com/authorize</p>
+                        <p style="text-align: left; margin-left: 100px;">?response_type=code</p>
+                        <p style="text-align: left; margin-left: 100px;">&client_id=abcdefg</p>
+                        <p style="text-align: left; margin-left: 100px;">&redirect_uri=https://client.abc.com/callback</p>
+                        <p style="text-align: left; margin-left: 100px;">&scope=api.read api.write</p>
+                        <p style="text-align: left; margin-left: 100px;">&state=xyz</p>
+                        <p style="text-align: left; margin-left: 100px; color: red;">&code_challenge=xyz...</p>
+                        <p style="text-align: left; margin-left: 100px; color: red;">&code_challenge_method=S256</p>
+                    </section>
+                    <section>
+                        <h4>PKCE - Token Request</h4>
+                        <p style="text-align: left">POST https://authserver.example.com/token</p>
+                        <p style="text-align: left; margin-left: 60px;">Content-Type: <br>application/x-www-form-urlencoded</p>
+                        <p style="text-align: left; margin-left: 60px;">grant_type=authorization_code&code=ab23bhW56Xb</p>
+                        <p style="text-align: left; margin-left: 60px;">&redirect_uri=https://client.abc.com/callback</p>
+                        <p style="text-align: left; margin-left: 60px;">&client_id=123&client_secret=456</p>
+                        <p style="text-align: left; margin-left: 60px; color: red;">&code_verifier=4gth4jn78k_8</p>
+                    </section>
+                    <section>
+                        <h3>OAuth 2 Access Token JWT Profile</h3>
+                        <p>Required claims: iss, exp, aud, sub, client_id</p>
+                        <p>Consider privacy restrictions for identity claims</p>
+                        <p>Authorization claims according to SCIM Core (RFC7643):</p>
+                        <ul>
+                            <li>Groups</li>
+                            <li>Entitlements</li>
+                            <li>Roles</li>
+                        </ul>
+                        <p>
+                            <small>
+                                <a href="https://tools.ietf.org/pdf/rfc7643.pdf">System for Cross-domain Identity Management (SCIM)</a><br>
+                                <a href="https://tools.ietf.org/html/draft-ietf-oauth-access-token-jwt">JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens</a>
+                            </small>
+                        </p>
+                    </section>
+                </section>
+
+                <!-- OpenID Connect 1.0 -->
+                <section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">OpenID Connect 1.0</h2>
+                        <h2 style="color: white">101</h2>
+                        <small>
+                            <p>
+                                <a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect Core 1.0</a><br>
+                                <a href="https://openid.net/specs/openid-connect-registration-1_0.html">OpenID Connect Dynamic Client Registration 1.0</a><br>
+                                <a href="https://openid.net/specs/openid-connect-discovery-1_0.html">OpenID Connect Discovery 1.0</a>
+                            </p>
+                        </small>
+                    </section>
+                    <section>
+                        <h3>OpenID Connect 1.0 is for Authentication</h3>
+                        <img src="images/manico_tweet_oauth2_not_authentication.png" class="plain" width="100%">
+                        <p>
+                            <small>
+                                <a href="https://oauth.net/articles/authentication/">OAuth 2.0 is not an authentication protocol</a>
+                            </small>
+                        </p>
+                    </section>
+                    <section>
+                        <h3>OIDC Model</h3>
+                        <img src="images/oidc_roles.png" class="plain" width="70%">
+                    </section>
+                    <section>
+                        <h3>Additions to OAuth 2.0</h3>
+                        <p>Id Token (JWT format)</p>
+                        <p>User Info Endpoint</p>
+                        <p>OpenID Provider Configuration Information</p>
+                    </section>
+                    <section>
+                        <h3>ID Token</h3>
+                        <h4>JSON Web token (JWT)</h4>
+                        <p>Base 64 Encoded JSON Formatted Value of...</p>
+                        <p class="fragment">...Header</p>
+                        <p class="fragment">...Payload</p>
+                        <p class="fragment">...Signature</p>
+                        <pre><code class="http" data-trim>
+                            GET / HTTP/1.1
+                            Host: localhost:8080
+                            Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1N...
+                        </code></pre>
+                        <small>
+                            <ul>
+                                <li><a href="https://tools.ietf.org/html/rfc7519">RFC 7519: JSON Web Token (JWT)</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-jwt-bcp">JSON Web Token Best Current Practices</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-proof-of-possession">Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs)</a></li>
+                            </ul>
+                        </small>
+                    </section>
+                    <section>
+                        <h3>JSON Web Token (JWT)</h3>
+                        <p>Header</p>
+                        <pre><code class="json" data-trim>
+                            {
+                              typ: "JWT",
+                              alg: "RS256"
+                            }
+                        </code></pre>
+                        <p>Payload</p>
+                        <pre><code class="json" data-trim>
+                            {
+                              iss: "https://identity.example.com",
+                              aud: "my-client-id",
+                              exp: 1495782385,
+                              nonce: "N0.46824857243233511495739124749",
+                              iat: 1495739185,
+                              at_hash: "hC1NDSB8WZ9SnjXTid175A",
+                              sub: "mysubject",
+                              auth_time: 1495739185,
+                              email: "test@gmail.com"
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>ID Token Claims</h2>
+                        <table style="font-size: smaller">
+                            <thead>
+                            <tr>
+                                <th>Scope</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>iss</td>
+                                <td>X</td>
+                                <td>Issuer Identifier</td>
+                            </tr>
+                            <tr>
+                                <td>sub</td>
+                                <td>X</td>
+                                <td>Subject Identifier</td>
+                            </tr>
+                            <tr>
+                                <td>aud</td>
+                                <td>X</td>
+                                <td>Audience(s) of this ID Token</td>
+                            </tr>
+                            <tr>
+                                <td>exp</td>
+                                <td>X</td>
+                                <td>Expiration time</td>
+                            </tr>
+                            <tr>
+                                <td>iat</td>
+                                <td>X</td>
+                                <td>Time at which the JWT was issued</td>
+                            </tr>
+                            <tr>
+                                <td>auth_time</td>
+                                <td>(X)</td>
+                                <td>Time of End-User authentication</td>
+                            </tr>
+                            <tr>
+                                <td>nonce</td>
+                                <td>--</td>
+                                <td>Associate a client with an ID Token</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section>
+                        <h2>Token Validation</h2>
+                        <p>
+                            <img src="images/token_validation.png" class="plain">
+                        </p>
+                    </section>
+                    <section>
+                        <h2>User Info Endpoint</h2>
+                        <pre><code class="http" data-trim>
+                            GET /userinfo HTTP/1.1
+                            Host: identityserver.example.com
+                            Authorization: Bearer SlAV32hkKG
+                        </code></pre>
+                        <pre><code class="http" data-trim>
+                            HTTP/1.1 200 OK
+                            Content-Type: application/json
+
+                            {
+                             "sub": "248289761001",
+                             "name": "Jane Doe",
+                             "given_name": "Jane",
+                             "family_name": "Doe",
+                             "preferred_username": "j.doe",
+                             "email": "janedoe@example.com",
+                             "picture": "http://example.com/janedoe/me.jpg"
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h3>OpenID Connect 1.0 Configuration</h3>
+                        <p>https://example.com/.well-known/openid-configuration</p>
+                        <pre><code class="json" data-trim>
+                            {
+                              "authorization_endpoint": "https://idp.example.com/auth",
+                              "grant_types_supported": [
+                                  "authorization_code",
+                                  "implicit",
+                                  "refresh_token"
+                              ],
+                              "issuer": "https://idp.example.com",
+                              "jwks_uri": "https://idp.example.com/keys",
+                              "token_endpoint": "https://idp.example.com/token",
+                              "userinfo_endpoint": "https://idp.example.com/userinfo",
+                              ...
+                            }
+                        </code></pre>
+                        <p>
+                            <small>
+                                <a href="https://openid.net/specs/openid-connect-discovery-1_0.html">OpenID Connect Discovery 1.0</a>
+                            </small>
+                        </p>
+                    </section>
+                </section>
+
+                <!-- OIDC Workshop -->
+
+                <section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">Hands-On Part</h2>
+                        <h3 style="color: white">OAuth 2.0 & OpenID Connect 1.0</h3>
+                        <h3 style="color: white">With Spring Security 5</h3>
+                    </section>
+                    <section>
+                        <h2>&ldquo;Legacy&rdquo; Spring Security OAuth 2 Stack</h2>
+                        <img src="images/spring_security_old.png" class="plain">
+                    </section>
+                    <section data-transition="none">
+                        <h2>&ldquo;New&rdquo; Spring Security <br> OAuth 2 Stack</h2>
+                        <img src="images/spring_security_new.png" class="plain">
+                    </section>
+                    <section data-transition="none">
+                        <h2>&ldquo;New&rdquo; Spring Security <br> OAuth 2 Stack</h2>
+                        <img class="plain" src="images/spring_security_new.png">
+                        <h4 style="color: red">We will use THIS stack !!!</h4>
+                    </section>
+
+                </section>
+
+                <section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">Let's Code!!</h2>
+                        <p style="color: white">git clone https://tinyurl.com/yylensdd oidc_workshop</p>
+                        <p style="color: white">import as gradle project into your Java IDE</p>
+                        <p style="color: white">AND</p>
+                        <p style="color: white">copy/extract keycloak.zip from provided USB sticks</p>
+                    </section>
+                    <section>
+                        <h3>Setup Keycloak</h3>
+                        <p>Follow setup instructions at: https://tinyurl.com/y3rgohqo</p>
+                        <ol>
+                            <li>Download the binary distribution: https://tinyurl.com/y2dcuu2o</li>
+                            <li>Extract the downloaded <strong>keycloak-6.0.1.zip</strong> file</li>
+                            <li>Download the prepared keycloak configuration: https://tinyurl.com/y3gpuwkj</li>
+                            <li>Extract the downloaded file <strong>keycloak_data.zip</strong> into the sub directory <em>standalone</em> of extracted keycloak</li>
+                        </ol>
+                    </section>
+                    <section>
+                        <h3>Start Keycloak</h3>
+                        <p>
+                            Start keycloak on Linux/Mac OS
+                        <pre><code class="hljs" data-trim>
+                            [keycloak_install_dir]/bin/standalone.sh
+                        </code></pre>
+                        or on Windows
+                        <pre><code class="hljs" data-trim>
+                            [keycloak_install_dir]\bin\standalone.bat
+                        </code></pre>
+                        </p>
+                    </section>
+                    <section>
+                        <h2>Intro-Lab</h2>
+                        <h3>Authorization Code Grant Flow</h3>
+                        <h3>In Action</h3>
+                        <p>See <a href="https://github.com/andifalk/https://andifalk.github.io/reactive-spring-security-5-workshop/tree/master/intro-labs/auth-code-demo">intro-labs/auth-code-demo</a> for instructions</p>
+                    </section>
+                    <section>
+                        <h2>Hands-On application</h2>
+                        <h3>An online book library</h3>
+                        <p>Administer Books</p>
+                        <p>List available Books</p>
+                        <p>Borrow a Book</p>
+                        <p>Return a borrowed Book</p>
+                        <p>Administer Library Users</p>
+                    </section>
+                    <section>
+                        <h2>Hands-On application</h2>
+                        <img class="plain" src="images/demo-architecture.png" width="100%">
+                    </section>
+                    <section>
+                        <h2>Hands-On Labs</h2>
+                        <ul>
+                            <li>Lab 1: OAuth2/OIDC Resource Server</li>
+                            <li>Lab 2: OAuth2/OIDC Client (Auth Code Flow)</li>
+                            <li>Lab 3: OAuth2/OIDC Client (Client-Credentials Flow)</li>
+                            <li>Lab 4: OAuth2/OIDC Testing Environment</li>
+                        </ul>
+                        <p style="color: darkblue">Please follow online tutorial in GitHub Repo</p>
+                    </section>
+                </section>
+
+                <!-- What is new in Spring Security -->
+
+                <section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">What's new in</h2>
+                        <h2 style="color: white">Spring Security</h2>
+                        <h2 style="color: white">5.2 & 5.3</h2>
+                    </section>
+                    <section>
+                        <h2>Spring Security 5.2 (08/2019)</h2>
+                        <ul>
+                            <li><a href="https://github.com/spring-projects/spring-security/issues/6446">Client Support for PKCE</a></li>
+                            <li><a href="https://github.com/spring-projects/spring-security/issues/5350">OpenID Connect RP-Initiated Logout</a></li>
+                            <li><a href="https://github.com/spring-projects/spring-security/issues/5200">Support for OAuth 2.0 Token Introspection</a></li>
+                            <li><a href="https://github.com/spring-projects/spring-security/issues/5351">Resource Server Multi-tenancy (Servlet & Reactive)</a></li>
+                            <li><a href="https://github.com/spring-projects/spring-security/issues/5465">Use symmetric keys with JwtDecoder</a></li>
+                            <li><a href="https://github.com/spring-projects/spring-security/issues/6634">JWT Flow API in Test Support</a></li>
+                        </ul>
+                        <p>
+                            <small>
+                                <a href="https://github.com/spring-projects/spring-security/milestone/132">Spring Security 5.2.0 M2 GitHub Issues</a><br>
+                                <a href="https://github.com/spring-projects/spring-security/milestone/141">Spring Security 5.2.0 M3 GitHub Issues</a><br>
+                                <a href="https://github.com/spring-projects/spring-security/milestone/142">Spring Security 5.2.0 RC1 GitHub Issues</a><br>
+                            </small>
+                        </p>
+                    </section>
+                    <section>
+                        <h3>OAuth 2.0 Token Introspection</h3>
+                        <p>Opaque Tokens</p>
+                        <pre><code class="java" data-trim>
+                            class ResSrvConfig extends WebSecurityConfigurerAdapter {
+
+                                @Override
+                                protected void configure(HttpSecurity http)
+                                        throws Exception {
+                                    http.oauth2ResourceServer()
+                                            .opaqueToken()
+                                                .introspectionUri(this.introspectionUri)
+                                                .introspectionClientCredentials(
+                                                    this.clientId, this.clientSecret);
+                                }
+                            }
+                        </code></pre>
+                        <small>
+                            <a href="https://github.com/spring-projects/spring-security/issues/5200">https://github.com/spring-projects/spring-security/issues/5200</a>
+                        </small>
+                    </section>
+                    <section>
+                        <h3>Resource Server Multi-tenancy</h3>
+                        <pre><code class="java" data-trim>
+                            class ResSrvConfig extends WebSecurityConfigurerAdapter {
+
+                                @Override protected void configure(HttpSecurity http) {
+                                    http.oauth2ResourceServer()
+                                        .authenticationManagerResolver(
+                                            multitenantAuthenticationManager());
+                                }
+
+                                @Bean AuthenticationManagerResolver&lt;HttpServletRequest&gt;
+                                    multiTenantAuthMgr() {...}
+
+                                AuthenticationManager jwt() {...}
+                                AuthenticationManager opaque() {...}
+                            }
+                        </code></pre>
+                        <small>
+                            <a href="https://github.com/spring-projects/spring-security/issues/5351">https://github.com/spring-projects/spring-security/issues/5351</a><br>
+                            <a href="https://github.com/spring-projects/spring-security/issues/6727">https://github.com/spring-projects/spring-security/issues/6727</a>
+                        </small>
+                    </section>
+                    <section>
+                        <h4>Use symmetric keys with JwtDecoder</h4>
+                        <pre><code class="java" data-trim>
+                            class ResSrvConfig extends WebSecurityConfigurerAdapter {
+
+                              @Value("${spring.security.oauth2.resourceserver.
+                                            jwt.key-value}") RSAPublicKey key;
+
+                              @Override protected void configure(HttpSecurity http) {
+                                http.oauth2ResourceServer().jwt().decoder(jwtDecoder());
+                              }
+
+                              @Bean JwtDecoder jwtDecoder() throws Exception {
+                                  return NimbusJwtDecoder.
+                                          withPublicKey(this.key).build();
+                              }
+                            }
+                        </code></pre>
+                        <small>
+                            <a href="https://github.com/spring-projects/spring-security/issues/5465">https://github.com/spring-projects/spring-security/issues/5465</a>
+                        </small>
+                    </section>
+                    <section>
+                        <h4>JWT Flow API in Test Support</h4>
+                        <pre><code class="java" data-trim>
+                            public class OAuth2ResourceServerTest {
+
+                                @Test
+                                public void testRequestPostProcessor() {
+                                  mockMvc.perform(get("/message")
+                                  .with(mockAccessToken().scope("message:read")))
+                                  .andExpect(status().isOk())
+
+                                  mockMvc.perform(get("/")
+                                  .with(jwt().claim(SUB, "the-subject")))
+                                  .andExpect(status().isOk())
+                                }
+                            }
+                        </code></pre>
+                        <small>
+                            <a href="https://github.com/spring-projects/spring-security/issues/6634">https://github.com/spring-projects/spring-security/issues/6634</a>
+                        </small>
+                    </section>
+                    <section>
+                        <h2>Spring Security 5.3</h2>
+                        <p><a href="https://github.com/spring-projects/spring-security/issues/6320">Support OAuth 2.0 Authorization Server:</a></p>
+                        <ul>
+                            <li>OAuth 2.0 Authorization Code Grant</li>
+                            <li>OpenID Connect 1.0 (Authorization Code Flow)</li>
+                            <li>PKCE</li>
+                            <li>OAuth 2.0 Client Credentials Grant</li>
+                            <li>JWT Access Token format</li>
+                            <li>JWK Set Endpoint</li>
+                            <li>Opaque Access Token format</li>
+                            <li>OAuth 2.0 Token Revocation</li>
+                        </ul>
+                        <p><small><a href="https://github.com/spring-projects/spring-security/milestone/136">Spring Security 5.3.0 GitHub Issues</a></small></p>
+                    </section>
+                </section>
+
+                <!-- The End -->
+                <section>
+                    <section>
+                        <h2>Book References</h2>
+                        <img src="images/iron-glad-java.jpg" class="plain" width="24%">
+                        <img src="images/devops-handbook.jpg" class="plain" width="20%">
+                        <img src="images/oauth2_in_action.jpg" class="plain" width="24%">
+                        <img src="images/agile-security-book.jpg" class="plain" width="24%">
+                    </section>
+                    <section>
+                        <h2>Online References</h2>
+                        <small>
+                            <ul>
+                                <li><a href="https://tools.ietf.org/html/rfc6749">RFC 6749: The OAuth 2.0 Authorization Framework</a></li>
+                                <li><a href="https://tools.ietf.org/html/rfc6750">RFC 6750: OAuth 2.0 Bearer Token Usage</a></li>
+                                <li><a href="https://tools.ietf.org/html/rfc6819">RFC 6819: OAuth 2.0 Threat Model and Security Considerations</a></li>
+                                <li><a href="http://tools.ietf.org/html/rfc7636">RFC 7636: Proof Key for Code Exchange (&ldquo;Pixy&rdquo;)</a></li>
+                                <li><a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect Core 1.0</a></li>
+                                <li><a href="https://openid.net/specs/openid-connect-registration-1_0.html">OpenID Connect Dynamic Client Registration 1.0</a></li>
+                                <li><a href="https://openid.net/specs/openid-connect-discovery-1_0.html">OpenID Connect Discovery 1.0</a></li>
+                                <li><a href="https://tools.ietf.org/html/rfc7519">RFC 7519: JSON Web Token (JWT)</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-jwt-bcp">JSON Web Token Best Current Practices</a></li>
+                                <li><a href="https://sec.uni-stuttgart.de/events/osw2019">4. OAuth Security Workshop 2019 event web page</a></li>
+                                <li><a href="https://medium.com/oauth-2/why-you-should-stop-using-the-oauth-implicit-grant-2436ced1c926">Why you should stop using the OAuth implicit grant</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-security-topics">OAuth 2.0 Security Best Current Practice</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-browser-based-apps-01">OAuth 2.0 for Browser-Based Apps</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-mtls">OAuth 2.0 Mutual TLS Client Authentication and Certificate-Bound Access Tokens</a></li>
+                                <li><a href="https://tools.ietf.org/html/draft-ietf-oauth-access-token-jwt">JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens</a></li>
+                                <li><a href="https://spring.io/projects/spring-security">Spring Security</a></li>
+                            </ul>
+                            <p>All images used are from <a href="https://pixabay.com/">Pixabay</a> and are published under <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en">Creative Commons CC0 license.</a></p>
+                            All used logos are trademarks of respective companies
+                        </small>
+                    </section>
+                    <section data-background="images/novatec_final_back.png">
+                        <div style="text-align: left; margin-left: -2em; margin-top: -2em">
+                        <h4 style="color: white">Andreas Falk / @andifalk</h4>
+                        <p style="color: white">
+                        Novatec Consulting GmbH<br>
+                        Dieselstraße 18/1<br>
+                        D-70771 Leinfelden-Echterdingen<br>
+                        andreas.falk@novatec-gmbh.de
+                        </p>
+                        <a href="https://www.novatec-gmbh.de">https://www.novatec-gmbh.de</a>
+                        </div>
+                    </section>
+                    <section data-background="images/andrena_feedback.png">
+                    </section>
+                </section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+                hash: true,
+                fragmentInURL: false,
+                dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+                    { src: 'plugin/print-pdf/print-pdf.js' },
+                    { src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/tagcloud/tagcloud.js', async: true },
+                    { src: 'plugin/elapsed-time-bar/elapsed-time-bar.js'},
+					{ src: 'plugin/highlight/highlight.js', async: true }
+				]
+			});
+            Reveal.configure({
+                slideNumber: 'c/t',
+                pdfMaxPagesPerSlide: 1
+            });
+		</script>
+	</body>
 </html>
