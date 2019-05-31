@@ -61,14 +61,14 @@ public class DataInitializer implements CommandLineRunner {
         .saveAll(
             Flux.just(
                 new User(
-                        USER_WAYNE_IDENTIFIER,
+                    USER_WAYNE_IDENTIFIER,
                     "bruce.wayne@example.com",
                     "wayne",
                     "Bruce",
                     "Wayne",
                     Collections.singletonList(Role.LIBRARY_USER)),
                 new User(
-                        USER_BANNER_IDENTIFIER,
+                    USER_BANNER_IDENTIFIER,
                     "bruce.banner@example.com",
                     "banner",
                     "Bruce",

@@ -1,9 +1,9 @@
 package com.example.library.server.common;
 
 public enum Role {
-  USER,
+  LIBRARY_USER,
 
-  CURATOR,
+  LIBRARY_CURATOR,
 
-  ADMIN
+  LIBRARY_ADMIN
 }

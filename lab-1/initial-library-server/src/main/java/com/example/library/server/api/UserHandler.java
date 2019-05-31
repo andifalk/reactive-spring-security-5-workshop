@@ -1,6 +1,5 @@
 package com.example.library.server.api;
 
-import com.example.library.server.business.UserResource;
 import com.example.library.server.business.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -38,6 +37,7 @@ public class UserHandler {
   public Mono<ServerResponse> getUser(ServerRequest request) {
     return userService
         .findById(UUID.fromString(request.pathVariable("userId")))
+        .map(userResourceAssembler::toResource)
         .flatMap(
             ur ->
                 ok().contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -50,6 +50,8 @@ public class UserHandler {
   }
 
   public Mono<ServerResponse> createUser(ServerRequest request) {
-    return ok().build(userService.create(request.bodyToMono(UserResource.class).map(userResourceAssembler::toModel)));
+    return ok().build(
+            userService.create(
+                request.bodyToMono(CreateUserResource.class).map(userResourceAssembler::toModel)));
   }
 }

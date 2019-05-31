@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Document(collection = "books")
@@ -60,16 +61,32 @@ public class Book {
     return isbn;
   }
 
+  public void setIsbn(String isbn) {
+    this.isbn = isbn;
+  }
+
   public String getTitle() {
     return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getDescription() {
     return description;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public List<String> getAuthors() {
     return authors;
+  }
+
+  public void setAuthors(List<String> authors) {
+    this.authors = authors;
   }
 
   public boolean isBorrowed() {
@@ -94,20 +111,23 @@ public class Book {
     }
   }
 
-  public void setIsbn(String isbn) {
-    this.isbn = isbn;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Book book = (Book) o;
+    return borrowed == book.borrowed
+        && id.equals(book.id)
+        && isbn.equals(book.isbn)
+        && title.equals(book.title)
+        && Objects.equals(description, book.description)
+        && authors.equals(book.authors)
+        && Objects.equals(borrowedBy, book.borrowedBy);
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setAuthors(List<String> authors) {
-    this.authors = authors;
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, isbn, title, description, authors, borrowed, borrowedBy);
   }
 
   @Override

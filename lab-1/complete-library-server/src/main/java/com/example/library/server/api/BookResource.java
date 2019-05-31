@@ -1,4 +1,4 @@
-package com.example.library.server.business;
+package com.example.library.server.api;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

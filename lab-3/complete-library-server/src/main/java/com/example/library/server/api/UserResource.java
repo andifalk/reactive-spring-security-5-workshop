@@ -1,7 +1,6 @@
-package com.example.library.server.business;
+package com.example.library.server.api;
 
 import com.example.library.server.common.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
@@ -13,21 +12,17 @@ public class UserResource {
 
   private String email;
 
-  @JsonIgnore private String password;
-
   private String firstName;
 
   private String lastName;
 
-  @JsonIgnore private List<Role> roles;
+  private List<Role> roles;
 
   public UserResource() {}
 
-  public UserResource(
-      UUID id, String email, String password, String firstName, String lastName, List<Role> roles) {
+  public UserResource(UUID id, String email, String firstName, String lastName, List<Role> roles) {
     this.id = id;
     this.email = email;
-    this.password = password;
     this.firstName = firstName;
     this.lastName = lastName;
     this.roles = roles;
@@ -71,14 +66,6 @@ public class UserResource {
 
   public void setRoles(List<Role> roles) {
     this.roles = roles;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
   }
 
   @Override

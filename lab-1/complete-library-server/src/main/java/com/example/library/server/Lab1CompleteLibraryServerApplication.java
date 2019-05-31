@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class LibraryServerApplication {
+public class Lab1CompleteLibraryServerApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(LibraryServerApplication.class, args);
+    SpringApplication.run(Lab1CompleteLibraryServerApplication.class, args);
   }
 }

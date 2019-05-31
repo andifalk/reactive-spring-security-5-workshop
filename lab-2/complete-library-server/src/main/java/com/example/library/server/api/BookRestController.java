@@ -1,6 +1,5 @@
 package com.example.library.server.api;
 
-import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,14 +28,17 @@ public class BookRestController {
 
   private final BookService bookService;
 
+  private final BookResourceAssembler bookResourceAssembler;
+
   @Autowired
-  public BookRestController(BookService bookService) {
+  public BookRestController(BookService bookService, BookResourceAssembler bookResourceAssembler) {
     this.bookService = bookService;
+    this.bookResourceAssembler = bookResourceAssembler;
   }
 
   @GetMapping("/books")
   public Flux<BookResource> getAllBooks() {
-    return bookService.findAll();
+    return bookService.findAll().map(bookResourceAssembler::toResource);
   }
 
   @GetMapping("/books/" + PATH_BOOK_ID)
@@ -44,6 +46,7 @@ public class BookRestController {
       @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId) {
     return bookService
         .findById(bookId)
+        .map(bookResourceAssembler::toResource)
         .map(ResponseEntity::ok)
         .defaultIfEmpty(ResponseEntity.notFound().build());
   }
@@ -61,7 +64,7 @@ public class BookRestController {
   @ResponseStatus(HttpStatus.CREATED)
   @PostMapping("/books")
   public Mono<Void> createBook(@RequestBody Mono<BookResource> bookResource) {
-    return bookService.create(bookResource);
+    return bookService.create(bookResource.map(bookResourceAssembler::toModel));
   }
 
   @DeleteMapping("/books/" + PATH_BOOK_ID)

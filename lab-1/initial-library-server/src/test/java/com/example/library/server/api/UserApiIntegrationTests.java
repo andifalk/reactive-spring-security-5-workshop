@@ -1,55 +1,61 @@
 package com.example.library.server.api;
 
 import com.example.library.server.business.BookService;
-import com.example.library.server.business.UserResource;
 import com.example.library.server.business.UserService;
-import com.example.library.server.common.Role;
 import com.example.library.server.config.IdGeneratorConfiguration;
 import com.example.library.server.config.ModelMapperConfiguration;
 import com.example.library.server.config.UserRouter;
 import com.example.library.server.dataaccess.User;
+import com.example.library.server.dataaccess.UserBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebFluxTest
 @Import({
-  UserHandler.class,
   UserRouter.class,
-  UserResourceAssembler.class,
+  UserHandler.class,
   BookResourceAssembler.class,
+  UserResourceAssembler.class,
   ModelMapperConfiguration.class,
   IdGeneratorConfiguration.class
 })
-@AutoConfigureRestDocs
 @DisplayName("Verify user api")
 class UserApiIntegrationTests {
 
-  @Autowired private WebTestClient webClient;
+  @Autowired private ApplicationContext applicationContext;
+
+  private WebTestClient webTestClient;
 
   @MockBean private UserService userService;
 
@@ -57,23 +63,27 @@ class UserApiIntegrationTests {
   @MockBean
   private BookService bookService;
 
+  @BeforeEach
+  void setUp(RestDocumentationContextProvider restDocumentation) {
+    this.webTestClient =
+        WebTestClient.bindToApplicationContext(applicationContext)
+            .configureClient()
+            .filter(
+                documentationConfiguration(restDocumentation)
+                    .operationPreprocessors()
+                    .withRequestDefaults(prettyPrint())
+                    .withResponseDefaults(prettyPrint()))
+            .build();
+  }
+
   @Test
   @DisplayName("to get list of users")
   void verifyAndDocumentGetUsers() {
 
     UUID userId = UUID.randomUUID();
-    given(userService.findAll())
-        .willReturn(
-            Flux.just(
-                new User(
-                    userId,
-                    "test@example.com",
-                    "test",
-                    "first",
-                    "last",
-                    Collections.singletonList(Role.LIBRARY_USER))));
+    given(userService.findAll()).willReturn(Flux.just(UserBuilder.user().withId(userId).build()));
 
-    webClient
+    webTestClient
         .get()
         .uri("/users")
         .accept(MediaType.APPLICATION_JSON)
@@ -84,7 +94,8 @@ class UserApiIntegrationTests {
         .json(
             "[{\"id\":\""
                 + userId
-                + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}]")
+                + "\",\"email\":\"john.doe@example.com\","
+                + "\"firstName\":\"John\",\"lastName\":\"Doe\"}]")
         .consumeWith(
             document(
                 "get-users", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
@@ -97,17 +108,9 @@ class UserApiIntegrationTests {
     UUID userId = UUID.randomUUID();
 
     given(userService.findById(userId))
-        .willReturn(
-            Mono.just(
-                new User(
-                    userId,
-                    "test@example.com",
-                    "test",
-                    "first",
-                    "last",
-                    Collections.singletonList(Role.LIBRARY_USER))));
+        .willReturn(Mono.just(UserBuilder.user().withId(userId).build()));
 
-    webClient
+    webTestClient
         .get()
         .uri("/users/{userId}", userId)
         .accept(MediaType.APPLICATION_JSON)
@@ -118,7 +121,9 @@ class UserApiIntegrationTests {
         .json(
             "{\"id\":\""
                 + userId
-                + "\",\"email\":\"test@example.com\",\"firstName\":\"first\",\"lastName\":\"last\"}")
+                + "\",\"email\":\"john.doe@example.com\","
+                + "\"firstName\":\"John\",\"lastName\":\"Doe\","
+                + "\"roles\":[\"LIBRARY_USER\"]}")
         .consumeWith(
             document(
                 "get-user", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
@@ -131,7 +136,7 @@ class UserApiIntegrationTests {
     UUID userId = UUID.randomUUID();
     given(userService.deleteById(userId)).willReturn(Mono.empty());
 
-    webClient
+    webTestClient
         .delete()
         .uri("/users/{userId}", userId)
         .accept(MediaType.APPLICATION_JSON)
@@ -151,23 +156,22 @@ class UserApiIntegrationTests {
   @DisplayName("to create a new user")
   void verifyAndDocumentCreateUser() throws JsonProcessingException {
 
+    UUID userId = UUID.randomUUID();
+
+    User expectedUser = UserBuilder.user().withId(userId).build();
+
     UserResource userResource =
-        new UserResource(
-            UUID.randomUUID(),
-            "test@example.com",
-            "test",
-            "first",
-            "last",
-            Collections.singletonList(Role.LIBRARY_USER));
+        new CreateUserResource(
+            userId,
+            expectedUser.getEmail(),
+            expectedUser.getPassword(),
+            expectedUser.getFirstName(),
+            expectedUser.getLastName(),
+            expectedUser.getRoles());
 
-    given(userService.create(any()))
-        .willAnswer(
-            i -> {
-              ((Mono<UserResource>) i.getArgument(0)).subscribe();
-              return Mono.empty();
-            });
+    given(userService.create(any())).willAnswer(i -> Mono.empty());
 
-    webClient
+    webTestClient
         .post()
         .uri("/users")
         .accept(MediaType.APPLICATION_JSON)
@@ -182,5 +186,10 @@ class UserApiIntegrationTests {
                 "create-user",
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint())));
+
+    ArgumentCaptor<Mono> userArg = ArgumentCaptor.forClass(Mono.class);
+    verify(userService).create(userArg.capture());
+
+    assertThat(userArg.getValue().block()).isNotNull().isEqualTo(expectedUser);
   }
 }

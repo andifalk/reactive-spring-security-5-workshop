@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Document(collection = "books")
@@ -108,6 +109,25 @@ public class Book {
       this.borrowed = false;
       this.borrowedBy = null;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Book book = (Book) o;
+    return borrowed == book.borrowed
+        && id.equals(book.id)
+        && isbn.equals(book.isbn)
+        && title.equals(book.title)
+        && Objects.equals(description, book.description)
+        && authors.equals(book.authors)
+        && Objects.equals(borrowedBy, book.borrowedBy);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, isbn, title, description, authors, borrowed, borrowedBy);
   }
 
   @Override

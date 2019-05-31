@@ -33,6 +33,7 @@ test {
 }
 
 asciidoctor {
+    inputs.dir snippetsDir
     setOptions([
             'doctype': 'book',
             'backend': 'html5'
@@ -66,6 +67,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
     testImplementation('io.projectreactor:reactor-test')
+    asciidoctor('org.springframework.restdocs:spring-restdocs-asciidoctor')
     testImplementation('org.springframework.restdocs:spring-restdocs-webtestclient')
     testImplementation('org.mockito:mockito-junit-jupiter')
     testImplementation('org.junit.jupiter:junit-jupiter-api')

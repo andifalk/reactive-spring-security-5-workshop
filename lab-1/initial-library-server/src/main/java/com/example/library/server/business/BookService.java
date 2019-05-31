@@ -17,9 +17,7 @@ public class BookService {
   private final UserRepository userRepository;
 
   @Autowired
-  public BookService(
-      BookRepository bookRepository,
-      UserRepository userRepository) {
+  public BookService(BookRepository bookRepository, UserRepository userRepository) {
     this.bookRepository = bookRepository;
     this.userRepository = userRepository;
   }

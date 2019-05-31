@@ -1,6 +1,5 @@
 package com.example.library.server.api;
 
-import com.example.library.server.business.BookResource;
 import com.example.library.server.business.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
