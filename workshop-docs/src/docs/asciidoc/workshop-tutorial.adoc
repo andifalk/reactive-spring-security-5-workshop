@@ -11,9 +11,9 @@ Andreas Falk <andreas.falk@novatec-gmbh.de>
 :numbered: ''
 :docinfo:
 
-.Karlsruher Entwicklertag 2019
+.Reactive Spring Security 5 Workshop
 
-image::images/entwicklertag-karlsruhe.jpeg[scaledwidth="40%", scaledheight="40%",alt="novatec"]
+image::images/reactor_spring.png[scaledwidth="40%", scaledheight="40%",alt="novatec"]
 
 .Welcome to the **Reactive Spring Security 5.1 Hands-On Workshop**.
 
@@ -1453,20 +1453,13 @@ This concludes our Spring Security 5.1 hands-on workshop.
 I hope you learned a lot regarding security and especially Spring Security 5.1.
 
 == Feedback
-Please provide feedback for this workshop directly to organization of the Frankfurter Entwicklertag
-using the provided QR code.
 
-image::images/feedback_qr_code_entwicklertag_karlsruhe.jpg[scaledwidth="50%", scaledheight="50%",alt="novatec"]
-
-[IMPORTANT]
-====
 If you have further feedback for this workshop, suggestions for improvements or you want me to
 conduct this workshop somewhere else please do not hesitate to contact me via
 
 * Mail: andreas.falk@novatec-gmbh.de
 * Twitter: https://twitter.com/andifalk[@andifalk]
 * LinkedIn: https://www.linkedin.com/in/andifalk[andifalk]
-====
 
 Thank YOU very much for being part of this workshop :-)
 

@@ -58,8 +58,7 @@
                     </section>
                     <section data-background="images/novatec_at_glance.png">
                     </section>
-                    <section>
-                        <img src="images/novatec_challenges.png" class="plain" width="100%">
+                    <section data-background="images/novatec_challenges.png">
                     </section>
                 </section>
 
@@ -67,7 +66,10 @@
 
                 <section>
                     <section data-background="images/novatec_title_back.png">
-                        <h1 style="color: white">Why Security ?</h1>
+                        <h1 style="color: white">Security ?</h1>
+                        <p style="color: white">&ldquo;From my experience all software developers are now security engineers wether they know it,
+                            admit to it or do it [...]&rdquo;</p>
+                            <p>&mdash; <a href="https://twitter.com/manicode/status/942965303310393344">Jim Manico on Twitter</a></p>
                     </section>
                     <section data-background="images/agile_security_attacks.svg" data-background-size="85%">
                     </section>
@@ -77,32 +79,33 @@
                                 allowfullscreen></iframe>
                     </section>
                     <section>
-                        <img alt="manico_tweet" src="images/jim_manico_tweet_developer_security.png" class="plain" width="100%">
-                    </section>
-                    <section>
-                        <img alt="maslow" src="images/software-quality-maslow.png" class="plain" width="82%">
+                        <p>&ldquo;If it's not secure, it's not guaranteed to be anything else either&rdquo;</p>
+                        <img alt="maslow" src="images/software-quality-maslow.png" class="plain" width="55%">
                         <p><small><a href="https://gojko.net/2012/05/08/redefining-software-quality/">https://gojko.net/2012/05/08/redefining-software-quality/</a></small></p>
                     </section>
-                    <section>
-                        <img alt="big picture" src="images/big_picture_security.png" class="plain" width="100%">
+                    <section data-background="images/big_picture_security.png" data-background-size="80%">
                     </section>
                     <section>
                         <h4>OWASP Top 10 2017</h4>
-                        <img alt="owasp top 10" src="images/owasp_top_10_2017_changes.png" class="plain">
+                        <img alt="owasp top 10" src="images/owasp_top_10_2017_risks.png" width="85%">
                         <p><small><a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">https://www.owasp.org/index.php/Top_10-2017_Top_10</a></small></p>
+                    </section>
+                    <section>
+                        <p>Application Security Verification Standard</p>
+                        <img src="images/asvs_sample.png" width="100%" class="plain">
+                        <p><small><a href="https://github.com/OWASP/ASVS">https://github.com/OWASP/ASVS</a></small></p>
                     </section>
                 </section>
 
                 <section>
-                    <section data-background-color="white">
-                        <h2>The</h2>
-                        <h2>Reactive Spring Security Workshop</h2>
-                        <p>
+                    <section data-background="images/novatec_title_back.png">
+                        <h2 style="color: white">The</h2>
+                        <h2 style="color: white;">Reactive Spring Security Workshop</h2>
+                        <p style="color: white">
                             <small>
                                 <a href="https://andifalk.github.io/reactive-spring-security-5-workshop">https://andifalk.github.io/reactive-spring-security-5-workshop</a>
                             </small>
                         </p>
-                        <img src="images/reactor_spring.png" class="plain" width="30%">
                     </section>
                     <section data-background="images/novatec_agenda_back.png">
                         <div style="text-align: left; margin-left: -2em; margin-top: 2em">
@@ -142,40 +145,64 @@
                         <p style="color: white">import as gradle project into your Java IDE</p>
                     </section>
                     <section>
-                        <h3>Target Application:</h3>
-                        <h3>An online books library</h3>
-                        <p>Create Books</p>
-                        <p>Delete Books</p>
-                        <p>List Books</p>
-                        <p>Get Book Details</p>
-                        <p>Borrow Books</p>
-                        <p>Return Books</p>
-                    </section>
-                    <section data-background="images/workshop_lab_1.png" data-background-size="80%">
-                    </section>
-                    <section data-background="images/workshop_lab_2.png" data-background-size="75%">
+                        <h2>Hands-On application</h2>
+                        <h4>An online book library</h4>
+                        <ul>
+                            <li>Administer books</li>
+                            <li>List available books</li>
+                            <li>Borrow an available book</li>
+                            <li>Return a borrowed book</li>
+                            <li>Administer library users</li>
+                        </ul>
                     </section>
                     <section>
+                        <h3>Library Service</h3>
+                        <img src="images/workshop_lab_1.png" class="plain">
+                    </section>
+                    <section>
+                        <h3>Library Service Architecture</h3>
+                        <img src="images/workshop_lab_2.png" class="plain">
+                    </section>
+                    <section>
+                        <h3>Library Service API Docs</h3>
                         <img src="images/library_app_api.png" class="plain">
                         <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html">https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html</a></small></p>
                     </section>
                     <section>
                         <h1>Workshop Steps</h1>
-                        <img src="images/steps-388914_1920.jpg" class="plain" width="75%">
+                        <ul>
+                            <li>Lab 1: Authentication (Auto Configuration)</li>
+                            <li>Lab 2: Customized Authentication</li>
+                            <li>Lab 3: Authorization</li>
+                            <li>Lab 4: Automated Security Tests</li>
+                        </ul>
                     </section>
-                    <section data-background="images/workshop_lab_3.png" data-background-size="90%">
+                    <section>
+                        <h3>Lab 1: Authentication</h3>
+                        <h4>(Auto Configuration)</h4>
+                        <img src="images/workshop_lab_3.png" class="plain">
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Lab 1</a></small></p>
                     </section>
-                    <section data-background="images/workshop_lab_4.png" data-background-size="80%">
+                    <section data-background="images/basic_auth.png" data-background-size="80%">
                     </section>
-                    <section data-background="images/workshop_lab_5.png" data-background-size="80%">
+                    <section>
+                        <h3>Lab 2: Authentication</h3>
+                        <h4>(Customized)</h4>
+                        <img src="images/workshop_lab_4.png" class="plain">
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Lab 2</a></small></p>
                     </section>
-                    <section data-background="images/workshop_lab_6.png" data-background-size="80%">
+                    <section data-background="images/session_auth.png" data-background-size="80%">
                     </section>
-                    <section data-background="images/workshop_lab_7.png" data-background-size="80%">
+                    <section>
+                        <h3>Lab 3: Authorization</h3>
+                        <img src="images/workshop_lab_5.png" class="plain">
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Lab 3</a></small></p>
                     </section>
-                </section>
-
-                <section>
+                    <section>
+                        <h3>Lab 4: Automated Security Tests</h3>
+                        <img src="images/workshop_lab_6.png" class="plain">
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Lab 4</a></small></p>
+                    </section>
                     <section data-background="images/novatec_separator_back.png">
                         <h2 style="color: white">Let's start...</h2>
                     </section>
@@ -194,20 +221,6 @@
                         <h2>Workshop Tutorial</h2>
                         <p><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html</a></p>
                         <p><a href="https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf">https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/workshop-tutorial.pdf</a></p>
-                    </section>
-                    <section data-background="images/workshop_lab_3.png" data-background-size="90%">
-                    </section>
-                    <section data-background="images/basic_auth.png" data-background-size="80%">
-                    </section>
-                    <section data-background="images/session_auth.png" data-background-size="80%">
-                    </section>
-                    <section data-background="images/workshop_lab_4.png" data-background-size="80%">
-                    </section>
-                    <section data-background="images/workshop_lab_5.png" data-background-size="80%">
-                    </section>
-                    <section data-background="images/workshop_lab_6.png" data-background-size="80%">
-                    </section>
-                    <section data-background="images/workshop_lab_7.png" data-background-size="80%">
                     </section>
                 </section>
 
@@ -230,17 +243,17 @@
                     </section>
                     <section data-background="images/novatec_separator_back.png">
                         <h2 style="color: white">In the meantime...</h2>
-                        <p style="color: white">git clone https://tinyurl.com/yylensdd oidc_workshop</p>
-                        <p style="color: white">import as gradle project into your Java IDE</p>
-                        <p style="color: white">AND</p>
-                        <p style="color: white">copy/extract keycloak.zip from provided USB sticks</p>
-                        <p style="color: white">OR follow setup instructions at https://tinyurl.com/y3rgohqo</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <p style="color: white">copy/extract <strong>keycloak.zip</strong> from provided USB sticks</p>
+                        <p style="color: white">OR</p>
+                        <p style="color: white">follow setup instructions at https://tinyurl.com/y3rgohqo</p>
                     </section>
                 </section>
 
                 <!-- Introduction into OAuth 2.0 and OpenID Connect 1.0 -->
                 <section>
-                    <section data-background="images/novatec_separator_back.png">
+                    <section data-background="images/novatec_title_back.png">
                         <h1 style="color: white">OAuth 2.0</h1>
                         <h2 style="color: white">101</h2>
                         <p>
@@ -357,13 +370,13 @@
                         <h4>Authorization code grant flow</h4>
                         <img src="images/authorization_code_13.png" class="plain" width="100%">
                     </section>
-                    <section data-background="images/title_image.png">
+                    <section data-background="images/novatec_separator_back.png">
                         <h4 style="color: white">We'll see</h4>
                         <h3 style="color: white">Authorization Code Grant Flow</h3>
-                        <p style="color: white">in action as part of <a href="https://github.com/andifalk/oidc-workshop-spring-io-2019/tree/master/intro-labs/auth-code-demo">Intro Lab</a></p>
+                        <p style="color: white">in action as part of <a href="https://github.com/andifalk/https://andifalk.github.io/reactive-spring-security-5-workshop/tree/master/intro-labs/auth-code-demo">Intro Lab</a></p>
                     </section>
                     <section>
-                        <h3>Implicit Flow Attacks</h3>
+                        <h4>Implicit Flow Attacks</h4>
                         <img class="plain" src="images/oauth_implicit_grant_attacks_d_fett.png" width="100%">
                         <br><small>Source: Torsten Lodderstedt and Daniel Fett</small>
                         <p><small><a href="https://tools.ietf.org/html/draft-ietf-oauth-security-topics">OAuth 2.0 Security Best Current Practice</a></small></p>
@@ -438,28 +451,11 @@
                         <p style="text-align: left; margin-left: 60px;">&client_id=123&client_secret=456</p>
                         <p style="text-align: left; margin-left: 60px; color: red;">&code_verifier=4gth4jn78k_8</p>
                     </section>
-                    <section>
-                        <h3>OAuth 2 Access Token JWT Profile</h3>
-                        <p>Required claims: iss, exp, aud, sub, client_id</p>
-                        <p>Consider privacy restrictions for identity claims</p>
-                        <p>Authorization claims according to SCIM Core (RFC7643):</p>
-                        <ul>
-                            <li>Groups</li>
-                            <li>Entitlements</li>
-                            <li>Roles</li>
-                        </ul>
-                        <p>
-                            <small>
-                                <a href="https://tools.ietf.org/pdf/rfc7643.pdf">System for Cross-domain Identity Management (SCIM)</a><br>
-                                <a href="https://tools.ietf.org/html/draft-ietf-oauth-access-token-jwt">JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens</a>
-                            </small>
-                        </p>
-                    </section>
                 </section>
 
                 <!-- OpenID Connect 1.0 -->
                 <section>
-                    <section data-background="images/novatec_separator_back.png">
+                    <section data-background="images/novatec_title_back.png">
                         <h2 style="color: white">OpenID Connect 1.0</h2>
                         <h2 style="color: white">101</h2>
                         <small>
@@ -480,14 +476,12 @@
                         </p>
                     </section>
                     <section>
-                        <h3>OIDC Model</h3>
-                        <img src="images/oidc_roles.png" class="plain" width="70%">
-                    </section>
-                    <section>
-                        <h3>Additions to OAuth 2.0</h3>
-                        <p>Id Token (JWT format)</p>
-                        <p>User Info Endpoint</p>
-                        <p>OpenID Provider Configuration Information</p>
+                        <h3>OIDC additions to OAuth 2.0</h3>
+                        <ul>
+                            <li>ID Token</li>
+                            <li>User Info Endpoint</li>
+                            <li>OpenID Provider Discovery</li>
+                        </ul>
                     </section>
                     <section>
                         <h3>ID Token</h3>
@@ -583,6 +577,28 @@
                         </table>
                     </section>
                     <section>
+                        <h3>Access Tokens in OIDC</h3>
+                        <p>Format and content still not standardized</p>
+                        <p>But...</p>
+                    </section>
+                    <section>
+                        <h3>OAuth 2 Access Token JWT Profile</h3>
+                        <p>Required claims: iss, exp, aud, sub, client_id</p>
+                        <p>Consider privacy restrictions for identity claims</p>
+                        <p>Authorization claims according to SCIM Core (RFC7643):</p>
+                        <ul>
+                            <li>Groups</li>
+                            <li>Entitlements</li>
+                            <li>Roles</li>
+                        </ul>
+                        <p>
+                            <small>
+                                <a href="https://tools.ietf.org/pdf/rfc7643.pdf">System for Cross-domain Identity Management (SCIM)</a><br>
+                                <a href="https://tools.ietf.org/html/draft-ietf-oauth-access-token-jwt">JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens</a>
+                            </small>
+                        </p>
+                    </section>
+                    <section>
                         <h2>Token Validation</h2>
                         <p>
                             <img src="images/token_validation.png" class="plain">
@@ -611,8 +627,8 @@
                         </code></pre>
                     </section>
                     <section>
-                        <h3>OpenID Connect 1.0 Configuration</h3>
-                        <p>https://example.com/.well-known/openid-configuration</p>
+                        <h4>OpenID Connect 1.0 Configuration</h4>
+                        <p>https://idp.example.com/.well-known/openid-configuration</p>
                         <pre><code class="json" data-trim>
                             {
                               "authorization_endpoint": "https://idp.example.com/auth",
@@ -639,57 +655,57 @@
                 <!-- OIDC Workshop -->
 
                 <section>
-                    <section data-background="images/novatec_separator_back.png">
+                    <section data-background="images/novatec_title_back.png">
                         <h2 style="color: white">Hands-On Part</h2>
                         <h3 style="color: white">OAuth 2.0 & OpenID Connect 1.0</h3>
                         <h3 style="color: white">With Spring Security 5</h3>
                     </section>
                     <section>
-                        <h2>&ldquo;Legacy&rdquo; Spring Security OAuth 2 Stack</h2>
+                        <h2>&ldquo;Legacy&rdquo; Spring Security OAuth2 Stack</h2>
                         <img src="images/spring_security_old.png" class="plain">
                     </section>
-                    <section data-transition="none">
-                        <h2>&ldquo;New&rdquo; Spring Security <br> OAuth 2 Stack</h2>
+                    <section>
+                        <h2>&ldquo;New&rdquo; Spring Security 5<br> OAuth2/OIDC Stack</h2>
                         <img src="images/spring_security_new.png" class="plain">
                     </section>
-                    <section data-transition="none">
-                        <h2>&ldquo;New&rdquo; Spring Security <br> OAuth 2 Stack</h2>
+                    <section>
+                        <h2>&ldquo;New&rdquo; Spring Security 5<br> OAuth2/OIDC Stack</h2>
                         <img class="plain" src="images/spring_security_new.png">
                         <h4 style="color: red">We will use THIS stack !!!</h4>
                     </section>
-
-                </section>
-
-                <section>
                     <section data-background="images/novatec_separator_back.png">
                         <h2 style="color: white">Let's Code!!</h2>
-                        <p style="color: white">git clone https://tinyurl.com/yylensdd oidc_workshop</p>
-                        <p style="color: white">import as gradle project into your Java IDE</p>
-                        <p style="color: white">AND</p>
-                        <p style="color: white">copy/extract keycloak.zip from provided USB sticks</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <p style="color: white">Make sure you have setup and started keycloak</p>
+                        <p style="color: white">THEN</p>
+                        <p style="color: white">Try the intro lab for Auth Code Demo</p>
+                        <p style="color: white">and follow instructions for Labs 5 & 6 in the<br> <a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">online tutorial</a></p>
                     </section>
                     <section>
-                        <h3>Setup Keycloak</h3>
-                        <p>Follow setup instructions at: https://tinyurl.com/y3rgohqo</p>
-                        <ol>
-                            <li>Download the binary distribution: https://tinyurl.com/y2dcuu2o</li>
-                            <li>Extract the downloaded <strong>keycloak-6.0.1.zip</strong> file</li>
-                            <li>Download the prepared keycloak configuration: https://tinyurl.com/y3gpuwkj</li>
-                            <li>Extract the downloaded file <strong>keycloak_data.zip</strong> into the sub directory <em>standalone</em> of extracted keycloak</li>
-                        </ol>
-                    </section>
-                    <section>
-                        <h3>Start Keycloak</h3>
+                        <h3>Starting Keycloak</h3>
                         <p>
-                            Start keycloak on Linux/Mac OS
+                        ...on Linux/Mac OS
                         <pre><code class="hljs" data-trim>
                             [keycloak_install_dir]/bin/standalone.sh
                         </code></pre>
-                        or on Windows
+                        ...on Windows
                         <pre><code class="hljs" data-trim>
                             [keycloak_install_dir]\bin\standalone.bat
                         </code></pre>
                         </p>
+                    </section>
+                    <section>
+                        <h2>Hands-On Labs</h2>
+                        <ul>
+                            <li>Intro-Lab: Authorization Code Flow Demo</li>
+                            <li>Lab 5: OAuth2/OIDC Resource Server</li>
+                            <li>Lab 6: OAuth2/OIDC Client (Auth Code Flow)</li>
+                            <li>Lab 7: OAuth2/OIDC Client (Client-Credentials Flow)</li>
+                            <li>Lab 8: OAuth2/OIDC Testing Environment</li>
+                        </ul>
+                        <p style="color: darkblue">Please follow <a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">online tutorial</a> in GitHub Repo</p>
                     </section>
                     <section>
                         <h2>Intro-Lab</h2>
@@ -698,34 +714,20 @@
                         <p>See <a href="https://github.com/andifalk/https://andifalk.github.io/reactive-spring-security-5-workshop/tree/master/intro-labs/auth-code-demo">intro-labs/auth-code-demo</a> for instructions</p>
                     </section>
                     <section>
-                        <h2>Hands-On application</h2>
-                        <h3>An online book library</h3>
-                        <p>Administer Books</p>
-                        <p>List available Books</p>
-                        <p>Borrow a Book</p>
-                        <p>Return a borrowed Book</p>
-                        <p>Administer Library Users</p>
+                        <h4>Labs 5 & 6: Resource Server and Client</h4>
+                        <img src="images/workshop_lab_7.png" class="plain">
+                        <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Labs 5 & 6</a></small></p>
                     </section>
                     <section>
-                        <h2>Hands-On application</h2>
+                        <h2>Hands-On client & server</h2>
                         <img class="plain" src="images/demo-architecture.png" width="100%">
-                    </section>
-                    <section>
-                        <h2>Hands-On Labs</h2>
-                        <ul>
-                            <li>Lab 1: OAuth2/OIDC Resource Server</li>
-                            <li>Lab 2: OAuth2/OIDC Client (Auth Code Flow)</li>
-                            <li>Lab 3: OAuth2/OIDC Client (Client-Credentials Flow)</li>
-                            <li>Lab 4: OAuth2/OIDC Testing Environment</li>
-                        </ul>
-                        <p style="color: darkblue">Please follow online tutorial in GitHub Repo</p>
                     </section>
                 </section>
 
                 <!-- What is new in Spring Security -->
 
                 <section>
-                    <section data-background="images/novatec_separator_back.png">
+                    <section data-background="images/novatec_title_back.png">
                         <h2 style="color: white">What's new in</h2>
                         <h2 style="color: white">Spring Security</h2>
                         <h2 style="color: white">5.2 & 5.3</h2>
@@ -854,6 +856,9 @@
 
                 <!-- The End -->
                 <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h2 style="color: white">Summary & References</h2>
+                    </section>
                     <section>
                         <h2>Book References</h2>
                         <img src="images/iron-glad-java.jpg" class="plain" width="24%">
@@ -885,6 +890,8 @@
                             <p>All images used are from <a href="https://pixabay.com/">Pixabay</a> and are published under <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en">Creative Commons CC0 license.</a></p>
                             All used logos are trademarks of respective companies
                         </small>
+                    </section>
+                    <section data-background="images/novatec_trainings.png">
                     </section>
                     <section data-background="images/novatec_final_back.png">
                         <div style="text-align: left; margin-left: -2em; margin-top: -2em">
