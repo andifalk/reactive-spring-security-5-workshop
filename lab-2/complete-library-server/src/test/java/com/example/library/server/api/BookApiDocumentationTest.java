@@ -50,7 +50,7 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 })
 @WithMockUser
 @DisplayName("Verify book api")
-class BookApiIntegrationTests {
+class BookApiDocumentationTest {
 
   @Autowired private ApplicationContext applicationContext;
 

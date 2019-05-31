@@ -54,7 +54,7 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 })
 @WithMockUser
 @DisplayName("Verify user api")
-class UserApiIntegrationTests {
+class UserApiDocumentationTest {
 
   @Autowired private ApplicationContext applicationContext;
 

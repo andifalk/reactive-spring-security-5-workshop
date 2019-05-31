@@ -47,7 +47,7 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
   IdGeneratorConfiguration.class
 })
 @DisplayName("Verify book api")
-class BookApiIntegrationTests {
+class BookApiDocumentationTest {
 
   @Autowired private ApplicationContext applicationContext;
 

@@ -1,6 +1,6 @@
 package com.example.library.server.business;
 
-import com.example.library.server.LibraryServerApplication;
+import com.example.library.server.Lab4CompleteLibraryServerApplication;
 import com.example.library.server.common.Role;
 import com.example.library.server.dataaccess.Book;
 import com.example.library.server.dataaccess.BookRepository;
@@ -15,7 +15,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -29,16 +28,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Verify that book service")
-@SpringJUnitConfig(LibraryServerApplication.class)
-class BookServiceTest {
+@SpringJUnitConfig(Lab4CompleteLibraryServerApplication.class)
+class BookServiceAuthorizationTest {
 
   @Autowired private BookService bookService;
 
   @MockBean private BookRepository bookRepository;
 
   @MockBean private UserRepository userRepository;
-
-  @MockBean private IdGenerator idGenerator;
 
   @DisplayName("grants access to create a book for role 'CURATOR'")
   @Test
@@ -48,7 +45,7 @@ class BookServiceTest {
     StepVerifier.create(
             bookService.create(
                 Mono.just(
-                    new BookResource(
+                    new Book(
                         UUID.randomUUID(),
                         "123456789",
                         "title",
@@ -66,7 +63,7 @@ class BookServiceTest {
     StepVerifier.create(
             bookService.create(
                 Mono.just(
-                    new BookResource(
+                    new Book(
                         UUID.randomUUID(),
                         "123456789",
                         "title",
@@ -83,7 +80,7 @@ class BookServiceTest {
     StepVerifier.create(
             bookService.create(
                 Mono.just(
-                    new BookResource(
+                    new Book(
                         UUID.randomUUID(),
                         "123456789",
                         "title",
@@ -155,7 +152,7 @@ class BookServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(bookService.borrowById(UUID.randomUUID(), UUID.randomUUID()))
         .verifyComplete();
 
@@ -201,7 +198,7 @@ class BookServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(bookService.returnById(UUID.randomUUID(), UUID.randomUUID()))
         .verifyComplete();
   }

@@ -1,6 +1,6 @@
 package com.example.library.server.business;
 
-import com.example.library.server.LibraryServerApplication;
+import com.example.library.server.Lab4CompleteLibraryServerApplication;
 import com.example.library.server.common.Role;
 import com.example.library.server.dataaccess.User;
 import com.example.library.server.dataaccess.UserRepository;
@@ -12,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.util.IdGenerator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -24,14 +23,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Verify that user service")
-@SpringJUnitConfig(LibraryServerApplication.class)
-class UserServiceTest {
+@SpringJUnitConfig(Lab4CompleteLibraryServerApplication.class)
+class UserServiceAuthorizationTest {
 
   @Autowired private UserService userService;
 
   @MockBean private UserRepository userRepository;
-
-  @MockBean private IdGenerator idGenerator;
 
   @DisplayName("grants access to find one user by email for anonymous user")
   @Test
@@ -45,7 +42,7 @@ class UserServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findOneByEmail("test@example.com"))
         .expectNextCount(1)
         .verifyComplete();
@@ -64,7 +61,7 @@ class UserServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findOneByEmail("test@example.com"))
         .expectNextCount(1)
         .verifyComplete();
@@ -83,17 +80,17 @@ class UserServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(
             userService.create(
                 Mono.just(
-                    new UserResource(
+                    new User(
                         UUID.randomUUID(),
                         "test@example.com",
                         "secret",
                         "Max",
                         "Maier",
-                        Collections.singletonList(Role.USER)))))
+                        Collections.singletonList(Role.LIBRARY_USER)))))
         .verifyComplete();
   }
 
@@ -104,13 +101,13 @@ class UserServiceTest {
     StepVerifier.create(
             userService.create(
                 Mono.just(
-                    new UserResource(
+                    new User(
                         UUID.randomUUID(),
                         "test@example.com",
                         "secret",
                         "Max",
                         "Maier",
-                        Collections.singletonList(Role.USER)))))
+                        Collections.singletonList(Role.LIBRARY_USER)))))
         .verifyError(AccessDeniedException.class);
   }
 
@@ -120,13 +117,13 @@ class UserServiceTest {
     StepVerifier.create(
             userService.create(
                 Mono.just(
-                    new UserResource(
+                    new User(
                         UUID.randomUUID(),
                         "test@example.com",
                         "secret",
                         "Max",
                         "Maier",
-                        Collections.singletonList(Role.USER)))))
+                        Collections.singletonList(Role.LIBRARY_USER)))))
         .verifyError(AccessDeniedException.class);
   }
 
@@ -143,7 +140,7 @@ class UserServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findById(UUID.randomUUID()))
         .expectNextCount(1)
         .verifyComplete();
@@ -177,7 +174,7 @@ class UserServiceTest {
                     "secret",
                     "Max",
                     "Maier",
-                    Collections.singletonList(Role.USER))));
+                    Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findAll()).expectNextCount(1).verifyComplete();
   }
 

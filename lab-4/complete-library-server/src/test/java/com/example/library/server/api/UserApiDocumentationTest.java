@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -39,6 +40,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebFluxTest
@@ -50,8 +52,9 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
   ModelMapperConfiguration.class,
   IdGeneratorConfiguration.class
 })
+@WithMockUser
 @DisplayName("Verify user api")
-class UserApiIntegrationTests {
+class UserApiDocumentationTest {
 
   @Autowired private ApplicationContext applicationContext;
 
@@ -137,6 +140,7 @@ class UserApiIntegrationTests {
     given(userService.deleteById(userId)).willReturn(Mono.empty());
 
     webTestClient
+        .mutateWith(csrf())
         .delete()
         .uri("/users/{userId}", userId)
         .accept(MediaType.APPLICATION_JSON)
@@ -172,6 +176,7 @@ class UserApiIntegrationTests {
     given(userService.create(any())).willAnswer(i -> Mono.empty());
 
     webTestClient
+        .mutateWith(csrf())
         .post()
         .uri("/users")
         .accept(MediaType.APPLICATION_JSON)
