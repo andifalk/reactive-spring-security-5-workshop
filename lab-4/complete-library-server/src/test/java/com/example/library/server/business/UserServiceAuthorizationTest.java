@@ -48,9 +48,10 @@ class UserServiceAuthorizationTest {
         .verifyComplete();
   }
 
-  @DisplayName("grants access to find one user by email for roles 'USER', 'CURATOR' and 'ADMIN'")
+  @DisplayName(
+      "grants access to find one user by email for roles 'LIBRARY_USER', 'LIBRARY_CURATOR' and 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR", "LIBRARY_ADMIN"})
   void verifyFindOneByEmailAccessIsGrantedForAllRoles() {
     when(userRepository.findOneByEmail(any()))
         .thenReturn(
@@ -67,9 +68,9 @@ class UserServiceAuthorizationTest {
         .verifyComplete();
   }
 
-  @DisplayName("grants access to create a user for role 'ADMIN'")
+  @DisplayName("grants access to create a user for role 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = "LIBRARY_ADMIN")
   void verifyCreateAccessIsGrantedForAdmin() {
     when(userRepository.insert(Mockito.<Mono<User>>any()))
         .thenReturn(
@@ -94,9 +95,9 @@ class UserServiceAuthorizationTest {
         .verifyComplete();
   }
 
-  @DisplayName("denies access to create a user for roles 'USER' and 'CURATOR'")
+  @DisplayName("denies access to create a user for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyCreateAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(
             userService.create(
@@ -127,9 +128,9 @@ class UserServiceAuthorizationTest {
         .verifyError(AccessDeniedException.class);
   }
 
-  @DisplayName("grants access to find a user by id for role 'ADMIN'")
+  @DisplayName("grants access to find a user by id for role 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = "LIBRARY_ADMIN")
   void verifyFindByIdAccessIsGrantedForAdmin() {
     when(userRepository.findById(any(UUID.class)))
         .thenReturn(
@@ -146,9 +147,9 @@ class UserServiceAuthorizationTest {
         .verifyComplete();
   }
 
-  @DisplayName("denies access to find a user by id for roles 'USER' and 'CURATOR'")
+  @DisplayName("denies access to find a user by id for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyFindByIdAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(userService.findById(UUID.randomUUID()))
         .verifyError(AccessDeniedException.class);
@@ -161,9 +162,9 @@ class UserServiceAuthorizationTest {
         .verifyError(AccessDeniedException.class);
   }
 
-  @DisplayName("grants access to find all users for role 'ADMIN'")
+  @DisplayName("grants access to find all users for role 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = "LIBRARY_ADMIN")
   void verifyFindAllAccessIsGrantedForAdmin() {
     when(userRepository.findAll())
         .thenReturn(
@@ -178,9 +179,9 @@ class UserServiceAuthorizationTest {
     StepVerifier.create(userService.findAll()).expectNextCount(1).verifyComplete();
   }
 
-  @DisplayName("denies access to find all users for roles 'USER' and 'CURATOR'")
+  @DisplayName("denies access to find all users for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyFindAllAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(userService.findAll()).verifyError(AccessDeniedException.class);
   }
@@ -191,17 +192,17 @@ class UserServiceAuthorizationTest {
     StepVerifier.create(userService.findAll()).verifyError(AccessDeniedException.class);
   }
 
-  @DisplayName("grants access to delete a user for role 'ADMIN'")
+  @DisplayName("grants access to delete a user for role 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = "ADMIN")
+  @WithMockUser(roles = "LIBRARY_ADMIN")
   void verifyDeleteByIdAccessIsGrantedForAdmin() {
     when(userRepository.deleteById(any(UUID.class))).thenReturn(Mono.empty());
     StepVerifier.create(userService.deleteById(UUID.randomUUID())).verifyComplete();
   }
 
-  @DisplayName("denies access to delete a user for roles 'USER' and 'CURATOR'")
+  @DisplayName("denies access to delete a user for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyDeleteByIdAccessIsDeniedForUserAndCurator() {
     StepVerifier.create(userService.deleteById(UUID.randomUUID()))
         .verifyError(AccessDeniedException.class);

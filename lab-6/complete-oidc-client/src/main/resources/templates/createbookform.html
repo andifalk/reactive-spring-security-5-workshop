@@ -1,0 +1,48 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Library Client</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Library Client</h1>
+
+    <hr>
+
+    <form action="#" method="post" th:action="@{/create}" th:object="${book}">
+        <div class="form-group">
+            <label for="author">Author</label>
+            <input class="form-control" id="author" name="author" placeholder="author" th:value="*{author}"
+                   type="text"/>
+        </div>
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input class="form-control" id="title" name="title" placeholder="title" th:value="*{title}" type="text"/>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input class="form-control" id="description" name="description" placeholder="description"
+                   th:value="*{description}"
+                   type="text"/>
+        </div>
+        <div class="form-group">
+            <label for="isbn">ISBN</label>
+            <input class="form-control" id="isbn" name="isbn" placeholder="isbn" th:value="*{isbn}" type="text"/>
+        </div>
+        <button class="btn btn-primary" id="create" name="create" type="submit">Create</button>
+    </form>
+
+    <hr>
+
+    <script src="../static/js/jquery.min.js" th:href="@{/js/jquery.min.js}"></script>
+    <script src="../static/js/popper.min.js" th:href="@{/js/popper.min.js}"></script>
+    <script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}"></script>
+
+</div>
+
+</body>
+</html>

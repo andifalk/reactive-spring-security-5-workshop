@@ -1,17 +1,25 @@
 server:
-  port: 8081
+  port: 9090
+  error:
+    include-stacktrace: never
 
 spring:
+  thymeleaf:
+    cache: false
   security:
     oauth2:
       client:
         registration:
-          library-client:
-            provider: okta
-            client-id: 0oajbryix1d8ABX1i0h7
-            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope: openid, profile, email, offline_access
-        provider:
-          okta:
-            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7
+          keycloak:
+            client-id: 'library-client'
+            client-secret: '9584640c-3804-4dcd-997b-93593cfb9ea7'
+            authorizationGrantType: authorization_code
+            redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+            scope: openid
+          provider:
+            keycloak:
+              issuerUri: http://localhost:8080/auth/realms/workshop
+              user-name-attribute: name
+
+library:
+  server: http://localhost:9091

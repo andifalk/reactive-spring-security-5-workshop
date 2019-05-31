@@ -6,10 +6,14 @@ management:
   endpoint:
     health:
       show-details: always
+
 spring:
   data:
     mongodb:
       port: 40495
+  jackson:
+    date-format: com.fasterxml.jackson.databind.util.StdDateFormat
+    default-property-inclusion: non_null
   security:
     oauth2:
       resourceserver:
@@ -18,3 +22,4 @@ spring:
 server:
   error:
     include-stacktrace: never
+  port: 9091

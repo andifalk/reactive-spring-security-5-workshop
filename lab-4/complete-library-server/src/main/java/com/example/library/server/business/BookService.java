@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
-@PreAuthorize("hasAnyRole('USER', 'CURATOR', 'ADMIN')")
+@PreAuthorize("hasAnyRole('LIBRARY_USER', 'LIBRARY_CURATOR')")
 public class BookService {
 
   private final BookRepository bookRepository;
@@ -24,7 +24,7 @@ public class BookService {
     this.userRepository = userRepository;
   }
 
-  @PreAuthorize("hasRole('CURATOR')")
+  @PreAuthorize("hasRole('LIBRARY_CURATOR')")
   public Mono<Void> create(Mono<Book> book) {
     return bookRepository.insert(book).then();
   }
@@ -33,7 +33,7 @@ public class BookService {
     return bookRepository.findById(uuid);
   }
 
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('LIBRARY_USER')")
   public Mono<Void> borrowById(UUID bookIdentifier, UUID userIdentifier) {
 
     if (bookIdentifier == null || userIdentifier == null) {
@@ -56,7 +56,7 @@ public class BookService {
         .switchIfEmpty(Mono.empty());
   }
 
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasRole('LIBRARY_USER')")
   public Mono<Void> returnById(UUID bookIdentifier, UUID userIdentifier) {
 
     if (bookIdentifier == null || userIdentifier == null) {
@@ -83,7 +83,7 @@ public class BookService {
     return bookRepository.findAll();
   }
 
-  @PreAuthorize("hasRole('CURATOR')")
+  @PreAuthorize("hasRole('LIBRARY_CURATOR')")
   public Mono<Void> deleteById(UUID bookIdentifier) {
     return bookRepository.deleteById(bookIdentifier).then();
   }

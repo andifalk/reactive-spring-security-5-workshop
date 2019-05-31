@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('LIBRARY_ADMIN')")
 public class UserService {
 
   private final UserRepository userRepository;

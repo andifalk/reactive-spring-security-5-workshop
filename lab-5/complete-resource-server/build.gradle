@@ -33,6 +33,7 @@ test {
 }
 
 asciidoctor {
+    inputs.dir snippetsDir
     setOptions([
             'doctype': 'book',
             'backend': 'html5'
@@ -58,7 +59,6 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     implementation('org.springframework.boot:spring-boot-starter-webflux')
-    implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server')
     implementation('org.apache.commons:commons-lang3')
     implementation('org.modelmapper:modelmapper:2.3.2')
@@ -67,6 +67,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
     testImplementation('io.projectreactor:reactor-test')
+    asciidoctor('org.springframework.restdocs:spring-restdocs-asciidoctor')
     testImplementation('org.springframework.restdocs:spring-restdocs-webtestclient')
     testImplementation('org.mockito:mockito-junit-jupiter')
     testImplementation('org.junit.jupiter:junit-jupiter-api')

@@ -1,24 +1,70 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
->
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/dialect" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>OIDC Library Client</title>
-    <meta charset="utf-8"/>
+    <title>Library Client</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
 </head>
 <body>
-<a th:href="@{/logout}">Log Out</a>
-<h1>OpenID Connect Library Client</h1>
 
-<h2>Authenticated User</h2>
-<a th:href="@{/userinfo}">User Infos</a>
+<div class="container">
 
-<h2>Library Services</h2>
-<ul>
-    <li><a th:href="@{/books}">List of Books</a></li>
-    <li>
-        <a th:href="@{/users}">List of Users</a>
-    </li>
-</ul>
+    <h1>Library Client</h1>
+
+    <div class="row">
+
+        <div class="col">
+            <p>A nice library to borrow books</p>
+        </div>
+
+        <div class="col">
+            <p th:text="'Hello ' + ${fullname}"></p>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="jumbotron" sec:authorize="hasRole('LIBRARY_CURATOR')">
+        <a class="btn btn-primary" href="#" role="button" sec:authorize="hasRole('LIBRARY_CURATOR')"
+           th:href="@{/createbook}">Create Book</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Author(s)</th>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">ISBN</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bookResource : ${books}">
+            <td th:text="${bookResource.authors}">Author</td>
+            <td th:text="${bookResource.title}">Title</td>
+            <td th:text="${bookResource.description}">descr</td>
+            <td th:text="${bookResource.isbn}">isbn</td>
+            <td><a class="btn btn-primary" href="#" role="button" sec:authorize="hasRole('LIBRARY_USER')"
+                   th:href="@{'/return?identifier=' + ${bookResource.identifier}}"
+                   th:unless="${!bookResource.returnBookAllowed}">Return</a><a class="btn btn-primary" href="#"
+                                                                               role="button"
+                                                                               sec:authorize="hasRole('LIBRARY_USER')"
+                                                                               th:href="@{'/borrow?identifier=' + ${bookResource.identifier}}"
+                                                                               th:unless="${bookResource.borrowed}">Borrow</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <script src="../static/js/jquery.min.js" th:href="@{/js/jquery.min.js}" th:src="@{/js/jquery.min.js}"></script>
+    <script src="../static/js/popper.min.js" th:href="@{/js/popper.min.js}" th:src="@{/js/popper.min.js}"></script>
+    <script src="../static/js/bootstrap.js" th:href="@{/js/bootstrap.js}" th:src="@{/js/bootstrap.js}"></script>
+
+</div>
 
 </body>
 </html>
