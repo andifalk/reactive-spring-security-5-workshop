@@ -1,4 +1,4 @@
-<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/dialect" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Library Client</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
@@ -25,8 +25,8 @@
 
     <hr>
 
-    <div class="jumbotron" sec:authorize="hasRole('LIBRARY_CURATOR')">
-        <a class="btn btn-primary" href="#" role="button" sec:authorize="hasRole('LIBRARY_CURATOR')"
+    <div class="jumbotron">
+        <a class="btn btn-primary" href="#" role="button" th:unless="${isCurator}"
            th:href="@{/createbook}">Create Book</a>
     </div>
 
@@ -46,12 +46,10 @@
             <td th:text="${bookResource.title}">Title</td>
             <td th:text="${bookResource.description}">descr</td>
             <td th:text="${bookResource.isbn}">isbn</td>
-            <td><a class="btn btn-primary" href="#" role="button" sec:authorize="hasRole('LIBRARY_USER')"
-                   th:href="@{'/return?identifier=' + ${bookResource.identifier}}"
-                   th:unless="${!bookResource.returnBookAllowed}">Return</a><a class="btn btn-primary" href="#"
+            <td><a class="btn btn-primary" href="#" role="button"
+                   th:href="@{'/return?identifier=' + ${bookResource.id}}" th:unless="${!bookResource.borrowed}">Return</a><a class="btn btn-primary" href="#"
                                                                                role="button"
-                                                                               sec:authorize="hasRole('LIBRARY_USER')"
-                                                                               th:href="@{'/borrow?identifier=' + ${bookResource.identifier}}"
+                                                                               th:href="@{'/borrow?identifier=' + ${bookResource.id}}"
                                                                                th:unless="${bookResource.borrowed}">Borrow</a>
             </td>
         </tr>

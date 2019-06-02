@@ -21,7 +21,7 @@ public class LibraryUserRolesJwtAuthenticationConverter
   @Override
   public Mono<AbstractAuthenticationToken> convert(Jwt jwt) {
     return libraryReactiveUserDetailsService
-        .findByUsername(jwt.getSubject())
+        .findByUsername(jwt.getClaimAsString("email"))
         .map(u -> new UsernamePasswordAuthenticationToken(u, "n/a", u.getAuthorities()));
   }
 }

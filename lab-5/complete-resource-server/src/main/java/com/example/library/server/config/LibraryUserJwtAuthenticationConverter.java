@@ -30,7 +30,7 @@ public class LibraryUserJwtAuthenticationConverter
   public Mono<AbstractAuthenticationToken> convert(Jwt jwt) {
     Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
     return libraryReactiveUserDetailsService
-        .findByUsername(jwt.getSubject())
+        .findByUsername(jwt.getClaimAsString("email"))
         .map(u -> new UsernamePasswordAuthenticationToken(u, "n/a", authorities));
   }
 

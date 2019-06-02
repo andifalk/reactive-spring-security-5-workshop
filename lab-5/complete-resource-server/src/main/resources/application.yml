@@ -18,7 +18,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7
+          issuer-uri: http://localhost:8080/auth/realms/workshop
 server:
   error:
     include-stacktrace: never

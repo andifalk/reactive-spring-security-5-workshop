@@ -1,4 +1,4 @@
-package com.example.oidc.client.api;
+package com.example.oidc.client.api.resource;
 
 import java.util.ArrayList;
 import java.util.List;

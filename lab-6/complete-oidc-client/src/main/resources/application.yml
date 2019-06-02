@@ -16,10 +16,10 @@ spring:
             authorizationGrantType: authorization_code
             redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
             scope: openid
-          provider:
-            keycloak:
-              issuerUri: http://localhost:8080/auth/realms/workshop
-              user-name-attribute: name
+        provider:
+          keycloak:
+            issuerUri: http://localhost:8080/auth/realms/workshop
+            user-name-attribute: name
 
 library:
   server: http://localhost:9091

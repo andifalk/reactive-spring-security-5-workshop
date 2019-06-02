@@ -1,4 +1,4 @@
-package com.example.oidc.client.api;
+package com.example.oidc.client.api.resource;
 
 import java.util.List;
 import java.util.UUID;

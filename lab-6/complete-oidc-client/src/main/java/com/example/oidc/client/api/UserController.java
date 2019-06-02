@@ -1,7 +1,9 @@
 package com.example.oidc.client.api;
 
+import com.example.oidc.client.api.resource.UserResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,6 +27,9 @@ public class UserController {
 
   private final WebClient webClient;
 
+  @Value("${library.server}")
+  private String libraryServer;
+
   public UserController(WebClient webClient) {
     this.webClient = webClient;
   }
@@ -38,12 +43,15 @@ public class UserController {
   Flux<UserResource> allUsers() {
     return webClient
         .get()
-        .uri("http://localhost:8080/users")
+        .uri(libraryServer + "/users")
         .attributes(clientRegistrationId("keycloak"))
         .retrieve()
         .onStatus(
             httpStatus -> HttpStatus.FORBIDDEN.value() == httpStatus.value(),
             clientResponse -> Mono.error(new AccessDeniedException("No access for this resource")))
+        .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
         .onStatus(
             HttpStatus::is5xxServerError,
             clientResponse -> Mono.error(new IllegalStateException("Internal error occurred")))
