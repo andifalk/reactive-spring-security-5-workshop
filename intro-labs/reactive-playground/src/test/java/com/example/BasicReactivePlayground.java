@@ -56,7 +56,7 @@ class BasicReactivePlayground {
     StepVerifier.create(Flux.range(1, 10).count()).expectNext(10L).verifyComplete();
     StepVerifier.create(Flux.range(1, 5).reduce(1, Integer::sum)).expectNext(16).verifyComplete();
     StepVerifier.create(Flux.range(1, 5).handle((a,b) -> {if (a > 3) b.next(a);})).expectNextCount(2).verifyComplete();
-    StepVerifier.create(Flux.range(1, 10)
+    StepVerifier.create(Flux.range(1, 10).log()
             .groupBy(i -> i % 2 == 0 ? "even" : "odd")
             .flatMap(s -> Flux.just(s.key())))
             .expectNextCount(2).verifyComplete();
