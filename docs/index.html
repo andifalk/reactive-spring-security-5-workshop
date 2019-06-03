@@ -97,6 +97,8 @@
                     </section>
                 </section>
 
+                <!-- Workshop Intro & Agenda-->
+
                 <section>
                     <section data-background="images/novatec_title_back.png">
                         <h2 style="color: white">The</h2>
@@ -112,7 +114,8 @@
                             <h3>Part 1</h3>
                             <ol>
                                 <li>Introduction to Reactive Programming</li>
-                                <li>Spring Security Basics (Hands-On)</li>
+                                <li>Spring Security Basics</li>
+                                <li>Spring Security Practice (Hands-On)</li>
                                 <ul>
                                     <li>Authentication</li>
                                     <li>Password Security & Upgrades</li>
@@ -144,6 +147,173 @@
                         <p style="color: white">&ldquo;git clone https://tinyurl.com/yylensdd security_workshop&rdquo;</p>
                         <p style="color: white">import as gradle project into your Java IDE</p>
                     </section>
+                </section>
+
+                <!-- Reactive Streams & Programming Intro -->
+
+                <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h1 style="color: white">Reactive Systems</h1>
+                        <p>&mdash; <a href="https://www.reactivemanifesto.org">reactivemanifesto.org</a></p>
+                    </section>
+                    <section>
+                        <h2>Reactive Systems</h2>
+                        <p>&ldquo;[...] we want systems that are Responsive, Resilient, Elastic and Message Driven. We call these Reactive Systems.&rdquo;</p>
+                        <p>&mdash; <a href="https://www.reactivemanifesto.org">reactivemanifesto.org</a></p>
+                    </section>
+                    <section>
+                        <h2>Reactive Systems</h2>
+                        <h3>- Responsive -</h3>
+                        <p>&ldquo;The system responds in a timely manner if at all possible&rdquo;</p>
+                    </section>
+                    <section>
+                        <h2>Reactive Systems</h2>
+                        <h3>- Resilient -</h3>
+                        <p>&ldquo;The system stays responsive in the face of failure&rdquo;</p>
+                    </section>
+                    <section>
+                        <h2>Reactive Systems</h2>
+                        <h3>- Elastic -</h3>
+                        <p>&ldquo;The system stays responsive under varying workload&rdquo;</p>
+                    </section>
+                    <section>
+                        <h2>Reactive Systems</h2>
+                        <h3>- Message Driven -</h3>
+                        <p>&ldquo;Reactive Systems rely on asynchronous message-passing&rdquo;</p>
+                    </section>
+                    <section>
+                        <h2>Reactive Streams</h2>
+                        <p>&ldquo;Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure..&rdquo;</p>
+                        <p>&mdash; <a href="http://www.reactive-streams.org/">reactive-streams.org/</a></p>
+                    </section>
+                    <section>
+                        <h2>Reactive Streams</h2>
+                        <h3>Implementations</h3>
+                        <ul>
+                            <li><a href="https://github.com/ReactiveX/RxJava">RxJava</a></li>
+                            <li><a href="https://akka.io/">Akka</a></li>
+                            <li><a href="https://vertx.io/">Vert.x</a></li>
+                            <li><a href="https://projectreactor.io/">Project Reactor</a></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Publisher</h2>
+                        <pre><code class="hljs java" data-trim>
+                            package org.reactivestreams;
+
+                            public interface Publisher&lt;T&gt; {
+                                public void subscribe(Subscriber&lt;? super T&gt; s);
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Subscriber</h2>
+                        <pre><code class="hljs java" data-trim>
+                            package org.reactivestreams;
+
+                            public interface Subscriber&lt;T&gt; {
+                                public void onSubscribe(Subscription s);
+                                public void onNext(T t);
+                                public void onError(Throwable t);
+                                public void onComplete();
+                            }
+
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Subscription</h2>
+                        <pre><code class="hljs java" data-trim>
+                            package org.reactivestreams;
+
+                            public interface Subscription {
+                                public void request(long n);
+                                public void cancel();
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Processor</h2>
+                        <pre><code class="hljs java" data-trim>
+                            package org.reactivestreams;
+
+                            public interface Processor&lt;T, R&gt; extends
+                                     Subscriber&lt;T&gt;, Publisher&lt;R&gt; {}
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Reactive Streams</h2>
+                        <h3>Included Since Java 9</h3>
+                        <p>java.util.concurrent.Flow.Publisher&lt;T&gt;</p>
+                        <p>java.util.concurrent.Flow.Subscriber&lt;T&gt;</p>
+                        <p>java.util.concurrent.Flow.Subscription</p>
+                        <p>java.util.concurrent.Flow.Processor&lt;T, R&gt;</p>
+                    </section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h1 style="color: white">Project Reactor</h1>
+                        <p><a href="https://projectreactor.io/">projectreactor.io</a></p>
+                    </section>
+                    <section>
+                        <h2>Project Reactor</h2>
+                        <p>&ldquo;Reactor is a fourth-generation<sup>1</sup> reactive library for building non-blocking applications on
+                            the JVM based on the Reactive Streams Specification&rdquo;</p>
+                        <p>&mdash; <a href="https://projectreactor.io/">projectreactor.io</a></p>
+                        <p><small><a href="https://akarnokd.blogspot.com/2016/03/operator-fusion-part-1.html">1) David Karnok’s Generations of Reactive classification</a></small></p>
+                        <img src="images/reactor.png" class="plain" width="20%">
+                    </section>
+                    <section>
+                        <h3>Composable reactive types</h3>
+                        <h4>- Mono -</h4>
+                        <p>An Asynchronous 0-1 Result</p>
+                        <p>
+                            <img src="images/mono.png" class="plain" width="120%">
+                        </p>
+                    </section>
+                    <section>
+                        <h3>Composable reactive types</h3>
+                        <h4>- Flux -</h4>
+                        <p>An Asynchronous Sequence of 0-N Items</p>
+                        <p>
+                            <img src="images/flux.png" class="plain" width="120%">
+                        </p>
+                    </section>
+                    <section>
+                        <h2>Imperative vs. Reactive</h2>
+                        <h4>Imperative</h4>
+                        <pre><code class="hljs java" data-trim>
+                            String msg = "World";
+                            String upperCaseMsg = msg.toUpperCase();
+                            String greeting = "Hello " + upperCaseMsg + "!";
+                            System.out.println(greeting);
+                        </code></pre>
+                        <h4>Reactive</h4>
+                        <pre><code class="hljs java" data-trim>
+                            Mono.just("World")
+                                .map(String::toUpperCase)
+                                .map(um -> "Hello " + um + "!")
+                                .subscribe(System.out::println);
+                        </code></pre>
+                    </section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">Let's try this...</h2>
+                        <p style="color: white">intro-labs/reactive-playground</p>
+                        <p>&nbsp;</p>
+                        <p><a href="https://projectreactor.io/docs/core/release/reference">projectreactor.io/docs/core/release/reference</a></p>
+                        <p><a href="https://projectreactor.io/docs/core/release/reference/#which-operator">projectreactor.io/docs/core/release/reference/#which-operator</a></p>
+                    </section>
+                </section>
+
+
+                <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h1 style="color: white">Spring Security Basics</h1>
+                        <p>&mdash; <a href="https://spring.io/projects/spring-security">spring.io/projects/spring-security</a></p>
+                    </section>
+                    <section>
+                        <h1>Spring Security Basics</h1>
+                    </section>
+                </section>
+
+                <section>
                     <section>
                         <h2>Hands-On application</h2>
                         <h4>An online book library</h4>
