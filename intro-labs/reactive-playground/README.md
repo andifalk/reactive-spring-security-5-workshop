@@ -4,4 +4,4 @@
 
 This contains a starting point to play around with the reactive stuff.
 
-Just add tests to class _ReactiveTest_ to learn the reactive streams api.
+Just execute and add tests to classes _*ReactivePlayground_ to learn the reactive streams api.
