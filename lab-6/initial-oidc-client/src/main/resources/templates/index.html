@@ -26,8 +26,8 @@
     <hr>
 
     <div class="jumbotron">
-        <a class="btn btn-primary" href="#" role="button" th:href="@{/createbook}"
-           th:unless="${isCurator}">Create Book</a>
+        <a class="btn btn-primary" href="#" role="button" th:unless="${isCurator}"
+           th:href="@{/createbook}">Create Book</a>
     </div>
 
     <table class="table table-striped">
@@ -47,11 +47,10 @@
             <td th:text="${bookResource.description}">descr</td>
             <td th:text="${bookResource.isbn}">isbn</td>
             <td><a class="btn btn-primary" href="#" role="button"
-                   th:href="@{'/return?identifier=' + ${bookResource.id}}"
-                   th:unless="${!bookResource.borrowed}">Return</a><a class="btn btn-primary" href="#"
-                                                                      role="button"
-                                                                      th:href="@{'/borrow?identifier=' + ${bookResource.id}}"
-                                                                      th:unless="${bookResource.borrowed}">Borrow</a>
+                   th:href="@{'/return?identifier=' + ${bookResource.id}}" th:unless="${!bookResource.borrowed}">Return</a><a class="btn btn-primary" href="#"
+                                                                               role="button"
+                                                                               th:href="@{'/borrow?identifier=' + ${bookResource.id}}"
+                                                                               th:unless="${bookResource.borrowed}">Borrow</a>
             </td>
         </tr>
         </tbody>

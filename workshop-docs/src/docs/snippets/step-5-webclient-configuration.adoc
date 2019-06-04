@@ -18,13 +18,15 @@ public class WebClientConfiguration {
         ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = # <1>
                 new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository,
                                                                           authorizedClientRepository);
-        oauth.setDefaultClientRegistrationId("library-app"); # <2>
+        oauth.setDefaultOAuth2AuthorizedClient(true); # <2>
+        oauth.setDefaultClientRegistrationId("keycloak"); # <3>
         return WebClient.builder()
-                .filter(oauth) # <3>
+                .filter(oauth) # <4>
                 .build();
     }
 }
 ----
 <1> Creates a filter for handling all the OAuth2 token stuff (i.e. initiating the OAuth2 code grant flow)
-<2> Registration id for client for automatic token handling
-<3> Add the filter to webclient
+<2> Set this OAuth2 client as default for all requests (Do not set this if you have requests that do not require access tokens)
+<3> Registration id for client for automatic token handling
+<4> Add the filter to webclient

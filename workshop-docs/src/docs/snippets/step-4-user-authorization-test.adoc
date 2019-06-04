@@ -5,8 +5,8 @@ package com.example.library.server.business;
 ...
 
 @DisplayName("Verify that user service")
-@SpringJUnitConfig(LibraryServerApplication.class) # <1>
-class UserServiceTest {
+@SpringJUnitConfig(InitialServerApplication.class) # <1>
+class UserServiceAuthorizationTest {
 
   @Autowired
   private UserService userService;
@@ -14,36 +14,60 @@ class UserServiceTest {
   @MockBean
   private UserRepository userRepository;
 
-  @SuppressWarnings("unused")
-  @MockBean
-  private IdGenerator idGenerator;
-
   @DisplayName("grants access to find one user by email for anonymous user")
   @Test
   void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() { # <2>
-    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
-            "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.LIBRARY_USER))));
-    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+    when(userRepository.findOneByEmail(any()))
+        .thenReturn(
+            Mono.just(
+                new User(
+                    UUID.randomUUID(),
+                    "test@example.com",
+                    "secret",
+                    "Max",
+                    "Maier",
+                    Collections.singletonList(Role.LIBRARY_USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com"))
+        .expectNextCount(1)
+        .verifyComplete();
   }
 
   @DisplayName("grants access to find one user by email for roles 'LIBRARY_USER', 'LIBRARY_CURATOR' and 'LIBRARY_ADMIN'")
   @Test
   @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR", "LIBRARY_ADMIN"})
   void verifyFindOneByEmailAccessIsGrantedForAllRoles() { # <3>
-    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
-            "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.LIBRARY_USER))));
-    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+    when(userRepository.findOneByEmail(any()))
+        .thenReturn(
+            Mono.just(
+                new User(
+                    UUID.randomUUID(),
+                    "test@example.com",
+                    "secret",
+                    "Max",
+                    "Maier",
+                    Collections.singletonList(Role.LIBRARY_USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com"))
+        .expectNextCount(1)
+        .verifyComplete();
   }
+
+  ...
 
   @DisplayName("denies access to create a user for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
   @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyCreateAccessIsDeniedForUserAndCurator() { # <4>
-    StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
-            "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.LIBRARY_USER))))).verifyError(AccessDeniedException.class);
+    StepVerifier.create(
+            userService.create(
+                Mono.just(
+                    new User(
+                        UUID.randomUUID(),
+                        "test@example.com",
+                        "secret",
+                        "Max",
+                        "Maier",
+                        Collections.singletonList(Role.LIBRARY_USER)))))
+        .verifyError(AccessDeniedException.class);
   }
   ...
 }

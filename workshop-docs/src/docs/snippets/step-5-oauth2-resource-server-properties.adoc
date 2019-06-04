@@ -5,7 +5,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 # <1>
+          issuer-uri: http://localhost:8080/auth/realms/workshop # <1>
 ----
 <1> The issuer url is used to look up the well known configuration page to get all required configuration settings to set up a resource server
 

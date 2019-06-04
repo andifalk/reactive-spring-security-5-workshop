@@ -1,22 +1,23 @@
 [source,options="nowrap"]
 ----
 server:
-  port: 8081
+  port: 9090
 
 spring:
   security:
-    oauth2:
-      client:
-        registration:
-          library-client: # <1>
-            provider: okta
-            client-id: 0oajbryix1d8ABX1i0h7
-            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope: openid, profile, email, offline_access
-        provider:
-          okta:
-            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 # <2>
+      oauth2:
+        client:
+          registration:
+            keycloak: # <1>
+              client-id: 'library-client'
+              client-secret: '9584640c-3804-4dcd-997b-93593cfb9ea7'
+              authorizationGrantType: authorization_code
+              redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+              scope: openid
+          provider:
+            keycloak:
+              issuerUri: http://localhost:8080/auth/realms/workshop # <2>
+              user-name-attribute: name
 ----
 <1> Client configuration like client-id and client-secret credentials and where to redirect to
 <2> The issuer url is used to look up the well known configuration page to get all required configuration settings to set up a client

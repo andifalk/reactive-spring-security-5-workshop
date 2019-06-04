@@ -68,7 +68,8 @@ class UserApiDocumentationTest {
     this.webTestClient =
         WebTestClient.bindToApplicationContext(applicationContext)
             .configureClient()
-            .filter(
+                .baseUrl("http://localhost:9091")
+                .filter(
                 documentationConfiguration(restDocumentation)
                     .operationPreprocessors()
                     .withRequestDefaults(prettyPrint())

@@ -63,6 +63,7 @@ class BookApiDocumentationTest {
     this.webTestClient =
         WebTestClient.bindToApplicationContext(applicationContext)
             .configureClient()
+            .baseUrl("http://localhost:9091")
             .filter(
                 documentationConfiguration(restDocumentation)
                     .operationPreprocessors()

@@ -852,13 +852,13 @@ Authorization should always be tested for positive *AND* negative test cases. Ot
 constraint. Depending on the time left in the workshop you can add some more test cases as you like or just look into the
 completed application _04-library-server_.
 
-.BookServiceTest class
+.BookServiceAuthorizationTest class
 
 include::{snippets}/step-4-book-authorization-test.adoc[]
 
 For sure you have to add similar tests as well for the user part.
 
-.UserServiceTest class
+.UserServiceAuthorizationTest class
 
 include::{snippets}/step-4-user-authorization-test.adoc[]
 
@@ -867,6 +867,13 @@ include::{snippets}/step-4-user-authorization-test.adoc[]
 Make sure you always add positive and negative authorization tests. Otherwise you may miss
 authorization endpoint leaks.
 ====
+
+Another approach is to test the authentication for the reactive api.
+This is shown in following class.
+
+.BookApiAuthenticationTest
+
+include::{snippets}/step-4-book-authentication-test.adoc[]
 
 The testing part is the last part of adding simple username/password based security to the reactive style of the _library-server_ project.
 The next step will dive into the world of token-based authentication.
@@ -1063,9 +1070,9 @@ These micro-services have to be configured to be reachable via the following URL
 |Identity Management Service (Keycloak)
 |http://localhost:8080/auth[http://localhost:8080/auth]
 |Library Client (OIDC Client)
-|http://localhost:8081[http://localhost:9090]
+|http://localhost:9090[http://localhost:9090]
 |Library Server (OIDC Resource Server)
-|http://localhost:8080[http://localhost:9092]
+|http://localhost:9091[http://localhost:9091]
 |===
 
 So now let's start.
@@ -1150,6 +1157,11 @@ for the workshop application:
 [[auth-code-demo]]
 === Intro-Lab: Authorization Code Demo Client
 
+In this introduction lab you can see the authorization code grant flow step-by-step in detail.
+
+Please make sure that you have started keycloak server.
+Then check this out, go to project **intro-labs/auth-code-demo** and run the class _com.example.authorizationcode.client.AuthorizationCodeDemo_.
+
 [[resource-server]]
 === Lab 5: OpenID Connect Resource Server
 
@@ -1175,7 +1187,7 @@ These dependencies already have been added to the initial project.
 ====
 You may look into the spring security oauth2 boot reference documentation
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-server[Spring Boot 2.1 Reference Documentation]
-and the https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1 Reference Documentation] on how to implement a resource server.
+and the https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1 Reference Documentation] on how to implement a resource server.
 ====
 
 ==== Implementation steps
@@ -1290,11 +1302,6 @@ following required dependencies to the existing gradle build file.
 
 include::{snippets}/step-5-oauth2-client-gradle-build.adoc[]
 
-[NOTE]
-====
-These dependencies already have been added to the initial project.
-====
-
 ==== Implementation steps
 
 First step is to configure an OAuth2/OIDC client. For this you have to register the corresponding
@@ -1376,9 +1383,10 @@ specials tags to connect the template with Spring beans.
 
 In our case there are already 3 HTML templates:
 
-* index.html: The main template that is displayed initially
-* books.html: This shows the list of books retrieved from the library server
+* index.html: The main template that is displayed initially to show list of books
+* createbookform.html: This renders a form to create a new book
 * users.html: This shows the list of users retrieved from the library server
+* error.html: Template to show errors
 
 To map these HTML template files to the web request paths and also map the content (the 'model' as it is called
 in Spring MVC) a controller class (annotated with _@Controller_) is required.
@@ -1396,146 +1404,14 @@ This endpoint is mapped to a _@RestController_.
 
 include::{snippets}/step-5-oauth2-client-user-info-rest-controller.adoc[]
 
-===== Configure web client authorities
-
-Same as on resource server side we don't want to use the automatic _SCOPE_xxx_ authorities but instead want to
-map again the _groups_ claim we get from the automatically called _userinfo_ endpoint to the expected _ROLE_xxx_
-authorities.
-
-To achieve this we have to extend the class _com.example.library.client.config.WebSecurityConfiguration_:
-
-```java
-package com.example.library.client.config;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-@Configuration
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
-        .anyRequest()
-        .fullyAuthenticated()
-        .and()
-        .oauth2Client()
-        .and()
-        .oauth2Login()
-        .userInfoEndpoint()
-        .userAuthoritiesMapper(userAuthoritiesMapper());
-  }
-
-  private GrantedAuthoritiesMapper userAuthoritiesMapper() {
-    return (authorities) -> {
-      Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
-
-      authorities.forEach(
-          authority -> {
-            if (authority instanceof OidcUserAuthority) {
-              OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
-
-              OidcIdToken idToken = oidcUserAuthority.getIdToken();
-              OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
-
-              List<SimpleGrantedAuthority> groupAuthorities =
-                  userInfo.getClaimAsStringList("groups").stream()
-                      .map(g -> new SimpleGrantedAuthority("ROLE_" + g.toUpperCase()))
-                      .collect(Collectors.toList());
-              mappedAuthorities.addAll(groupAuthorities);
-            }
-          });
-
-      return mappedAuthorities;
-    };
-  }
-}
-```
-
-With the snippet
-
-```
-...
-.oauth2Client()
-        .and()
-        .oauth2Login()
-        .userInfoEndpoint()
-        .userAuthoritiesMapper(userAuthoritiesMapper());
-```
-we configure an OAuth2 client and an OIDC login client and reconfigure the _userinfo_ endpoint user mapping
-to map authorities different as the standard one. The custom mapping is done in the implementation
-of the _GrantedAuthoritiesMapper_ interface that maps entries of the _groups_ claim to authority roles .
-
-<hr>
-
-===== Change authentication principal
-
-The final required step is to change the authentication principal from _org.springframework.security.core.userdetails.User_
-to _org.springframework.security.oauth2.core.oidc.user.OidcUser_.
-
-We have to change this in class _com.example.library.client.web.BookResource_:
-
-```
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-...
-public boolean isReturnBookAllowed() {
-    if (!isBorrowed()) {
-      return false;
-    }
-
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof OidcUser) {
-      OidcUser oidcUser =
-          (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      return borrowedBy != null && borrowedBy.getEmail().equals(oidcUser.getEmail());
-    } else {
-      // Always fail secure
-      return false;
-    }
-  }
-...
-```
-
-and We have to change this in class _com.example.library.client.web.BooksController_:
-
-    ```
-    import net.minidev.json.JSONArray;
-    import org.springframework.security.oauth2.core.user.OAuth2User;
-    ...
-    @GetMapping("/")
-      Mono<String> index(@AuthenticationPrincipal OAuth2User oauth2User, Model model) {
-
-        model.addAttribute("fullname", oauth2User.getName());
-        model.addAttribute(
-            "isCurator",
-            ((JSONArray) oauth2User.getAttributes().get("groups")).get(0).equals("library_curator"));
-        ...
-    }
-    ...
-    ```
-
-<hr>
-
 ===== Run all the components
 
 Finally start the two components:
 
-* Run _LibraryServerApplication_ class in project *lab-5/complete-resource-server*
-* Run _OAuth2LoginClientApplication_ class in project *lab-6/initial-oidc-client*
+* Run _CompleteResourceServerApplication_ class in project *lab-5/complete-resource-server*
+* Run _InitialOidcClientApplication_ class in project *lab-6/initial-oidc-client*
 
-Now when you access http://localhost:8081/userinfo[localhost:8081/userinfo] you should be redirected to the OKTA identity server.
+Now when you access http://localhost:9090/userinfo[localhost:9090/userinfo] you should be redirected to the keycloak identity server.
 After logging in you should get the current authenticated user info back from identity server.
 
 Here you can log in using one of these predefined users:
@@ -1561,7 +1437,7 @@ Here you can log in using one of these predefined users:
 |LIBRARY_ADMIN
 |===
 
-You can now access http://localhost:8081/books[localhost:8081/books] as well.
+You can now access http://localhost:9090[localhost:9090] as well.
 This returns the book list from the library-server (resource server).
 
 ===== Logout Users
@@ -1578,7 +1454,6 @@ users:
 
 image::images/keycloak_sessions.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
 
-
 * After you have revocated sessions in keycloak you have to delete the current JSESSION cookie
   for the library client. You can do this by opening the application tab in the developer tools of chrome.
   Navigate to the cookies entry on the left and select the url of the library client, then delete the cookie
@@ -1590,11 +1465,16 @@ Now when you refresh the library client in the browser you should be redirected 
 
 [NOTE]
 ====
-You find the completed code in project *lab-6/complete_oidc_client*.
+You find the completed code in project *lab-6/complete-oidc-client*.
 ====
 
 This concludes our Spring Security 5.1 hands-on workshop.
-I hope you learned a lot regarding security and especially Spring Security 5.1.
+I hope you have learned a lot regarding security and especially Spring Security 5.1.
+
+[TIP]
+====
+So take the next step and make YOUR applications more secure !
+====
 
 == Feedback
 

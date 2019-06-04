@@ -65,6 +65,7 @@ class BookApiDocumentationTest {
         WebTestClient.bindToApplicationContext(applicationContext)
             .apply(springSecurity())
             .configureClient()
+            .baseUrl("http://localhost:9091")
             .filter(
                 documentationConfiguration(restDocumentation)
                     .operationPreprocessors()

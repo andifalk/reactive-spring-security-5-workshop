@@ -1940,7 +1940,7 @@ public class DataInitializer implements CommandLineRunner {
         new DelegatingPasswordEncoder(
             "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5"))); <i class="conum" data-value="2"></i><b>(2)</b>
 
-    logger.info("Creating users with LIBRARY_USER, CURATOR and LIBRARY_ADMIN roles...");
+    logger.info("Creating users with LIBRARY_USER, LIBRARY_CURATOR and LIBRARY_ADMIN roles...");
     userRepository
         .saveAll(
             Flux.just(
@@ -2687,56 +2687,74 @@ constraint. Depending on the time left in the workshop you can add some more tes
 completed application <em>04-library-server</em>.</p>
 </div>
 <div class="listingblock">
-<div class="title">BookServiceTest class</div>
+<div class="title">BookServiceAuthorizationTest class</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>package com.example.library.server.business;
 
 ...
 
 @DisplayName("Verify that book service")
-@SpringJUnitConfig(LibraryServerApplication.class) <i class="conum" data-value="1"></i><b>(1)</b>
-class BookServiceTest {
+@SpringJUnitConfig(InitialServerApplication.class) <i class="conum" data-value="1"></i><b>(1)</b>
+class BookServiceAuthorizationTest {
 
-  @Autowired
-  private BookService bookService;
+  @Autowired private BookService bookService;
 
-  @MockBean <i class="conum" data-value="2"></i><b>(2)</b>
-  private BookRepository bookRepository;
+  @MockBean private BookRepository bookRepository; <i class="conum" data-value="2"></i><b>(2)</b>
 
-  @MockBean
-  private UserRepository userRepository;
-
-  @MockBean
-  private IdGenerator idGenerator;
+  @MockBean private UserRepository userRepository;
 
   @DisplayName("grants access to create a book for role 'LIBRARY_CURATOR'")
   @Test
   @WithMockUser(roles = "LIBRARY_CURATOR")
   void verifyCreateAccessIsGrantedForCurator() { <i class="conum" data-value="3"></i><b>(3)</b>
     when(bookRepository.insert(Mockito.&lt;Mono&lt;Book&gt;&gt;any())).thenReturn(Flux.just(new Book()));
-    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
-                    "123456789", "title", "description", Collections.singletonList("author"),
-                    false, null)
-            ))).verifyComplete();
+    StepVerifier.create(
+            bookService.create(
+                Mono.just(
+                    new Book(
+                        UUID.randomUUID(),
+                        "123456789",
+                        "title",
+                        "description",
+                        Collections.singletonList("author"),
+                        false,
+                        null))))
+        .verifyComplete();
   }
 
   @DisplayName("denies access to create a book for roles 'LIBRARY_USER' and 'LIBRARY_ADMIN'")
   @Test
   @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_ADMIN"})
   void verifyCreateAccessIsDeniedForUserAndAdmin() { <i class="conum" data-value="4"></i><b>(4)</b>
-    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
-            "123456789", "title", "description", Collections.singletonList("author"),
-            false, null)
-    ))).verifyError(AccessDeniedException.class);
+    StepVerifier.create(
+            bookService.create(
+                Mono.just(
+                    new Book(
+                        UUID.randomUUID(),
+                        "123456789",
+                        "title",
+                        "description",
+                        Collections.singletonList("author"),
+                        false,
+                        null))))
+        .verifyError(AccessDeniedException.class);
   }
 
   @DisplayName("denies access to create a book for anonymous user")
   @Test
   void verifyCreateAccessIsDeniedForUnauthenticated() { <i class="conum" data-value="5"></i><b>(5)</b>
-    StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
-            "123456789", "title", "description", Collections.singletonList("author"),
-            false, null)
-    ))).verifyError(AccessDeniedException.class);
+    StepVerifier.create(
+            bookService.create(
+                Mono.just(
+                    new Book(
+                        UUID.randomUUID(),
+                        "123456789",
+                        "title",
+                        "description",
+                        Collections.singletonList("author"),
+                        false,
+                        null))))
+        .verifyError(AccessDeniedException.class);
   }
 
   ...
@@ -2772,15 +2790,15 @@ class BookServiceTest {
 <p>For sure you have to add similar tests as well for the user part.</p>
 </div>
 <div class="listingblock">
-<div class="title">UserServiceTest class</div>
+<div class="title">UserServiceAuthorizationTest class</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>package com.example.library.server.business;
 
 ...
 
 @DisplayName("Verify that user service")
-@SpringJUnitConfig(LibraryServerApplication.class) <i class="conum" data-value="1"></i><b>(1)</b>
-class UserServiceTest {
+@SpringJUnitConfig(InitialServerApplication.class) <i class="conum" data-value="1"></i><b>(1)</b>
+class UserServiceAuthorizationTest {
 
   @Autowired
   private UserService userService;
@@ -2788,36 +2806,60 @@ class UserServiceTest {
   @MockBean
   private UserRepository userRepository;
 
-  @SuppressWarnings("unused")
-  @MockBean
-  private IdGenerator idGenerator;
-
   @DisplayName("grants access to find one user by email for anonymous user")
   @Test
   void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() { <i class="conum" data-value="2"></i><b>(2)</b>
-    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
-            "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.LIBRARY_USER))));
-    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+    when(userRepository.findOneByEmail(any()))
+        .thenReturn(
+            Mono.just(
+                new User(
+                    UUID.randomUUID(),
+                    "test@example.com",
+                    "secret",
+                    "Max",
+                    "Maier",
+                    Collections.singletonList(Role.LIBRARY_USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com"))
+        .expectNextCount(1)
+        .verifyComplete();
   }
 
   @DisplayName("grants access to find one user by email for roles 'LIBRARY_USER', 'LIBRARY_CURATOR' and 'LIBRARY_ADMIN'")
   @Test
   @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR", "LIBRARY_ADMIN"})
   void verifyFindOneByEmailAccessIsGrantedForAllRoles() { <i class="conum" data-value="3"></i><b>(3)</b>
-    when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
-            "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.LIBRARY_USER))));
-    StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
+    when(userRepository.findOneByEmail(any()))
+        .thenReturn(
+            Mono.just(
+                new User(
+                    UUID.randomUUID(),
+                    "test@example.com",
+                    "secret",
+                    "Max",
+                    "Maier",
+                    Collections.singletonList(Role.LIBRARY_USER))));
+    StepVerifier.create(userService.findOneByEmail("test@example.com"))
+        .expectNextCount(1)
+        .verifyComplete();
   }
+
+  ...
 
   @DisplayName("denies access to create a user for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
   @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyCreateAccessIsDeniedForUserAndCurator() { <i class="conum" data-value="4"></i><b>(4)</b>
-    StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
-            "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.LIBRARY_USER))))).verifyError(AccessDeniedException.class);
+    StepVerifier.create(
+            userService.create(
+                Mono.just(
+                    new User(
+                        UUID.randomUUID(),
+                        "test@example.com",
+                        "secret",
+                        "Max",
+                        "Maier",
+                        Collections.singletonList(Role.LIBRARY_USER)))))
+        .verifyError(AccessDeniedException.class);
   }
   ...
 }</code></pre>
@@ -2855,6 +2897,154 @@ class UserServiceTest {
 authorization endpoint leaks.</p>
 </div>
 </td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Another approach is to test the authentication for the reactive api.
+This is shown in following class.</p>
+</div>
+<div class="listingblock">
+<div class="title">BookApiAuthenticationTest</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code>package com.example.library.server.api;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = BookApiAuthenticationTest.TestConfig.class) <i class="conum" data-value="1"></i><b>(1)</b>
+@DisplayName("Access to book api")
+class BookApiAuthenticationTest {
+
+  @Autowired private ApplicationContext applicationContext;
+
+  private WebTestClient webTestClient;
+
+  @MockBean private BookService bookService;
+  @MockBean private UserRepository userRepository;
+
+  @BeforeEach
+  void setUp() {
+    this.webTestClient =
+        WebTestClient.bindToApplicationContext(applicationContext)
+            .apply(springSecurity()) <i class="conum" data-value="2"></i><b>(2)</b>
+            .configureClient()
+            .build();
+  }
+
+  @ComponentScan(
+      basePackages = {
+        "com.example.library.server.api",
+        "com.example.library.server.business",
+        "com.example.library.server.config"
+      })
+  @EnableWebFlux
+  @EnableWebFluxSecurity
+  @EnableAutoConfiguration( <i class="conum" data-value="3"></i><b>(3)</b>
+      exclude = {
+        MongoReactiveAutoConfiguration.class,
+        MongoAutoConfiguration.class,
+        MongoDataAutoConfiguration.class,
+        EmbeddedMongoAutoConfiguration.class,
+        MongoReactiveRepositoriesAutoConfiguration.class,
+        MongoRepositoriesAutoConfiguration.class
+      })
+  static class TestConfig {}
+
+  @DisplayName("as authenticated user is granted")
+  @Nested
+  class AuthenticatedBookApi {
+
+    @WithMockUser <i class="conum" data-value="4"></i><b>(4)</b>
+    @Test
+    @DisplayName("to get list of books")
+    void verifyGetBooksAuthenticated() {
+
+      given(bookService.findAll()).willReturn(Flux.just(BookBuilder.book().build()));
+
+      webTestClient
+          .get()
+          .uri("/books")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectHeader() <i class="conum" data-value="5"></i><b>(5)</b>
+          .exists("X-XSS-Protection")
+          .expectHeader()
+          .valueEquals("X-Frame-Options", "DENY");
+    }
+
+    @Test
+    @DisplayName("to get single book")
+    void verifyGetBookAuthenticated() {
+
+      UUID bookId = UUID.randomUUID();
+
+      given(bookService.findById(bookId))
+          .willReturn(Mono.just(BookBuilder.book().withId(bookId).build()));
+
+      webTestClient
+          .mutateWith(mockUser()) <i class="conum" data-value="6"></i><b>(6)</b>
+          .get()
+          .uri("/books/{bookId}", bookId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus()
+          .isOk();
+    }
+
+    ...
+  }
+
+  @DisplayName("as unauthenticated user is denied with 401")
+  @Nested
+  class UnAuthenticatedBookApi {
+
+    @Test
+    @DisplayName("to get list of books")
+    void verifyGetBooksUnAuthenticated() {
+
+      webTestClient
+          .get()
+          .uri("/books")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus()
+          .isUnauthorized(); <i class="conum" data-value="7"></i><b>(7)</b>
+    }
+
+    ...
+  }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Custom test configuration</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets up Spring Security&#8217;s WebTestClient test support</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Exclude complete persistence layer from test (out of scope for authentication)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Specify user authentication</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Verify existence of expected security response headers</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Alternative way to specify user authentication</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Negative test case to verify unauthenticated user is not authorized to use the api</td>
 </tr>
 </table>
 </div>
@@ -3215,11 +3405,11 @@ of Spring Security 5.1.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Library Client (OIDC Client)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8081">http://localhost:9090</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9090">http://localhost:9090</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Library Server (OIDC Resource Server)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:8080">http://localhost:9092</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://localhost:9091">http://localhost:9091</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -3371,7 +3561,13 @@ for the workshop application:</p>
 </div>
 <div class="sect2">
 <h3 id="auth-code-demo"><a class="anchor" href="#auth-code-demo"></a><a class="link" href="#auth-code-demo">7.3. Intro-Lab: Authorization Code Demo Client</a></h3>
-
+<div class="paragraph">
+<p>In this introduction lab you can see the authorization code grant flow step-by-step in detail.</p>
+</div>
+<div class="paragraph">
+<p>Please make sure that you have started keycloak server.
+Then check this out, go to project <strong>intro-labs/auth-code-demo</strong> and run the class <em>com.example.authorizationcode.client.AuthorizationCodeDemo</em>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="resource-server"><a class="anchor" href="#resource-server"></a><a class="link" href="#resource-server">7.4. Lab 5: OpenID Connect Resource Server</a></h3>
@@ -3432,7 +3628,7 @@ following required dependencies to the existing gradle build file.</p>
 <div class="paragraph">
 <p>You may look into the spring security oauth2 boot reference documentation
 <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-server">Spring Boot 2.1 Reference Documentation</a>
-and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/reference/html5/#webflux-oauth2-resource-server">Spring Security 5.1 Reference Documentation</a> on how to implement a resource server.</p>
+and the <a href="https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/html5/#webflux-oauth2-resource-server">Spring Security 5.1 Reference Documentation</a> on how to implement a resource server.</p>
 </div>
 </td>
 </tr>
@@ -3479,7 +3675,7 @@ as part of the predefined spring property <em>spring.security.oauth2.resourceser
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+          issuer-uri: http://localhost:8080/auth/realms/workshop <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -3530,31 +3726,30 @@ Spring Security also validates by default:</p>
 <div class="title"><a href="http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration" class="bare">http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration</a></div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>{
-  "issuer": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7",
-  "authorization_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/authorize",
-  "token_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/token",
-  "userinfo_endpoint": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/userinfo",
-  "registration_endpoint": "https://dev-667216.oktapreview.com/oauth2/v1/clients",
-  "jwks_uri": "https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/v1/keys",
-  "response_types_supported": [
-    "code",
-    "id_token",
-    "code id_token",
-    "code token",
-    "id_token token",
-    "code id_token token"
-  ],
-  "response_modes_supported": [
-    "query",
-    "fragment",
-    "form_post",
-    "okta_post_message"
-  ],
+  "issuer": "http://localhost:8080/auth/realms/workshop",
+  "authorization_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth",
+  "token_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token",
+  "token_introspection_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token/introspect",
+  "userinfo_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo",
+  "end_session_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/logout",
+  "jwks_uri": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs",
+  "check_session_iframe": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/login-status-iframe.html",
   "grant_types_supported": [
     "authorization_code",
     "implicit",
     "refresh_token",
-    "password"
+    "password",
+    "client_credentials"
+  ],
+  "response_types_supported": [
+    "code",
+    "none",
+    "id_token",
+    "token",
+    "id_token token",
+    "code id_token",
+    "code token",
+    "code id_token token"
   ],
   ...
 }</code></pre>
@@ -3618,21 +3813,23 @@ public class WebSecurityConfiguration {
         .matchers(EndpointRequest.to("info"))
         .permitAll()
         .matchers(EndpointRequest.toAnyEndpoint())
-        .hasRole(Role.LIBRARY_ADMIN.name()) <i class="conum" data-value="1"></i><b>(1)</b>
+        .hasRole(Role.LIBRARY_ADMIN.name())
+        .pathMatchers(HttpMethod.POST, "/books/{bookId}/borrow")
+        .hasRole(Role.LIBRARY_USER.name())
+        .pathMatchers(HttpMethod.POST, "/books/{bookId}/return")
+        .hasRole(Role.LIBRARY_USER.name())
         .pathMatchers(HttpMethod.POST, "/books")
         .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers(HttpMethod.DELETE, "/books")
         .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers("/users/**")
         .hasRole(Role.LIBRARY_ADMIN.name())
-        .pathMatchers("/books/**")
-        .hasRole(Role.LIBRARY_USER.name())
         .anyExchange()
         .authenticated()
         .and()
-        .oauth2ResourceServer() <i class="conum" data-value="2"></i><b>(2)</b>
-        .jwt() <i class="conum" data-value="3"></i><b>(3)</b>
-        .jwtAuthenticationConverter(libraryUserJwtAuthenticationConverter()); <i class="conum" data-value="4"></i><b>(4)</b>
+        .oauth2ResourceServer() <i class="conum" data-value="1"></i><b>(1)</b>
+        .jwt() <i class="conum" data-value="2"></i><b>(2)</b>
+        .jwtAuthenticationConverter(libraryUserJwtAuthenticationConverter()); <i class="conum" data-value="3"></i><b>(3)</b>
     // .jwtAuthenticationConverter(libraryUserRolesJwtAuthenticationConverter());
     return http.build();
   }
@@ -3653,18 +3850,14 @@ public class WebSecurityConfiguration {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Actuator endpoints are only accessible with 'LIBRARY_ADMIN' roles except 'health' and 'info'</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Auto configuration for an OAuth2 resource server</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Configures JSON web token (JWT) handling for this resource server</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>Configures a JWT authentication converter to map JWT to an Authentication object</td>
 </tr>
 </table>
@@ -3740,7 +3933,7 @@ public class LibraryUserJwtAuthenticationConverter
   public Mono&lt;AbstractAuthenticationToken&gt; convert(Jwt jwt) { <i class="conum" data-value="1"></i><b>(1)</b>
     Collection&lt;GrantedAuthority&gt; authorities = extractAuthorities(jwt);
     return libraryReactiveUserDetailsService
-        .findByUsername(jwt.getSubject())
+        .findByUsername(jwt.getClaimAsString("email"))
         .map(u -&gt; new UsernamePasswordAuthenticationToken(u, "n/a", authorities));
   }
 
@@ -3808,7 +4001,7 @@ public class LibraryUserRolesJwtAuthenticationConverter
   @Override
   public Mono&lt;AbstractAuthenticationToken&gt; convert(Jwt jwt) { <i class="conum" data-value="1"></i><b>(1)</b>
     return libraryReactiveUserDetailsService
-        .findByUsername(jwt.getSubject())
+        .findByUsername(jwt.getClaimAsString("email"))
         .map(u -&gt; new UsernamePasswordAuthenticationToken(u, "n/a", u.getAuthorities()));
   }
 }</code></pre>
@@ -3855,20 +4048,6 @@ following required dependencies to the existing gradle build file.</p>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>Spring Boot starter for OAuth2 client including core OAuth2/OIDC client and JOSE (Javascript Object Signing and Encryption)
 framework to support for example JSON Web Token (JWT)</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<p>These dependencies already have been added to the initial project.</p>
-</div>
-</td>
 </tr>
 </table>
 </div>
@@ -4006,22 +4185,23 @@ using the user name instead of the default value 'sub').</p>
 <div class="title">application.yml client configuration</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code>server:
-  port: 8081
+  port: 9090
 
 spring:
   security:
-    oauth2:
-      client:
-        registration:
-          library-client: <i class="conum" data-value="1"></i><b>(1)</b>
-            provider: okta
-            client-id: 0oajbryix1d8ABX1i0h7
-            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope: openid, profile, email, offline_access
-        provider:
-          okta:
-            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+      oauth2:
+        client:
+          registration:
+            keycloak: <i class="conum" data-value="1"></i><b>(1)</b>
+              client-id: 'library-client'
+              client-secret: '9584640c-3804-4dcd-997b-93593cfb9ea7'
+              authorizationGrantType: authorization_code
+              redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+              scope: openid
+          provider:
+            keycloak:
+              issuerUri: http://localhost:8080/auth/realms/workshop <i class="conum" data-value="2"></i><b>(2)</b>
+              user-name-attribute: name</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -4073,9 +4253,10 @@ public class WebClientConfiguration {
         ServerOAuth2AuthorizedClientExchangeFilterFunction oauth = <i class="conum" data-value="1"></i><b>(1)</b>
                 new ServerOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrationRepository,
                                                                           authorizedClientRepository);
-        oauth.setDefaultClientRegistrationId("library-app"); <i class="conum" data-value="2"></i><b>(2)</b>
+        oauth.setDefaultOAuth2AuthorizedClient(true); <i class="conum" data-value="2"></i><b>(2)</b>
+        oauth.setDefaultClientRegistrationId("keycloak"); <i class="conum" data-value="3"></i><b>(3)</b>
         return WebClient.builder()
-                .filter(oauth) <i class="conum" data-value="3"></i><b>(3)</b>
+                .filter(oauth) <i class="conum" data-value="4"></i><b>(4)</b>
                 .build();
     }
 }</code></pre>
@@ -4089,10 +4270,14 @@ public class WebClientConfiguration {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Registration id for client for automatic token handling</td>
+<td>Set this OAuth2 client as default for all requests (Do not set this if you have requests that do not require access tokens)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Registration id for client for automatic token handling</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Add the filter to webclient</td>
 </tr>
 </table>
@@ -4147,13 +4332,16 @@ specials tags to connect the template with Spring beans.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>index.html: The main template that is displayed initially</p>
+<p>index.html: The main template that is displayed initially to show list of books</p>
 </li>
 <li>
-<p>books.html: This shows the list of books retrieved from the library server</p>
+<p>createbookform.html: This renders a form to create a new book</p>
 </li>
 <li>
 <p>users.html: This shows the list of users retrieved from the library server</p>
+</li>
+<li>
+<p>error.html: Template to show errors</p>
 </li>
 </ul>
 </div>
@@ -4167,66 +4355,161 @@ in Spring MVC) a controller class (annotated with <em>@Controller</em>) is requi
 <div class="listingblock">
 <div class="title">BookController class</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code>package com.example.oauth2loginclient.api;
+<pre class="highlightjs highlight nowrap"><code>package com.example.oidc.client.api;
 
+import com.example.oidc.client.api.resource.BookResource;
+import com.example.oidc.client.api.resource.CreateBookResource;
+import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+import java.io.IOException;
 
 @Controller
-@RequestMapping("/books")
 public class BookController { <i class="conum" data-value="1"></i><b>(1)</b>
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
 
   private final WebClient webClient;
 
+  @Value("${library.server}")
+  private String libraryServer;
+
   public BookController(WebClient webClient) {
     this.webClient = webClient;
   }
 
-  @GetMapping
-  public String books() { <i class="conum" data-value="2"></i><b>(2)</b>
-    return "books";
+  @ModelAttribute("isCurator")
+  Mono&lt;Boolean&gt; isCurator(@AuthenticationPrincipal OAuth2User user) {
+    return Mono.just(
+        ((JSONArray) user.getAttributes().get("groups"))
+            .stream().anyMatch(g -&gt; g.equals("library_curator")));
   }
 
-  @ModelAttribute("allBooks")
-  Flux&lt;BookResource&gt; allBooks() { <i class="conum" data-value="3"></i><b>(3)</b>
+  @ModelAttribute("books")
+  Flux&lt;BookResource&gt; books() { <i class="conum" data-value="2"></i><b>(2)</b>
     return webClient
         .get()
-        .uri("http://localhost:8080/books")
-        .attributes(clientRegistrationId("library-client"))
+        .uri(libraryServer + "/books")
         .retrieve()
         .onStatus(
-            httpStatus -&gt; HttpStatus.FORBIDDEN.value() == httpStatus.value(),
-            clientResponse -&gt; Mono.error(new AccessDeniedException("No access for this resource")))
+            s -&gt; s.equals(HttpStatus.UNAUTHORIZED),
+            cr -&gt; Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.FORBIDDEN),
+            cr -&gt; Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -&gt; Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
         .onStatus(
             HttpStatus::is5xxServerError,
-            clientResponse -&gt; Mono.error(new IllegalStateException("Internal error occurred")))
+            cr -&gt; Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToFlux(BookResource.class);
   }
 
-  @ExceptionHandler(WebClientResponseException.class) <i class="conum" data-value="4"></i><b>(4)</b>
-  public ResponseEntity&lt;String&gt; handleWebClientResponseException(WebClientResponseException ex) {
-    LOGGER.error(
-        "Error from WebClient - Status {}, Body {}",
-        ex.getRawStatusCode(),
-        ex.getResponseBodyAsString(),
-        ex);
-    return ResponseEntity.status(ex.getRawStatusCode()).body(ex.getResponseBodyAsString());
+  @GetMapping("/")
+  Mono&lt;String&gt; index(@AuthenticationPrincipal OAuth2User user, Model model) { <i class="conum" data-value="3"></i><b>(3)</b>
+
+    model.addAttribute("fullname", user.getName());
+    model.addAttribute(
+        "isCurator",
+        user.getAuthorities().stream().anyMatch(ga -&gt; ga.getAuthority().equals("library_curator")));
+    return Mono.just("index");
+  }
+
+  @GetMapping("/createbook")
+  String createForm(Model model) { <i class="conum" data-value="4"></i><b>(4)</b>
+
+    model.addAttribute("book", new CreateBookResource());
+
+    return "createbookform";
+  }
+
+  @PostMapping("/create")
+  Mono&lt;String&gt; create( <i class="conum" data-value="5"></i><b>(5)</b>
+      CreateBookResource createBookResource, ServerWebExchange serverWebExchange, Model model)
+      throws IOException {
+
+    return webClient
+        .post()
+        .uri(libraryServer + "/books")
+        .body(Mono.just(createBookResource), CreateBookResource.class)
+        .retrieve()
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.UNAUTHORIZED),
+            cr -&gt; Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.FORBIDDEN),
+            cr -&gt; Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -&gt; Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            cr -&gt; Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
+        .bodyToMono(BookResource.class)
+        .then(Mono.just("index"));
+  }
+
+  @GetMapping("/borrow") <i class="conum" data-value="6"></i><b>(6)</b>
+  Mono&lt;String&gt; borrowBook(@RequestParam("identifier") String identifier) {
+    return webClient
+        .post()
+        .uri(libraryServer + "/books/{bookId}/borrow", identifier)
+        .retrieve()
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.UNAUTHORIZED),
+            cr -&gt; Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.FORBIDDEN),
+            cr -&gt; Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -&gt; Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            cr -&gt; Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
+        .bodyToMono(BookResource.class)
+        .then(Mono.just("index"));
+  }
+
+  @GetMapping("/return")
+  Mono&lt;String&gt; returnBook( <i class="conum" data-value="7"></i><b>(7)</b>
+      @RequestParam("identifier") String identifier, ServerWebExchange serverWebExchange) {
+    return webClient
+        .post()
+        .uri(libraryServer + "/books/{bookId}/return", identifier)
+        .retrieve()
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.UNAUTHORIZED),
+            cr -&gt; Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -&gt; s.equals(HttpStatus.FORBIDDEN),
+            cr -&gt; Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -&gt; Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            cr -&gt; Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
+        .bodyToMono(BookResource.class)
+        .then(Mono.just("redirect:/"));
   }
 }</code></pre>
 </div>
@@ -4239,15 +4522,27 @@ public class BookController { <i class="conum" data-value="1"></i><b>(1)</b>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Map '/books' GET request to 'books.html' template</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>Use reactive webclient to call 'books' endpoint on library resource server</td>
 </tr>
 <tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Map '/' GET request to 'index.html' template</td>
+</tr>
+<tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Exception handler to log and show errors on screen</td>
+<td>Render the form to create new book</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Use reactive webclient to call POST 'books' endpoint on library resource server to create book</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Use reactive webclient to call POST 'books' endpoint on library resource server to borrow a book</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Use reactive webclient to call POST 'books' endpoint on library resource server to return a book</td>
 </tr>
 </table>
 </div>
@@ -4287,159 +4582,6 @@ public class UserInfoRestController {
 </table>
 </div>
 <div class="sect4">
-<h5 id="_configure_web_client_authorities"><a class="anchor" href="#_configure_web_client_authorities"></a><a class="link" href="#_configure_web_client_authorities">Configure web client authorities</a></h5>
-<div class="paragraph">
-<p>Same as on resource server side we don&#8217;t want to use the automatic <em>SCOPE_xxx</em> authorities but instead want to
-map again the <em>groups</em> claim we get from the automatically called <em>userinfo</em> endpoint to the expected <em>ROLE_xxx</em>
-authorities.</p>
-</div>
-<div class="paragraph">
-<p>To achieve this we have to extend the class <em>com.example.library.client.config.WebSecurityConfiguration</em>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.example.library.client.config;
-
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-@Configuration
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
-        .anyRequest()
-        .fullyAuthenticated()
-        .and()
-        .oauth2Client()
-        .and()
-        .oauth2Login()
-        .userInfoEndpoint()
-        .userAuthoritiesMapper(userAuthoritiesMapper());
-  }
-
-  private GrantedAuthoritiesMapper userAuthoritiesMapper() {
-    return (authorities) -&gt; {
-      Set&lt;GrantedAuthority&gt; mappedAuthorities = new HashSet&lt;&gt;();
-
-      authorities.forEach(
-          authority -&gt; {
-            if (authority instanceof OidcUserAuthority) {
-              OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
-
-              OidcIdToken idToken = oidcUserAuthority.getIdToken();
-              OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
-
-              List&lt;SimpleGrantedAuthority&gt; groupAuthorities =
-                  userInfo.getClaimAsStringList("groups").stream()
-                      .map(g -&gt; new SimpleGrantedAuthority("ROLE_" + g.toUpperCase()))
-                      .collect(Collectors.toList());
-              mappedAuthorities.addAll(groupAuthorities);
-            }
-          });
-
-      return mappedAuthorities;
-    };
-  }
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>With the snippet</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code>...
-.oauth2Client()
-        .and()
-        .oauth2Login()
-        .userInfoEndpoint()
-        .userAuthoritiesMapper(userAuthoritiesMapper());</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>we configure an OAuth2 client and an OIDC login client and reconfigure the <em>userinfo</em> endpoint user mapping
-to map authorities different as the standard one. The custom mapping is done in the implementation
-of the <em>GrantedAuthoritiesMapper</em> interface that maps entries of the <em>groups</em> claim to authority roles .</p>
-</div>
-<div class="paragraph">
-<p>&lt;hr&gt;</p>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_change_authentication_principal"><a class="anchor" href="#_change_authentication_principal"></a><a class="link" href="#_change_authentication_principal">Change authentication principal</a></h5>
-<div class="paragraph">
-<p>The final required step is to change the authentication principal from <em>org.springframework.security.core.userdetails.User</em>
-to <em>org.springframework.security.oauth2.core.oidc.user.OidcUser</em>.</p>
-</div>
-<div class="paragraph">
-<p>We have to change this in class <em>com.example.library.client.web.BookResource</em>:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code>import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-...
-public boolean isReturnBookAllowed() {
-    if (!isBorrowed()) {
-      return false;
-    }
-
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof OidcUser) {
-      OidcUser oidcUser =
-          (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      return borrowedBy != null &amp;&amp; borrowedBy.getEmail().equals(oidcUser.getEmail());
-    } else {
-      // Always fail secure
-      return false;
-    }
-  }
-...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and We have to change this in class <em>com.example.library.client.web.BooksController</em>:</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>```
-import net.minidev.json.JSONArray;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-...
-@GetMapping("/")
-  Mono&lt;String&gt; index(@AuthenticationPrincipal OAuth2User oauth2User, Model model) {</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>    model.addAttribute("fullname", oauth2User.getName());
-    model.addAttribute(
-        "isCurator",
-        ((JSONArray) oauth2User.getAttributes().get("groups")).get(0).equals("library_curator"));
-    ...
-}
-...
-```</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>&lt;hr&gt;</p>
-</div>
-</div>
-<div class="sect4">
 <h5 id="_run_all_the_components"><a class="anchor" href="#_run_all_the_components"></a><a class="link" href="#_run_all_the_components">Run all the components</a></h5>
 <div class="paragraph">
 <p>Finally start the two components:</p>
@@ -4447,15 +4589,15 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 <div class="ulist">
 <ul>
 <li>
-<p>Run <em>LibraryServerApplication</em> class in project <strong>lab-5/complete-resource-server</strong></p>
+<p>Run <em>CompleteResourceServerApplication</em> class in project <strong>lab-5/complete-resource-server</strong></p>
 </li>
 <li>
-<p>Run <em>OAuth2LoginClientApplication</em> class in project <strong>lab-6/initial-oidc-client</strong></p>
+<p>Run <em>InitialOidcClientApplication</em> class in project <strong>lab-6/initial-oidc-client</strong></p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Now when you access <a href="http://localhost:8081/userinfo">localhost:8081/userinfo</a> you should be redirected to the OKTA identity server.
+<p>Now when you access <a href="http://localhost:9090/userinfo">localhost:9090/userinfo</a> you should be redirected to the keycloak identity server.
 After logging in you should get the current authenticated user info back from identity server.</p>
 </div>
 <div class="paragraph">
@@ -4503,7 +4645,7 @@ After logging in you should get the current authenticated user info back from id
 </tbody>
 </table>
 <div class="paragraph">
-<p>You can now access <a href="http://localhost:8081/books">localhost:8081/books</a> as well.
+<p>You can now access <a href="http://localhost:9090">localhost:9090</a> as well.
 This returns the book list from the library-server (resource server).</p>
 </div>
 </div>
@@ -4557,7 +4699,7 @@ on the right hand side</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <strong>lab-6/complete_oidc_client</strong>.</p>
+<p>You find the completed code in project <strong>lab-6/complete-oidc-client</strong>.</p>
 </div>
 </td>
 </tr>
@@ -4565,7 +4707,21 @@ on the right hand side</p>
 </div>
 <div class="paragraph">
 <p>This concludes our Spring Security 5.1 hands-on workshop.
-I hope you learned a lot regarding security and especially Spring Security 5.1.</p>
+I hope you have learned a lot regarding security and especially Spring Security 5.1.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>So take the next step and make YOUR applications more secure !</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -4664,7 +4820,7 @@ Free use of this software is granted under the terms of the Apache 2.0 License.<
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0-SNAPSHOT<br>
-Last updated 2019-06-04 19:41:58 +0200
+Last updated 2019-06-04 22:37:56 +0200
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">

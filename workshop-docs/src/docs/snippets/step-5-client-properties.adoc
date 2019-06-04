@@ -2,26 +2,27 @@
 ----
 spring:
   security:
-    oauth2:
-      client:
-        registration:
-          library-client: <1>
-            provider: okta # <2>
-            client-id: 0oajbryix1d8ABX1i0h7 # <3>
-            client-secret: IO_t-KoGka55dz0AVx94mraOig4zclp4ri4Y92vl # <4>
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}" # <5>
-            scope: openid, profile, email, offline_access # <6>
-        provider:
-          okta: # <7>
-            issuer-uri: https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7 # <8>
+      oauth2:
+        client:
+          registration:
+            keycloak: # <1>
+              client-id: 'library-client' # <2>
+              client-secret: '9584640c-3804-4dcd-997b-93593cfb9ea7' # <3>
+              authorizationGrantType: authorization_code # <4>
+              redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}' # <5>
+              scope: openid # <6>
+          provider:
+            keycloak: # <7>
+              issuerUri: http://localhost:8080/auth/realms/workshop # <8>
+              user-name-attribute: name # <9>
 ----
 <1> The registration id for the client
-<2> References the registered identity provider to use for this OAuth2 client
-<3> The client id to use at the identity provider
-<4> The client secret to use at the identity provider
+<2> The client id to use at the identity provider
+<3> The client secret to use at the identity provider
+<4> The authorization grant flow to be used
 <5> The pattern to build the required redirect URL back from authorization server to this client
-<6> The required OAuth2 scopes to use at the identity provider
-<7> Name of the identity provider (Okta identity provider service)
+<6> The required OAuth2/OIDC scopes to use at the identity provider
+<7> Identifier of the identity provider (Keycloak as identity provider service)
 <8> The issuer URI for tokens (is used to read the identity provider configuration
-    from https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration[https://dev-667216.oktapreview.com/oauth2/ausjbx4pq5Wg0kZx10h7/.well-known/openid-configuration])
+    from http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration[http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration])
 

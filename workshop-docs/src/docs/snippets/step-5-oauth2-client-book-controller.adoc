@@ -1,70 +1,168 @@
 [source,options="nowrap"]
 ----
-package com.example.oauth2loginclient.api;
+package com.example.oidc.client.api;
 
+import com.example.oidc.client.api.resource.BookResource;
+import com.example.oidc.client.api.resource.CreateBookResource;
+import net.minidev.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+import java.io.IOException;
 
 @Controller
-@RequestMapping("/books")
 public class BookController { # <1>
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
 
   private final WebClient webClient;
 
+  @Value("${library.server}")
+  private String libraryServer;
+
   public BookController(WebClient webClient) {
     this.webClient = webClient;
   }
 
-  @GetMapping
-  public String books() { # <2>
-    return "books";
+  @ModelAttribute("isCurator")
+  Mono<Boolean> isCurator(@AuthenticationPrincipal OAuth2User user) {
+    return Mono.just(
+        ((JSONArray) user.getAttributes().get("groups"))
+            .stream().anyMatch(g -> g.equals("library_curator")));
   }
 
-  @ModelAttribute("allBooks")
-  Flux<BookResource> allBooks() { # <3>
+  @ModelAttribute("books")
+  Flux<BookResource> books() { # <2>
     return webClient
         .get()
-        .uri("http://localhost:8080/books")
-        .attributes(clientRegistrationId("library-client"))
+        .uri(libraryServer + "/books")
         .retrieve()
         .onStatus(
-            httpStatus -> HttpStatus.FORBIDDEN.value() == httpStatus.value(),
-            clientResponse -> Mono.error(new AccessDeniedException("No access for this resource")))
+            s -> s.equals(HttpStatus.UNAUTHORIZED),
+            cr -> Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
         .onStatus(
             HttpStatus::is5xxServerError,
-            clientResponse -> Mono.error(new IllegalStateException("Internal error occurred")))
+            cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToFlux(BookResource.class);
   }
 
-  @ExceptionHandler(WebClientResponseException.class) # <4>
-  public ResponseEntity<String> handleWebClientResponseException(WebClientResponseException ex) {
-    LOGGER.error(
-        "Error from WebClient - Status {}, Body {}",
-        ex.getRawStatusCode(),
-        ex.getResponseBodyAsString(),
-        ex);
-    return ResponseEntity.status(ex.getRawStatusCode()).body(ex.getResponseBodyAsString());
+  @GetMapping("/")
+  Mono<String> index(@AuthenticationPrincipal OAuth2User user, Model model) { # <3>
+
+    model.addAttribute("fullname", user.getName());
+    model.addAttribute(
+        "isCurator",
+        user.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("library_curator")));
+    return Mono.just("index");
+  }
+
+  @GetMapping("/createbook")
+  String createForm(Model model) { # <4>
+
+    model.addAttribute("book", new CreateBookResource());
+
+    return "createbookform";
+  }
+
+  @PostMapping("/create")
+  Mono<String> create( # <5>
+      CreateBookResource createBookResource, ServerWebExchange serverWebExchange, Model model)
+      throws IOException {
+
+    return webClient
+        .post()
+        .uri(libraryServer + "/books")
+        .body(Mono.just(createBookResource), CreateBookResource.class)
+        .retrieve()
+        .onStatus(
+            s -> s.equals(HttpStatus.UNAUTHORIZED),
+            cr -> Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
+        .bodyToMono(BookResource.class)
+        .then(Mono.just("index"));
+  }
+
+  @GetMapping("/borrow") # <6>
+  Mono<String> borrowBook(@RequestParam("identifier") String identifier) {
+    return webClient
+        .post()
+        .uri(libraryServer + "/books/{bookId}/borrow", identifier)
+        .retrieve()
+        .onStatus(
+            s -> s.equals(HttpStatus.UNAUTHORIZED),
+            cr -> Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
+        .bodyToMono(BookResource.class)
+        .then(Mono.just("index"));
+  }
+
+  @GetMapping("/return")
+  Mono<String> returnBook( # <7>
+      @RequestParam("identifier") String identifier, ServerWebExchange serverWebExchange) {
+    return webClient
+        .post()
+        .uri(libraryServer + "/books/{bookId}/return", identifier)
+        .retrieve()
+        .onStatus(
+            s -> s.equals(HttpStatus.UNAUTHORIZED),
+            cr -> Mono.just(new BadCredentialsException("Not authenticated")))
+        .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
+            HttpStatus::is4xxClientError,
+            cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
+        .onStatus(
+            HttpStatus::is5xxServerError,
+            cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
+        .bodyToMono(BookResource.class)
+        .then(Mono.just("redirect:/"));
   }
 }
 ----
 <1> Thymeleaf web controller for Books
-<2> Map '/books' GET request to 'books.html' template
-<3> Use reactive webclient to call 'books' endpoint on library resource server
-<4> Exception handler to log and show errors on screen
+<2> Use reactive webclient to call 'books' endpoint on library resource server
+<3> Map '/' GET request to 'index.html' template
+<4> Render the form to create new book
+<5> Use reactive webclient to call POST 'books' endpoint on library resource server to create book
+<6> Use reactive webclient to call POST 'books' endpoint on library resource server to borrow a book
+<7> Use reactive webclient to call POST 'books' endpoint on library resource server to return a book
 

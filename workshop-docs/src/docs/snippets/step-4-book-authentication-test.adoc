@@ -1,0 +1,118 @@
+[source,options="nowrap"]
+----
+package com.example.library.server.api;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = BookApiAuthenticationTest.TestConfig.class) # <1>
+@DisplayName("Access to book api")
+class BookApiAuthenticationTest {
+
+  @Autowired private ApplicationContext applicationContext;
+
+  private WebTestClient webTestClient;
+
+  @MockBean private BookService bookService;
+  @MockBean private UserRepository userRepository;
+
+  @BeforeEach
+  void setUp() {
+    this.webTestClient =
+        WebTestClient.bindToApplicationContext(applicationContext)
+            .apply(springSecurity()) # <2>
+            .configureClient()
+            .build();
+  }
+
+  @ComponentScan(
+      basePackages = {
+        "com.example.library.server.api",
+        "com.example.library.server.business",
+        "com.example.library.server.config"
+      })
+  @EnableWebFlux
+  @EnableWebFluxSecurity
+  @EnableAutoConfiguration( # <3>
+      exclude = {
+        MongoReactiveAutoConfiguration.class,
+        MongoAutoConfiguration.class,
+        MongoDataAutoConfiguration.class,
+        EmbeddedMongoAutoConfiguration.class,
+        MongoReactiveRepositoriesAutoConfiguration.class,
+        MongoRepositoriesAutoConfiguration.class
+      })
+  static class TestConfig {}
+
+  @DisplayName("as authenticated user is granted")
+  @Nested
+  class AuthenticatedBookApi {
+
+    @WithMockUser # <4>
+    @Test
+    @DisplayName("to get list of books")
+    void verifyGetBooksAuthenticated() {
+
+      given(bookService.findAll()).willReturn(Flux.just(BookBuilder.book().build()));
+
+      webTestClient
+          .get()
+          .uri("/books")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectHeader() # <5>
+          .exists("X-XSS-Protection")
+          .expectHeader()
+          .valueEquals("X-Frame-Options", "DENY");
+    }
+
+    @Test
+    @DisplayName("to get single book")
+    void verifyGetBookAuthenticated() {
+
+      UUID bookId = UUID.randomUUID();
+
+      given(bookService.findById(bookId))
+          .willReturn(Mono.just(BookBuilder.book().withId(bookId).build()));
+
+      webTestClient
+          .mutateWith(mockUser()) # <6>
+          .get()
+          .uri("/books/{bookId}", bookId)
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus()
+          .isOk();
+    }
+
+    ...
+  }
+
+  @DisplayName("as unauthenticated user is denied with 401")
+  @Nested
+  class UnAuthenticatedBookApi {
+
+    @Test
+    @DisplayName("to get list of books")
+    void verifyGetBooksUnAuthenticated() {
+
+      webTestClient
+          .get()
+          .uri("/books")
+          .accept(MediaType.APPLICATION_JSON)
+          .exchange()
+          .expectStatus()
+          .isUnauthorized(); # <7>
+    }
+
+    ...
+  }
+
+----
+<1> Custom test configuration
+<2> Sets up Spring Security's WebTestClient test support
+<3> Exclude complete persistence layer from test (out of scope for authentication)
+<4> Specify user authentication
+<5> Verify existence of expected security response headers
+<6> Alternative way to specify user authentication
+<7> Negative test case to verify unauthenticated user is not authorized to use the api

@@ -27,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
         new DelegatingPasswordEncoder(
             "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5"))); # <2>
 
-    logger.info("Creating users with LIBRARY_USER, CURATOR and LIBRARY_ADMIN roles...");
+    logger.info("Creating users with LIBRARY_USER, LIBRARY_CURATOR and LIBRARY_ADMIN roles...");
     userRepository
         .saveAll(
             Flux.just(

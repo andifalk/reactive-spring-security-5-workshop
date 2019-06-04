@@ -43,21 +43,23 @@ public class WebSecurityConfiguration {
         .matchers(EndpointRequest.to("info"))
         .permitAll()
         .matchers(EndpointRequest.toAnyEndpoint())
-        .hasRole(Role.LIBRARY_ADMIN.name()) # <1>
+        .hasRole(Role.LIBRARY_ADMIN.name())
+        .pathMatchers(HttpMethod.POST, "/books/{bookId}/borrow")
+        .hasRole(Role.LIBRARY_USER.name())
+        .pathMatchers(HttpMethod.POST, "/books/{bookId}/return")
+        .hasRole(Role.LIBRARY_USER.name())
         .pathMatchers(HttpMethod.POST, "/books")
         .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers(HttpMethod.DELETE, "/books")
         .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers("/users/**")
         .hasRole(Role.LIBRARY_ADMIN.name())
-        .pathMatchers("/books/**")
-        .hasRole(Role.LIBRARY_USER.name())
         .anyExchange()
         .authenticated()
         .and()
-        .oauth2ResourceServer() # <2>
-        .jwt() # <3>
-        .jwtAuthenticationConverter(libraryUserJwtAuthenticationConverter()); # <4>
+        .oauth2ResourceServer() # <1>
+        .jwt() # <2>
+        .jwtAuthenticationConverter(libraryUserJwtAuthenticationConverter()); # <3>
     // .jwtAuthenticationConverter(libraryUserRolesJwtAuthenticationConverter());
     return http.build();
   }
@@ -73,8 +75,7 @@ public class WebSecurityConfiguration {
   }
 }
 ----
-<1> Actuator endpoints are only accessible with 'LIBRARY_ADMIN' roles except 'health' and 'info'
-<2> Auto configuration for an OAuth2 resource server
-<3> Configures JSON web token (JWT) handling for this resource server
-<4> Configures a JWT authentication converter to map JWT to an Authentication object
+<1> Auto configuration for an OAuth2 resource server
+<2> Configures JSON web token (JWT) handling for this resource server
+<3> Configures a JWT authentication converter to map JWT to an Authentication object
 

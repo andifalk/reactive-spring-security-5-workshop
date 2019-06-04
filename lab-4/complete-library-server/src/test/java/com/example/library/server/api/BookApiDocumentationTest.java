@@ -40,7 +40,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @WebFluxTest
@@ -63,8 +62,8 @@ class BookApiDocumentationTest {
   void setUp(RestDocumentationContextProvider restDocumentation) {
     this.webTestClient =
         WebTestClient.bindToApplicationContext(applicationContext)
-            .apply(springSecurity())
             .configureClient()
+            .baseUrl("http://localhost:9091")
             .filter(
                 documentationConfiguration(restDocumentation)
                     .operationPreprocessors()

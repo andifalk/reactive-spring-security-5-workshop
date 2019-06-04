@@ -17,8 +17,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
-
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -44,7 +42,6 @@ public class UserController {
     return webClient
         .get()
         .uri(libraryServer + "/users")
-        .attributes(clientRegistrationId("keycloak"))
         .retrieve()
         .onStatus(
             httpStatus -> HttpStatus.FORBIDDEN.value() == httpStatus.value(),
