@@ -26,11 +26,11 @@ public class DataInitializer implements CommandLineRunner {
                 .save(
                         new User(
                                 USER_IDENTIFIER,
-                                "user@example.com",
-                                passwordEncoder.encode("user"), # <2>
-                                "Library",
-                                "User",
-                                Collections.singletonList(Role.USER)))
+                                "bruce.wayne@example.com",
+                                passwordEncoder.encode("wayne"), # <2>
+                                "Bruce",
+                                "Wayne",
+                                Collections.singletonList(Role.LIBRARY_USER)))
                 .subscribe();
         ...
     }

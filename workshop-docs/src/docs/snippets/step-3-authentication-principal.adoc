@@ -12,13 +12,13 @@ public class BookRestController {
     @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
     public Mono<Void> borrowBookById(
             @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { # <1>
-        return bookService.borrowById(bookId, user.getUserResource().getId());
+        return bookService.borrowById(bookId, user != null ? user.getId() : null);
     }
 
     @PostMapping("/books/" + PATH_BOOK_ID + "/return")
     public Mono<Void> returnBookById(@PathVariable(
             PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { # <2>
-        return bookService.returnById(bookId, user.getUserResource().getId());
+        return bookService.returnById(bookId, user != null ? user.getId() : null);
     }
 
     ...

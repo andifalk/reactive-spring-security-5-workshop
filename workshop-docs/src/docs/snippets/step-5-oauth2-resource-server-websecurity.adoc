@@ -43,15 +43,15 @@ public class WebSecurityConfiguration {
         .matchers(EndpointRequest.to("info"))
         .permitAll()
         .matchers(EndpointRequest.toAnyEndpoint())
-        .hasRole(Role.ADMIN.name()) # <1>
+        .hasRole(Role.LIBRARY_ADMIN.name()) # <1>
         .pathMatchers(HttpMethod.POST, "/books")
-        .hasRole(Role.CURATOR.name())
+        .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers(HttpMethod.DELETE, "/books")
-        .hasRole(Role.CURATOR.name())
+        .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers("/users/**")
-        .hasRole(Role.ADMIN.name())
+        .hasRole(Role.LIBRARY_ADMIN.name())
         .pathMatchers("/books/**")
-        .hasRole(Role.USER.name())
+        .hasRole(Role.LIBRARY_USER.name())
         .anyExchange()
         .authenticated()
         .and()
@@ -73,7 +73,7 @@ public class WebSecurityConfiguration {
   }
 }
 ----
-<1> Actuator endpoints are only accessible with 'ADMIN' roles except 'health' and 'info'
+<1> Actuator endpoints are only accessible with 'LIBRARY_ADMIN' roles except 'health' and 'info'
 <2> Auto configuration for an OAuth2 resource server
 <3> Configures JSON web token (JWT) handling for this resource server
 <4> Configures a JWT authentication converter to map JWT to an Authentication object

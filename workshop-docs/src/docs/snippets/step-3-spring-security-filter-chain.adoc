@@ -11,23 +11,39 @@ public class WebSecurityConfiguration {
     @Bean # <2>
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
-                .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() # <3>
-                .matchers(EndpointRequest.to("health")).permitAll() # <4>
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name()) # <5>
-                .pathMatchers(HttpMethod.POST, "/books").hasRole(Role.CURATOR.name()) # <6>
-                .pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
-                .pathMatchers("/users/**").hasRole(Role.ADMIN.name()) # <7>
-                .anyExchange().authenticated() # <8>
+            .authorizeExchange()
+                .matchers(PathRequest.toStaticResources().atCommonLocations())
+                .permitAll() # <3>
+                .matchers(EndpointRequest.to("health"))
+                .permitAll() # <4>
+                .matchers(EndpointRequest.to("info"))
+                .permitAll()
+                .matchers(EndpointRequest.toAnyEndpoint())
+                .hasRole(Role.LIBRARY_ADMIN.name()) # <5>
+                .pathMatchers(HttpMethod.POST, "/books/{bookId}/borrow")
+                .hasRole(Role.LIBRARY_USER.name())
+                .pathMatchers(HttpMethod.POST, "/books/{bookId}/return")
+                .hasRole(Role.LIBRARY_USER.name()) # <6>
+                .pathMatchers(HttpMethod.POST, "/books")
+                .hasRole(Role.LIBRARY_CURATOR.name()) # <7>
+                .pathMatchers(HttpMethod.DELETE, "/books")
+                .hasRole(Role.LIBRARY_CURATOR.name())
+                .pathMatchers("/users/**")
+                .hasRole(Role.LIBRARY_ADMIN.name()) # <8>
+                .anyExchange()
+                .authenticated() # <9>
                 .and()
-                .httpBasic().and().formLogin().and() # <9>
-                .logout().logoutSuccessHandler(logoutSuccessHandler()) # <10>
+                .httpBasic()
+                .and()
+                .formLogin() # <10>
+                .and()
+                .logout()
+                .logoutSuccessHandler(logoutSuccessHandler()) # <11>
                 .and()
                 .build();
     }
 
-    @Bean # <11>
+    @Bean # <12>
     public ServerLogoutSuccessHandler logoutSuccessHandler() {
         RedirectServerLogoutSuccessHandler logoutSuccessHandler = new RedirectServerLogoutSuccessHandler();
         logoutSuccessHandler.setLogoutSuccessUrl(URI.create("/books"));
@@ -46,9 +62,10 @@ public class WebSecurityConfiguration {
 <3> All static resources (favicon.ico, css, images, ...) can be accessed without authentication
 <4> Actuator endpoints for _health_ and _info_ can be accessed without authentication
 <5> All other actuator endpoints require authentication
-<6> Modifying access to books require authenticated user having the 'CURATOR' role
-<7> Access to users require authenticated user having the 'ADMIN' role
-<8> All other web endpoints require authentication
-<9> Authentication can be performed using basic authentication or form based login
-<10> After logging out it redirects to URL configured in the logout success handler
-<11> The configured login success handler redirects to https://localhost:8080/books[/books] resource
+<6> Borrow or returning books require authenticated user having the 'LIBRARY_USER' role
+<7> Modifying access to books require authenticated user having the 'LIBRARY_CURATOR' role
+<8> Access to users require authenticated user having the 'LIBRARY_ADMIN' role
+<9> All other web endpoints require authentication
+<10> Authentication can be performed using basic authentication or form based login
+<11> After logging out it redirects to URL configured in the logout success handler
+<12> The configured login success handler redirects to https://localhost:8080/books[/books] resource

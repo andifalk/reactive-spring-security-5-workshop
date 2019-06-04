@@ -23,27 +23,27 @@ class UserServiceTest {
   void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() { # <2>
     when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
             "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.USER))));
+            Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
   }
 
-  @DisplayName("grants access to find one user by email for roles 'USER', 'CURATOR' and 'ADMIN'")
+  @DisplayName("grants access to find one user by email for roles 'LIBRARY_USER', 'LIBRARY_CURATOR' and 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR", "LIBRARY_ADMIN"})
   void verifyFindOneByEmailAccessIsGrantedForAllRoles() { # <3>
     when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
             "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.USER))));
+            Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
   }
 
-  @DisplayName("denies access to create a user for roles 'USER' and 'CURATOR'")
+  @DisplayName("denies access to create a user for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyCreateAccessIsDeniedForUserAndCurator() { # <4>
     StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
             "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.USER))))).verifyError(AccessDeniedException.class);
+            Collections.singletonList(Role.LIBRARY_USER))))).verifyError(AccessDeniedException.class);
   }
   ...
 }
@@ -51,5 +51,5 @@ class UserServiceTest {
 <1> As this is a JUnit 5 based integration test we use _@SpringJUnitConfig_ to add spring JUnit 5 extension and configure the application context
 <2> Positive test case of access control for finding a user by email for anonymous user
 <3> Positive test case of access control for finding a user by email with all possible roles
-<4> Negative test case of access control for creating user with roles 'USER' or 'CURATOR'
+<4> Negative test case of access control for creating user with roles 'LIBRARY_USER' or 'LIBRARY_CURATOR'
 

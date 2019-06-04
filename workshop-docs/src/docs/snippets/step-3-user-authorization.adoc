@@ -5,7 +5,7 @@ package com.example.library.server.business;
 import org.springframework.security.access.prepost.PreAuthorize;
 ...
 @Service
-@PreAuthorize("hasRole('ADMIN')") # <1>
+@PreAuthorize("hasRole('LIBRARY_ADMIN')") # <1>
 public class UserService {
 
     ...
@@ -18,7 +18,7 @@ public class UserService {
     ...
 }
 ----
-<1> In general only users having role 'ADMIN' can access RESTful services for users
+<1> In general only users having role 'LIBRARY_ADMIN' can access RESTful services for users
 <2> As this operation is used by the _LibraryUserDetailsService_ to perform authentication this
     has to be accessible for anonymous users (unless authentication is finished successfully anonymous
     users are unauthenticated users)

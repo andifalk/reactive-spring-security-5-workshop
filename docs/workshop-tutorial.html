@@ -594,7 +594,7 @@ As an Eclipse user you have to install a plugin via the marketplace</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git</code></pre>
+<pre class="highlightjs highlight"><code>git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git security_workshop</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -602,7 +602,7 @@ As an Eclipse user you have to install a plugin via the marketplace</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code> git clone git@github.com:andifalk/reactive-spring-security-5-workshop.git</code></pre>
+<pre class="highlightjs highlight"><code> git clone git@github.com:andifalk/reactive-spring-security-5-workshop.git security_workshop</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -639,19 +639,22 @@ fit into the <a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">OWASP 
 <div class="ulist">
 <ul>
 <li>
-<p>A2: Broken Authentication</p>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication">A2: Broken Authentication</a></p>
 </li>
 <li>
-<p>A3: Sensitive Data Exposure</p>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">A3: Sensitive Data Exposure</a></p>
 </li>
 <li>
-<p>A5: Broken Access Control</p>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">A5: Broken Access Control</a></p>
 </li>
 <li>
-<p>A6: Security Misconfiguration</p>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration">A6: Security Misconfiguration</a></p>
 </li>
 <li>
-<p>A10: Insufficient Logging &amp; Monitoring</p>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities">A9: Using components with known vulnerabilities</a></p>
+</li>
+<li>
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A10-Insufficient_Logging%26Monitoring">A10: Insufficient Logging &amp; Monitoring</a></p>
 </li>
 </ul>
 </div>
@@ -688,6 +691,11 @@ To help getting all security requirements right for your project and how to test
 <div class="sect1">
 <h2 id="_reactive_systems_streams"><a class="anchor" href="#_reactive_systems_streams"></a><a class="link" href="#_reactive_systems_streams">3. Reactive Systems &amp; Streams</a></h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The following subsections give a very condensed introduction to the basics of Reactive Systems,
+the Project Reactor and Spring WebFlux.<br>
+This might help to better understand the sample application for beginners of Reactive.</p>
+</div>
 <div class="quoteblock">
 <blockquote>
 Reactive Systems are Responsive, Resilient, Elastic and Message Driven (Asynchronous).
@@ -802,6 +810,19 @@ imperative and reactive programming style.</p>
 <div class="paragraph">
 <p>To do this we will look into the project <strong>intro-labs/reactive-playground</strong>.</p>
 </div>
+<div class="paragraph">
+<p>The following resources might be helpful for first steps into the reactive world:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://projectreactor.io/docs/core/release/reference/">Project Reactor Reference Documentation</a></p>
+</li>
+<li>
+<p><a href="https://projectreactor.io/docs/core/release/reference/#which-operator">Which operator do I need?</a></p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -843,6 +864,9 @@ The packages of the application are organized as follows:</p>
 </li>
 <li>
 <p><strong>config</strong>: All spring configuration classes</p>
+</li>
+<li>
+<p><strong>common</strong>: Common classes used by several other packages</p>
 </li>
 </ul>
 </div>
@@ -886,7 +910,8 @@ which also provides sample requests for <em>curl</em> and <em>httpie</em>.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The application is build using</p>
+<p>If you are going into reactive systems this works best if all layers work in non-blocking reactive style.
+Therefore the application is build using:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -900,11 +925,6 @@ which also provides sample requests for <em>curl</em> and <em>httpie</em>.</p>
 <p>In-memory Mongodb to have an easier setup for the workshop</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>The following subsections give a very condensed introduction to the basics of Reactive Systems,
-the Project Reactor and Spring WebFlux.<br>
-This might help to better understand the sample application for beginners of Reactive.</p>
 </div>
 </div>
 </div>
@@ -937,7 +957,7 @@ just continue using <strong>lab-1/complete-library-server</strong>.</p>
 <h3 id="_lab_1_auto_configuration"><a class="anchor" href="#_lab_1_auto_configuration"></a><a class="link" href="#_lab_1_auto_configuration">6.1. Lab 1: Auto Configuration</a></h3>
 <div class="paragraph">
 <div class="title">In the first step we start quite easy by just adding the spring boot starter dependency for spring security.</div>
-<p>We just need to add the following two dependencies to the <em>build.gradle</em> file of the initial application (<em>00-library-server</em>).</p>
+<p>We just need to add the following two dependencies to the <em>build.gradle</em> file of the initial application (lab-1/initial-library-server_).</p>
 </div>
 <div class="listingblock">
 <div class="title">build.gradle</div>
@@ -969,7 +989,7 @@ just continue using <strong>lab-1/complete-library-server</strong>.</p>
 <div class="title">Figure 8. Authentication using in-memory user</div>
 </div>
 <div class="paragraph">
-<p>Please start the application by running the class <em>LibraryServerApplication</em>.</p>
+<p>Please start the application by running the class <em>InitialLibraryServerApplication</em>.</p>
 </div>
 <div class="sect3">
 <h4 id="_login"><a class="anchor" href="#_login"></a><a class="link" href="#_login">6.1.1. Login</a></h4>
@@ -1022,10 +1042,63 @@ Using default security password: ded10c78-0b2f-4ae8-89fe-c267f9a29e1d</code></pr
 </div>
 </div>
 <div class="paragraph">
+<p>Of course you won&#8217;t use the generated password for any serious application as this will change with each restart of the
+application.</p>
+</div>
+<div class="paragraph">
+<p>Instead you can easily just change the password to a static value by changing the <em>application.yaml</em> file.</p>
+</div>
+<div class="listingblock">
+<div class="title">application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>spring:
+  ...
+  security:
+    user:
+      password: secret</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Please make sure the indents of the content is correct in yaml formatted files. If this is not the case you can get
+really strange errors sometimes.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>As you can see, if Spring Security is on the classpath,
 then the web application is secured by default.
 <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security">Spring boot</a> auto-configured
 basic authentication and form based authentication for all web endpoints.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10-2017 A5-Broken Access Control</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>With the exception of public resources, deny by default</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1091,6 +1164,69 @@ dialog on the screen.</p>
 <div class="title">Figure 11. Autogenerated logout formular</div>
 </div>
 <div class="paragraph">
+<p>The application already contains a central error handler for the whole web application using <em>@RestControllerAdvice</em>.
+You can find this in class <em>com.example.library.server.api.ErrorHandler</em>.</p>
+</div>
+<div class="paragraph">
+<p>To handle potential future access denied error we add the following new block to this class:</p>
+</div>
+<div class="listingblock">
+<div class="title">com.example.library.server.api.ErrorHandler</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>import org.springframework.security.access.AccessDeniedException;
+
+@RestControllerAdvice
+public class ErrorHandler {
+
+@ExceptionHandler(AccessDeniedException.class)
+public Mono&lt;ResponseEntity&lt;String&gt;&gt; handle(AccessDeniedException ex) {
+Logger logger = LoggerFactory.getLogger(this.getClass());
+logger.error(ex.getMessage());
+return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+}
+...</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If you try to run the existing tests in package <em>com.example.library.server.api</em> you will
+notice that these are not <em>green</em> any more. This is due to the security enforcements
+by Spring Security.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now all requests in the tests require an authenticated user and fail with http status 401 (Unauhorized).</p>
+</div>
+<div class="paragraph">
+<p>All tests using requests with <em>POST</em>, <em>PUT</em> or <em>DELETE</em> methods are failing with http status 403 (Forbidden).
+These requests are now protected against <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)">CSRF</a> attacks
+and require CSRF tokens.</p>
+</div>
+<div class="paragraph">
+<p>To achieve authentication in the tests you have to add the annotation <em>@WithMockUser</em> on class level.
+CSRF is handled by mutating the requests inside the tests by adding this snippet to the failing tests:</p>
+</div>
+<div class="listingblock">
+<div class="title">com.example.library.server.api.BookApiDocumentationTest</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>...
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+...
+webTestClient
+        .mutateWith(csrf())
+        ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>This concludes the first step.</p>
 </div>
 <div class="admonitionblock note">
@@ -1101,7 +1237,7 @@ dialog on the screen.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>You find the completed code in project <em>01-library-server</em>.</p>
+<p>You find the completed code in project <strong>lab-1/complete-library-server</strong>.</p>
 </div>
 </td>
 </tr>
@@ -1116,7 +1252,7 @@ dialog on the screen.</p>
 <h3 id="_lab_2_customize_authentication"><a class="anchor" href="#_lab_2_customize_authentication"></a><a class="link" href="#_lab_2_customize_authentication">6.2. Lab 2: Customize Authentication</a></h3>
 <div class="paragraph">
 <div class="title">Now it is time to start customizing the auto-configuration.</div>
-<p>The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.</p>
+<p>The spring boot auto-configuration will back-off a bit in this lab and will back-off completely in next step.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -1216,8 +1352,8 @@ public class LoggingWebFilter implements WebFilter {
 <div class="sect3">
 <h4 id="_webfilterchainproxy"><a class="anchor" href="#_webfilterchainproxy"></a><a class="link" href="#_webfilterchainproxy">6.2.2. WebFilterChainProxy</a></h4>
 <div class="paragraph">
-<p>In step 1 we just used the auto configuration of Spring Boot.
-This configured default security settings as follows:</p>
+<p>In lab 1 we just used the auto configuration of Spring Boot.
+This configured the default security settings as follows:</p>
 </div>
 <div class="listingblock">
 <div class="title">Default security configuration (with Spring Boot)</div>
@@ -1330,6 +1466,31 @@ of <em>SecurityWebFilterChain</em> configuration methods.</p>
 </div>
 <div class="sect3">
 <h4 id="_step_1_encrypting_passwords"><a class="anchor" href="#_step_1_encrypting_passwords"></a><a class="link" href="#_step_1_encrypting_passwords">6.2.3. Step 1: Encrypting Passwords</a></h4>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure">OWASP Top 10-2017 A3-Sensitive Data Exposure</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure to encrypt all sensitive data at rest</p>
+</li>
+<li>
+<p>Store passwords using strong adaptive and salted hashing functions with a work factor (delay factor),
+such as Argon2, scrypt, bcrypt or PBKDF2</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class <em>WebSecurityConfiguration</em> to package <em>com.example.library.server.config</em> having the following
@@ -1490,11 +1651,11 @@ public class DataInitializer implements CommandLineRunner {
                 .save(
                         new User(
                                 USER_IDENTIFIER,
-                                "user@example.com",
-                                passwordEncoder.encode("user"), <i class="conum" data-value="2"></i><b>(2)</b>
-                                "Library",
-                                "User",
-                                Collections.singletonList(Role.USER)))
+                                "bruce.wayne@example.com",
+                                passwordEncoder.encode("wayne"), <i class="conum" data-value="2"></i><b>(2)</b>
+                                "Bruce",
+                                "Wayne",
+                                Collections.singletonList(Role.LIBRARY_USER)))
                 .subscribe();
         ...
     }
@@ -1779,7 +1940,7 @@ public class DataInitializer implements CommandLineRunner {
         new DelegatingPasswordEncoder(
             "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5"))); <i class="conum" data-value="2"></i><b>(2)</b>
 
-    logger.info("Creating users with USER, CURATOR and ADMIN roles...");
+    logger.info("Creating users with LIBRARY_USER, CURATOR and LIBRARY_ADMIN roles...");
     userRepository
         .saveAll(
             Flux.just(
@@ -1790,7 +1951,7 @@ public class DataInitializer implements CommandLineRunner {
                     oldPasswordEncoder.encode("user"),
                     "Library",
                     "OldEncryption",
-                    Collections.singletonList(Role.USER))))
+                    Collections.singletonList(Role.LIBRARY_USER))))
         .log()
         .then(userRepository.count())
         .subscribe(c -&gt; logger.info("{} users created", c));
@@ -1939,6 +2100,30 @@ allowed to do in our application (<strong>authorization</strong>).</p>
 </div>
 <div class="title">Figure 13. Authorization for library-service</div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><a href="https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control">OWASP Top 10-2017 A5-Broken Access Control</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>With the exception of public resources, deny by default</p>
+</li>
+<li>
+<p>Implement access control mechanisms once and re-use them throughout the application, including minimizing CORS usage.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>As a best practice the authorization should always be implemented on different layers like the web and method layer.
 This way the authorization still prohibits access even if a user manages to bypass the web url based authorization filter
@@ -1967,6 +2152,18 @@ by playing around with manipulated URL&#8217;s.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/books/{bookId}/borrow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">/books/{bookId}/return</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">POST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LIBRARY_USER</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">/books</p></td>
@@ -2031,23 +2228,39 @@ public class WebSecurityConfiguration {
     @Bean <i class="conum" data-value="2"></i><b>(2)</b>
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
-                .authorizeExchange()
-                .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() <i class="conum" data-value="3"></i><b>(3)</b>
-                .matchers(EndpointRequest.to("health")).permitAll() <i class="conum" data-value="4"></i><b>(4)</b>
-                .matchers(EndpointRequest.to("info")).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(Role.ADMIN.name()) <i class="conum" data-value="5"></i><b>(5)</b>
-                .pathMatchers(HttpMethod.POST, "/books").hasRole(Role.CURATOR.name()) <i class="conum" data-value="6"></i><b>(6)</b>
-                .pathMatchers(HttpMethod.DELETE, "/books").hasRole(Role.CURATOR.name())
-                .pathMatchers("/users/**").hasRole(Role.ADMIN.name()) <i class="conum" data-value="7"></i><b>(7)</b>
-                .anyExchange().authenticated() <i class="conum" data-value="8"></i><b>(8)</b>
+            .authorizeExchange()
+                .matchers(PathRequest.toStaticResources().atCommonLocations())
+                .permitAll() <i class="conum" data-value="3"></i><b>(3)</b>
+                .matchers(EndpointRequest.to("health"))
+                .permitAll() <i class="conum" data-value="4"></i><b>(4)</b>
+                .matchers(EndpointRequest.to("info"))
+                .permitAll()
+                .matchers(EndpointRequest.toAnyEndpoint())
+                .hasRole(Role.LIBRARY_ADMIN.name()) <i class="conum" data-value="5"></i><b>(5)</b>
+                .pathMatchers(HttpMethod.POST, "/books/{bookId}/borrow")
+                .hasRole(Role.LIBRARY_USER.name())
+                .pathMatchers(HttpMethod.POST, "/books/{bookId}/return")
+                .hasRole(Role.LIBRARY_USER.name()) <i class="conum" data-value="6"></i><b>(6)</b>
+                .pathMatchers(HttpMethod.POST, "/books")
+                .hasRole(Role.LIBRARY_CURATOR.name()) <i class="conum" data-value="7"></i><b>(7)</b>
+                .pathMatchers(HttpMethod.DELETE, "/books")
+                .hasRole(Role.LIBRARY_CURATOR.name())
+                .pathMatchers("/users/**")
+                .hasRole(Role.LIBRARY_ADMIN.name()) <i class="conum" data-value="8"></i><b>(8)</b>
+                .anyExchange()
+                .authenticated() <i class="conum" data-value="9"></i><b>(9)</b>
                 .and()
-                .httpBasic().and().formLogin().and() <i class="conum" data-value="9"></i><b>(9)</b>
-                .logout().logoutSuccessHandler(logoutSuccessHandler()) <i class="conum" data-value="10"></i><b>(10)</b>
+                .httpBasic()
+                .and()
+                .formLogin() <i class="conum" data-value="10"></i><b>(10)</b>
+                .and()
+                .logout()
+                .logoutSuccessHandler(logoutSuccessHandler()) <i class="conum" data-value="11"></i><b>(11)</b>
                 .and()
                 .build();
     }
 
-    @Bean <i class="conum" data-value="11"></i><b>(11)</b>
+    @Bean <i class="conum" data-value="12"></i><b>(12)</b>
     public ServerLogoutSuccessHandler logoutSuccessHandler() {
         RedirectServerLogoutSuccessHandler logoutSuccessHandler = new RedirectServerLogoutSuccessHandler();
         logoutSuccessHandler.setLogoutSuccessUrl(URI.create("/books"));
@@ -2086,26 +2299,30 @@ public class WebSecurityConfiguration {
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Modifying access to books require authenticated user having the 'CURATOR' role</td>
+<td>Borrow or returning books require authenticated user having the 'LIBRARY_USER' role</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>Access to users require authenticated user having the 'ADMIN' role</td>
+<td>Modifying access to books require authenticated user having the 'LIBRARY_CURATOR' role</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>All other web endpoints require authentication</td>
+<td>Access to users require authenticated user having the 'LIBRARY_ADMIN' role</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="9"></i><b>9</b></td>
-<td>Authentication can be performed using basic authentication or form based login</td>
+<td>All other web endpoints require authentication</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="10"></i><b>10</b></td>
-<td>After logging out it redirects to URL configured in the logout success handler</td>
+<td>Authentication can be performed using basic authentication or form based login</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="11"></i><b>11</b></td>
+<td>After logging out it redirects to URL configured in the logout success handler</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="12"></i><b>12</b></td>
 <td>The configured login success handler redirects to <a href="https://localhost:8080/books">/books</a> resource</td>
 </tr>
 </table>
@@ -2172,23 +2389,34 @@ import org.springframework.security.access.prepost.PreAuthorize;
 ...
 
 @Service
-@PreAuthorize("hasAnyRole('USER', 'CURATOR', 'ADMIN')") <i class="conum" data-value="1"></i><b>(1)</b>
+@PreAuthorize("hasAnyRole('LIBRARY_USER', 'LIBRARY_CURATOR')") <i class="conum" data-value="1"></i><b>(1)</b>
 public class BookService {
 
     ...
 
-    @PreAuthorize("hasRole('CURATOR')") <i class="conum" data-value="2"></i><b>(2)</b>
+    @PreAuthorize("hasRole('LIBRARY_CURATOR')") <i class="conum" data-value="2"></i><b>(2)</b>
     public Mono&lt;Void&gt; create(Mono&lt;BookResource&gt; bookResource) {
         return bookRepository.insert(bookResource.map(this::convert)).then();
     }
 
     ...
 
-    @PreAuthorize("hasRole('CURATOR')") <i class="conum" data-value="3"></i><b>(3)</b>
+    @PreAuthorize("hasRole('LIBRARY_CURATOR')") <i class="conum" data-value="3"></i><b>(3)</b>
     public Mono&lt;Void&gt; deleteById(UUID uuid) {
         return bookRepository.deleteById(uuid).then();
     }
     ...
+
+    @PreAuthorize("hasRole('LIBRARY_USER')") <i class="conum" data-value="4"></i><b>(4)</b>
+      public Mono&lt;Void&gt; borrowById(UUID bookIdentifier, UUID userIdentifier) {
+      ...
+    }
+    ...
+
+    @PreAuthorize("hasRole('LIBRARY_USER')") <i class="conum" data-value="5"></i><b>(5)</b>
+      public Mono&lt;Void&gt; returnById(UUID bookIdentifier, UUID userIdentifier) {
+      ...
+    }
 }</code></pre>
 </div>
 </div>
@@ -2196,15 +2424,23 @@ public class BookService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>In general all users (having either of these 3 roles) can access RESTful services for books</td>
+<td>In general all users (having either of these 2 roles) can access RESTful services for books</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Only users having role 'CURATOR' can access this RESTful service to create books</td>
+<td>Only users having role 'LIBRARY_CURATOR' can access this RESTful service to create books</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Only users having role 'CURATOR' can access this RESTful service to delete books</td>
+<td>Only users having role 'LIBRARY_CURATOR' can access this RESTful service to delete books</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Only users having role 'LIBRARY_USER' can access this RESTful service to borrow books</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Only users having role 'LIBRARY_USER' can access this RESTful service to return books</td>
 </tr>
 </table>
 </div>
@@ -2219,7 +2455,7 @@ public class BookService {
 import org.springframework.security.access.prepost.PreAuthorize;
 ...
 @Service
-@PreAuthorize("hasRole('ADMIN')") <i class="conum" data-value="1"></i><b>(1)</b>
+@PreAuthorize("hasRole('LIBRARY_ADMIN')") <i class="conum" data-value="1"></i><b>(1)</b>
 public class UserService {
 
     ...
@@ -2237,7 +2473,7 @@ public class UserService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>In general only users having role 'ADMIN' can access RESTful services for users</td>
+<td>In general only users having role 'LIBRARY_ADMIN' can access RESTful services for users</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -2268,13 +2504,13 @@ public class BookRestController {
     @PostMapping("/books/" + PATH_BOOK_ID + "/borrow")
     public Mono&lt;Void&gt; borrowBookById(
             @PathVariable(PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { <i class="conum" data-value="1"></i><b>(1)</b>
-        return bookService.borrowById(bookId, user.getUserResource().getId());
+        return bookService.borrowById(bookId, user != null ? user.getId() : null);
     }
 
     @PostMapping("/books/" + PATH_BOOK_ID + "/return")
     public Mono&lt;Void&gt; returnBookById(@PathVariable(
             PATH_VARIABLE_BOOK_ID) UUID bookId, @AuthenticationPrincipal LibraryUser user) { <i class="conum" data-value="2"></i><b>(2)</b>
-        return bookService.returnById(bookId, user.getUserResource().getId());
+        return bookService.returnById(bookId, user != null ? user.getId() : null);
     }
 
     ...
@@ -2294,8 +2530,39 @@ public class BookRestController {
 </table>
 </div>
 <div class="paragraph">
-<p>So please go ahead and re-start the application and try to borrow a book with an authenticated user.
-If you are an IntelliJ user you can use the provided <em>book.http</em> file in subdirectory <em>http</em>.</p>
+<p>So please go ahead and re-start the application and try to borrow a book with an authenticated user.</p>
+</div>
+<div class="listingblock">
+<div class="title">httpie get list of books</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>http localhost:9091/books --auth 'bruce.wayne@example.com:wayne'</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">httpie borrow a book</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>http POST localhost:9091/books/{bookId}/borrow --auth 'bruce.wayne@example.com:wayne'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note: Replace <em>{bookId}</em> with the id of one of the books you have got in the list of books.</p>
+</div>
+<div class="listingblock">
+<div class="title">curl get list of books</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>curl 'http://localhost:8080/books' -i -X GET \
+    -H 'Accept: application/json' -u bruce.wayne@example.com:wayne | jq</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">curl borrow a book</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>curl 'http://localhost:8080/books/{bookId}/borrow' -i -X POST \
+    -H 'Accept: application/json' -u bruce.wayne@example.com:wayne | jq</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note: Replace <em>{bookId}</em> with the id of one of the books you have got in the list of books.</p>
 </div>
 <div class="paragraph">
 <p>At first you will notice that even with the correct basic authentication header you get an error message like this one:</p>
@@ -2442,9 +2709,9 @@ class BookServiceTest {
   @MockBean
   private IdGenerator idGenerator;
 
-  @DisplayName("grants access to create a book for role 'CURATOR'")
+  @DisplayName("grants access to create a book for role 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = "CURATOR")
+  @WithMockUser(roles = "LIBRARY_CURATOR")
   void verifyCreateAccessIsGrantedForCurator() { <i class="conum" data-value="3"></i><b>(3)</b>
     when(bookRepository.insert(Mockito.&lt;Mono&lt;Book&gt;&gt;any())).thenReturn(Flux.just(new Book()));
     StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
@@ -2453,9 +2720,9 @@ class BookServiceTest {
             ))).verifyComplete();
   }
 
-  @DisplayName("denies access to create a book for roles 'USER' and 'ADMIN'")
+  @DisplayName("denies access to create a book for roles 'LIBRARY_USER' and 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = {"USER", "ADMIN"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_ADMIN"})
   void verifyCreateAccessIsDeniedForUserAndAdmin() { <i class="conum" data-value="4"></i><b>(4)</b>
     StepVerifier.create(bookService.create(Mono.just(new BookResource(UUID.randomUUID(),
             "123456789", "title", "description", Collections.singletonList("author"),
@@ -2489,11 +2756,11 @@ class BookServiceTest {
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Positive test case of access control for creating books with role 'CURATOR'</td>
+<td>Positive test case of access control for creating books with role 'LIBRARY_CURATOR'</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Negative test case of access control for creating books with roles 'USER' or 'ADMIN'</td>
+<td>Negative test case of access control for creating books with roles 'LIBRARY_USER' or 'LIBRARY_ADMIN'</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
@@ -2530,27 +2797,27 @@ class UserServiceTest {
   void verifyFindOneByEmailAccessIsGrantedForUnauthenticated() { <i class="conum" data-value="2"></i><b>(2)</b>
     when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
             "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.USER))));
+            Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
   }
 
-  @DisplayName("grants access to find one user by email for roles 'USER', 'CURATOR' and 'ADMIN'")
+  @DisplayName("grants access to find one user by email for roles 'LIBRARY_USER', 'LIBRARY_CURATOR' and 'LIBRARY_ADMIN'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR", "ADMIN"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR", "LIBRARY_ADMIN"})
   void verifyFindOneByEmailAccessIsGrantedForAllRoles() { <i class="conum" data-value="3"></i><b>(3)</b>
     when(userRepository.findOneByEmail(any())).thenReturn(Mono.just(new User(UUID.randomUUID(),
             "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.USER))));
+            Collections.singletonList(Role.LIBRARY_USER))));
     StepVerifier.create(userService.findOneByEmail("test@example.com")).expectNextCount(1).verifyComplete();
   }
 
-  @DisplayName("denies access to create a user for roles 'USER' and 'CURATOR'")
+  @DisplayName("denies access to create a user for roles 'LIBRARY_USER' and 'LIBRARY_CURATOR'")
   @Test
-  @WithMockUser(roles = {"USER", "CURATOR"})
+  @WithMockUser(roles = {"LIBRARY_USER", "LIBRARY_CURATOR"})
   void verifyCreateAccessIsDeniedForUserAndCurator() { <i class="conum" data-value="4"></i><b>(4)</b>
     StepVerifier.create(userService.create(Mono.just(new UserResource(UUID.randomUUID(),
             "test@example.com", "secret", "Max", "Maier",
-            Collections.singletonList(Role.USER))))).verifyError(AccessDeniedException.class);
+            Collections.singletonList(Role.LIBRARY_USER))))).verifyError(AccessDeniedException.class);
   }
   ...
 }</code></pre>
@@ -2572,7 +2839,7 @@ class UserServiceTest {
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Negative test case of access control for creating user with roles 'USER' or 'CURATOR'</td>
+<td>Negative test case of access control for creating user with roles 'LIBRARY_USER' or 'LIBRARY_CURATOR'</td>
 </tr>
 </table>
 </div>
@@ -2974,6 +3241,10 @@ an OAuth2/OIDC resource server and client based on the project.</p>
 This provider supports solutions for authentication, authorization and user administration.
 For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens (JWT).</p>
 </div>
+<div class="paragraph">
+<p>To setup the local keycloak server please copy/extract it from provided USB sticks
+or follow the setup instructions at <a href="https://tinyurl.com/y2mqyeua" class="bare">https://tinyurl.com/y2mqyeua</a>.</p>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -3347,15 +3618,15 @@ public class WebSecurityConfiguration {
         .matchers(EndpointRequest.to("info"))
         .permitAll()
         .matchers(EndpointRequest.toAnyEndpoint())
-        .hasRole(Role.ADMIN.name()) <i class="conum" data-value="1"></i><b>(1)</b>
+        .hasRole(Role.LIBRARY_ADMIN.name()) <i class="conum" data-value="1"></i><b>(1)</b>
         .pathMatchers(HttpMethod.POST, "/books")
-        .hasRole(Role.CURATOR.name())
+        .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers(HttpMethod.DELETE, "/books")
-        .hasRole(Role.CURATOR.name())
+        .hasRole(Role.LIBRARY_CURATOR.name())
         .pathMatchers("/users/**")
-        .hasRole(Role.ADMIN.name())
+        .hasRole(Role.LIBRARY_ADMIN.name())
         .pathMatchers("/books/**")
-        .hasRole(Role.USER.name())
+        .hasRole(Role.LIBRARY_USER.name())
         .anyExchange()
         .authenticated()
         .and()
@@ -3382,7 +3653,7 @@ public class WebSecurityConfiguration {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Actuator endpoints are only accessible with 'ADMIN' roles except 'health' and 'info'</td>
+<td>Actuator endpoints are only accessible with 'LIBRARY_ADMIN' roles except 'health' and 'info'</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -4393,7 +4664,7 @@ Free use of this software is granted under the terms of the Apache 2.0 License.<
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0-SNAPSHOT<br>
-Last updated 2019-05-31 12:44:47 +0200
+Last updated 2019-06-04 19:41:58 +0200
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">

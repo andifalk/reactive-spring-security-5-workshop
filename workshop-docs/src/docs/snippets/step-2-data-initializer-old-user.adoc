@@ -27,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
         new DelegatingPasswordEncoder(
             "MD5", Collections.singletonMap("MD5", new MessageDigestPasswordEncoder("MD5"))); # <2>
 
-    logger.info("Creating users with USER, CURATOR and ADMIN roles...");
+    logger.info("Creating users with LIBRARY_USER, CURATOR and LIBRARY_ADMIN roles...");
     userRepository
         .saveAll(
             Flux.just(
@@ -38,7 +38,7 @@ public class DataInitializer implements CommandLineRunner {
                     oldPasswordEncoder.encode("user"),
                     "Library",
                     "OldEncryption",
-                    Collections.singletonList(Role.USER))))
+                    Collections.singletonList(Role.LIBRARY_USER))))
         .log()
         .then(userRepository.count())
         .subscribe(c -> logger.info("{} users created", c));

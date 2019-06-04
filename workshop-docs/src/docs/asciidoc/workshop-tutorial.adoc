@@ -51,13 +51,13 @@ image::images/eclipse_gradle.png[scaledwidth="50%", scaledheight="50%",alt="ecli
 To get the workshop project you either can just clone the repository using
 
 ```
-git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git
+git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git security_workshop
 ```
 
 or
 
 ```
- git clone git@github.com:andifalk/reactive-spring-security-5-workshop.git
+ git clone git@github.com:andifalk/reactive-spring-security-5-workshop.git security_workshop
 ```
 
 or simply download it as a https://github.com/andifalk/reactive-spring-security-5-workshop/archive/master.zip[zip archive].
@@ -75,11 +75,12 @@ fit into the https://www.owasp.org/index.php/Top_10-2017_Top_10[OWASP Top 10 201
 
 We will look at:
 
-- A2: Broken Authentication
-- A3: Sensitive Data Exposure
-- A5: Broken Access Control
-- A6: Security Misconfiguration
-- A10: Insufficient Logging & Monitoring
+- https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication[A2: Broken Authentication]
+- https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure[A3: Sensitive Data Exposure]
+- https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control[A5: Broken Access Control]
+- https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration[A6: Security Misconfiguration]
+- https://www.owasp.org/index.php/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities[A9: Using components with known vulnerabilities]
+- https://www.owasp.org/index.php/Top_10-2017_A10-Insufficient_Logging%26Monitoring[A10: Insufficient Logging & Monitoring]
 
 .OWASP Top 10 2017
 
@@ -97,6 +98,10 @@ You will find more sources of information about security referenced in the <<Ref
 ====
 
 == Reactive Systems & Streams
+
+The following subsections give a very condensed introduction to the basics of Reactive Systems,
+the Project Reactor and Spring WebFlux. +
+This might help to better understand the sample application for beginners of Reactive.
 
 [quote, https://www.reactivemanifesto.org]
 Reactive Systems are Responsive, Resilient, Elastic and Message Driven (Asynchronous).
@@ -161,6 +166,11 @@ imperative and reactive programming style.
 
 To do this we will look into the project **intro-labs/reactive-playground**.
 
+The following resources might be helpful for first steps into the reactive world:
+
+* https://projectreactor.io/docs/core/release/reference/[Project Reactor Reference Documentation]
+* https://projectreactor.io/docs/core/release/reference/#which-operator[Which operator do I need?]
+
 == The workshop application
 
 In this workshop you will be provided a finished but completely unsecured reactive
@@ -184,6 +194,7 @@ The packages of the application are organized as follows:
 - *business*: All the service classes (quite simple for workshop, usually containing business logic)
 - *dataaccess*: All domain models and repositories
 - *config*: All spring configuration classes
+- *common*: Common classes used by several other packages
 
 .Library service stack
 
@@ -203,15 +214,12 @@ There are three target user roles for this application:
 - *Curators*: A curator user can add or delete books
 - *Administrators*: An administrator user can add or remove users
 
-The application is build using
+If you are going into reactive systems this works best if all layers work in non-blocking reactive style.
+Therefore the application is build using:
 
 - Spring 5 WebFlux on Netty
 - Spring Data MongoDB with reactive driver
 - In-memory Mongodb to have an easier setup for the workshop
-
-The following subsections give a very condensed introduction to the basics of Reactive Systems,
-the Project Reactor and Spring WebFlux. +
-This might help to better understand the sample application for beginners of Reactive.
 
 == Basic Security Labs
 
@@ -230,7 +238,7 @@ just continue using **lab-1/complete-library-server**.
 
 .In the first step we start quite easy by just adding the spring boot starter dependency for spring security.
 
-We just need to add the following two dependencies to the _build.gradle_ file of the initial application (_00-library-server_).
+We just need to add the following two dependencies to the _build.gradle_ file of the initial application (lab-1/initial-library-server_).
 
 .build.gradle
 
@@ -240,7 +248,7 @@ include::{snippets}/step-1-gradle-build.adoc[]
 
 image::images/workshop_lab_3.png[scaledwidth="75%",alt="Library service authentication"]
 
-Please start the application by running the class _LibraryServerApplication_.
+Please start the application by running the class _InitialLibraryServerApplication_.
 
 ==== Login
 
@@ -267,10 +275,38 @@ With spring security autoconfigured by spring boot the credentials are as follow
 
 include::{snippets}/step-1-default-password-console.adoc[]
 
+Of course you won't use the generated password for any serious application as this will change with each restart of the
+application.
+
+Instead you can easily just change the password to a static value by changing the _application.yaml_ file.
+
+.application.yml
+
+```
+spring:
+  ...
+  security:
+    user:
+      password: secret
+```
+
+[NOTE]
+====
+Please make sure the indents of the content is correct in yaml formatted files. If this is not the case you can get
+really strange errors sometimes.
+====
+
 As you can see, if Spring Security is on the classpath,
 then the web application is secured by default.
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security[Spring boot] auto-configured
 basic authentication and form based authentication for all web endpoints.
+
+[NOTE]
+====
+https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control[OWASP Top 10-2017 A5-Broken Access Control]
+
+- With the exception of public resources, deny by default
+====
 
 .Form-based authentication with session cookies
 
@@ -310,11 +346,61 @@ dialog on the screen.
 
 image::images/logoutform.png[scaledwidth="40%", scaledheight="40%",alt="owasp_top_10"]
 
+The application already contains a central error handler for the whole web application using _@RestControllerAdvice_.
+You can find this in class _com.example.library.server.api.ErrorHandler_.
+
+To handle potential future access denied error we add the following new block to this class:
+
+.com.example.library.server.api.ErrorHandler
+
+```
+import org.springframework.security.access.AccessDeniedException;
+
+@RestControllerAdvice
+public class ErrorHandler {
+
+@ExceptionHandler(AccessDeniedException.class)
+public Mono<ResponseEntity<String>> handle(AccessDeniedException ex) {
+Logger logger = LoggerFactory.getLogger(this.getClass());
+logger.error(ex.getMessage());
+return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+}
+...
+```
+
+[NOTE]
+====
+If you try to run the existing tests in package _com.example.library.server.api_ you will
+notice that these are not _green_ any more. This is due to the security enforcements
+by Spring Security.
+====
+
+Now all requests in the tests require an authenticated user and fail with http status 401 (Unauhorized).
+
+All tests using requests with _POST_, _PUT_ or _DELETE_ methods are failing with http status 403 (Forbidden).
+These requests are now protected against https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)[CSRF] attacks
+and require CSRF tokens.
+
+To achieve authentication in the tests you have to add the annotation _@WithMockUser_ on class level.
+CSRF is handled by mutating the requests inside the tests by adding this snippet to the failing tests:
+
+.com.example.library.server.api.BookApiDocumentationTest
+
+```
+...
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
+...
+webTestClient
+        .mutateWith(csrf())
+        ...
+```
+
+
 This concludes the first step.
 
 [NOTE]
 ====
-You find the completed code in project _01-library-server_.
+You find the completed code in project **lab-1/complete-library-server**.
 ====
 
 Now let's proceed to next step and start with customizing the authentication part.
@@ -323,7 +409,7 @@ Now let's proceed to next step and start with customizing the authentication par
 
 .Now it is time to start customizing the auto-configuration.
 
-The spring boot auto-configuration will back-off a bit in this step and will back-off completely in next step.
+The spring boot auto-configuration will back-off a bit in this lab and will back-off completely in next step.
 
 .Custom authentication with persistent users
 
@@ -364,8 +450,8 @@ include::{snippets}/step-2-logging-web-filter.adoc[]
 
 ==== WebFilterChainProxy
 
-In step 1 we just used the auto configuration of Spring Boot.
-This configured default security settings as follows:
+In lab 1 we just used the auto configuration of Spring Boot.
+This configured the default security settings as follows:
 
 .Default security configuration (with Spring Boot)
 
@@ -387,6 +473,16 @@ These are handled centrally by the _WebFilterChainProxy_ class.
 include::{snippets}/step-2-web-filter-chain-proxy.adoc[]
 
 ==== Step 1: Encrypting Passwords
+
+[NOTE]
+====
+https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure[OWASP Top 10-2017 A3-Sensitive Data Exposure]
+
+- Make sure to encrypt all sensitive data at rest
+- Store passwords using strong adaptive and salted hashing functions with a work factor (delay factor),
+  such as Argon2, scrypt, bcrypt or PBKDF2
+====
+
 
 We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
@@ -547,6 +643,14 @@ allowed to do in our application (*authorization*).
 
 image::images/workshop_lab_5.png[scaledwidth="75%",alt="Library service authorization"]
 
+[NOTE]
+====
+https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control[OWASP Top 10-2017 A5-Broken Access Control]
+
+- With the exception of public resources, deny by default
+- Implement access control mechanisms once and re-use them throughout the application, including minimizing CORS usage.
+====
+
 As a best practice the authorization should always be implemented on different layers like the web and method layer.
 This way the authorization still prohibits access even if a user manages to bypass the web url based authorization filter
 by playing around with manipulated URL's.
@@ -560,6 +664,14 @@ Our required authorization rule matrix looks like this:
 |All
 |No
 |--
+|/books/{bookId}/borrow
+|POST
+|Yes
+|LIBRARY_USER
+|/books/{bookId}/return
+|POST
+|Yes
+|LIBRARY_USER
 |/books
 |POST
 |Yes
@@ -650,7 +762,36 @@ directly into our operation via _@AuthenticationPrincipal_ annotation.
 include::{snippets}/step-3-authentication-principal.adoc[]
 
 So please go ahead and re-start the application and try to borrow a book with an authenticated user.
-If you are an IntelliJ user you can use the provided _book.http_ file in subdirectory _http_.
+
+.httpie get list of books
+
+```
+http localhost:9091/books --auth 'bruce.wayne@example.com:wayne'
+```
+
+.httpie borrow a book
+
+```
+http POST localhost:9091/books/{bookId}/borrow --auth 'bruce.wayne@example.com:wayne'
+```
+
+Note: Replace _{bookId}_ with the id of one of the books you have got in the list of books.
+
+.curl get list of books
+
+```
+curl 'http://localhost:8080/books' -i -X GET \
+    -H 'Accept: application/json' -u bruce.wayne@example.com:wayne | jq
+```
+
+.curl borrow a book
+
+```
+curl 'http://localhost:8080/books/{bookId}/borrow' -i -X POST \
+    -H 'Accept: application/json' -u bruce.wayne@example.com:wayne | jq
+```
+
+Note: Replace _{bookId}_ with the id of one of the books you have got in the list of books.
 
 At first you will notice that even with the correct basic authentication header you get an error message like this one:
 
@@ -940,6 +1081,9 @@ But first read important information about how to setup and start the required _
 For this workshop the OpenID Connect certified https://www.keycloak.org/[Keycloak identity provider server] is used.
 This provider supports solutions for authentication, authorization and user administration.
 For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens (JWT).
+
+To setup the local keycloak server please copy/extract it from provided USB sticks
+or follow the setup instructions at https://tinyurl.com/y2mqyeua.
 
 [TIP]
 ====
