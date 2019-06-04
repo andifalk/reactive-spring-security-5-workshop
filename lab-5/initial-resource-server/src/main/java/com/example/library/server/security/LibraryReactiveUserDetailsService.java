@@ -24,6 +24,6 @@ public class LibraryReactiveUserDetailsService implements ReactiveUserDetailsSer
   public Mono<UserDetails> findByUsername(String username) {
     LOGGER.info("Finding user for user name {}", username);
 
-    return userService.findOneByEmail(username).map(LibraryUser::new);
+    return userService.findOneByEmail(username).switchIfEmpty(Mono.empty()).map(LibraryUser::new);
   }
 }

@@ -1,27 +1,29 @@
 package com.example.oidc.client.api;
 
+import com.example.oidc.client.api.resource.BookResource;
+import com.example.oidc.client.api.resource.CreateBookResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
 @Controller
-@RequestMapping("/books")
 public class BookController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
@@ -35,13 +37,15 @@ public class BookController {
     this.webClient = webClient;
   }
 
-  @GetMapping("/")
-  Mono<String> index(@AuthenticationPrincipal User user, Model model) {
+  @ModelAttribute("isCurator")
+  Mono<Boolean> isCurator(@AuthenticationPrincipal User user) {
+    return Mono.just(
+        user.getAuthorities().stream()
+            .anyMatch(ga -> ga.getAuthority().equals("ROLE_LIBRARY_CURATOR")));
+  }
 
-    model.addAttribute("fullname", user.getUsername());
-    model.addAttribute(
-        "isCurator",
-        user.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("library_curator")));
+  @ModelAttribute("books")
+  Flux<BookResource> books() {
     return webClient
         .get()
         .uri(libraryServer + "/books")
@@ -50,19 +54,25 @@ public class BookController {
             s -> s.equals(HttpStatus.UNAUTHORIZED),
             cr -> Mono.just(new BadCredentialsException("Not authenticated")))
         .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
             HttpStatus::is4xxClientError,
             cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
         .onStatus(
             HttpStatus::is5xxServerError,
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
-        .bodyToFlux(BookResource.class)
-        .log()
-        .collectList()
-        .map(
-            c -> {
-              model.addAttribute("books", c);
-              return "index";
-            });
+        .bodyToFlux(BookResource.class);
+  }
+
+  @GetMapping("/")
+  Mono<String> index(@AuthenticationPrincipal User user, Model model) {
+
+    model.addAttribute("fullname", user.getUsername());
+    model.addAttribute(
+        "isCurator",
+        user.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("library_curator")));
+    return Mono.just("index");
   }
 
   @GetMapping("/createbook")
@@ -74,7 +84,7 @@ public class BookController {
   }
 
   @PostMapping("/create")
-  Mono<ResponseEntity<String>> create(
+  Mono<String> create(
       CreateBookResource createBookResource, ServerWebExchange serverWebExchange, Model model)
       throws IOException {
 
@@ -87,6 +97,9 @@ public class BookController {
             s -> s.equals(HttpStatus.UNAUTHORIZED),
             cr -> Mono.just(new BadCredentialsException("Not authenticated")))
         .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
             HttpStatus::is4xxClientError,
             cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
         .onStatus(
@@ -94,12 +107,12 @@ public class BookController {
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
         .log()
-        .then(Mono.just(ResponseEntity.ok().body("OK")));
+        .then(Mono.just("index"));
   }
 
   @GetMapping("/borrow")
-  String borrowBook(@RequestParam("identifier") String identifier) throws IOException {
-    webClient
+  Mono<String> borrowBook(@RequestParam("identifier") String identifier) {
+    return webClient
         .post()
         .uri(libraryServer + "/books/{bookId}/borrow", identifier)
         .retrieve()
@@ -107,6 +120,9 @@ public class BookController {
             s -> s.equals(HttpStatus.UNAUTHORIZED),
             cr -> Mono.just(new BadCredentialsException("Not authenticated")))
         .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
             HttpStatus::is4xxClientError,
             cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
         .onStatus(
@@ -114,15 +130,13 @@ public class BookController {
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
         .log()
-        .block();
-
-    // response.sendRedirect(request.getContextPath());
-    return null;
+        .then(Mono.just("index"));
   }
 
   @GetMapping("/return")
-  String returnBook(@RequestParam("identifier") String identifier) throws IOException {
-    webClient
+  Mono<String> returnBook(
+      @RequestParam("identifier") String identifier, ServerWebExchange serverWebExchange) {
+    return webClient
         .post()
         .uri(libraryServer + "/books/{bookId}/return", identifier)
         .retrieve()
@@ -130,16 +144,15 @@ public class BookController {
             s -> s.equals(HttpStatus.UNAUTHORIZED),
             cr -> Mono.just(new BadCredentialsException("Not authenticated")))
         .onStatus(
+            s -> s.equals(HttpStatus.FORBIDDEN),
+            cr -> Mono.just(new AccessDeniedException("Not authorized")))
+        .onStatus(
             HttpStatus::is4xxClientError,
             cr -> Mono.just(new IllegalArgumentException(cr.statusCode().getReasonPhrase())))
         .onStatus(
             HttpStatus::is5xxServerError,
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
-        .log()
-        .block();
-
-    // response.sendRedirect(request.getContextPath());
-    return null;
+        .then(Mono.just("redirect:/"));
   }
 }
