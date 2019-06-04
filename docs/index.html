@@ -309,11 +309,104 @@
                         <p>&mdash; <a href="https://spring.io/projects/spring-security">spring.io/projects/spring-security</a></p>
                     </section>
                     <section>
-                        <h1>Spring Security Basics</h1>
+                        <h2>Spring Security Overview</h2>
+                        <p>
+                            <img src="images/spring_security_overview.png" class="plain">
+                        </p>
+                    </section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">Spring Security</h2>
+                        <p>&nbsp;</p>
+                        <h3 style="color: white">Servlet Web Stack</h3>
+                    </section>
+                    <section>
+                        <h2>Security Dependencies</h2>
+                        <h4>Servlet Web Stack</h4>
+                        <pre><code class="hljs groovy" data-trim>
+                            ...
+                            implementation
+                              'org.springframework.boot:spring-boot-starter-security'
+                            implementation
+                              'org.springframework.boot:spring-boot-starter-web'
+                            ...
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Configuration</h2>
+                        <h4>Servlet Web Stack</h4>
+                        <pre><code class="hljs java" data-trim>
+                            @Configuration
+                            public class WebSecurityConfiguration
+                                extends WebSecurityConfigurerAdapter {
+
+                              @Override
+                              protected void configure(HttpSecurity http)
+                                                   throws Exception {
+                                http.authorizeRequests()
+                                        .anyRequest()
+                                        .authenticated()
+                                        .and()
+                                        .httpBasic().and().formLogin();
+                              }
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Authentication - Servlet Web Stack</h4>
+                        <p>
+                            <img src="images/spring_security_authentication.png" class="plain" width="82%">
+                        </p>
+                    </section>
+                    <section data-background="images/novatec_separator_back.png">
+                        <h2 style="color: white">Spring Security</h2>
+                        <p>&nbsp;</p>
+                        <h3 style="color: white">Reactive Web Stack</h3>
+                    </section>
+                    <section>
+                        <h2>Security Dependencies</h2>
+                        <h4>Reactive Web Stack</h4>
+                        <pre><code class="hljs groovy" data-trim>
+                            ...
+                            implementation
+                              'org.springframework.boot:spring-boot-starter-security'
+                            implementation
+                              'org.springframework.boot:spring-boot-starter-webflux'
+                            ...
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Configuration</h2>
+                        <h4>Reactive Web Stack</h4>
+                        <pre><code class="hljs java" data-trim>
+                            @Configuration
+                            @EnableWebFluxSecurity
+                            public class ReactiveWebSecurityConfiguration {
+
+                              @Bean
+                              SecurityWebFilterChain
+                                    securityWebFilterChain(ServerHttpSecurity http) {
+                                return http.authorizeExchange()
+                                        .anyExchange()
+                                        .authenticated()
+                                        .and()
+                                        .httpBasic().and().formLogin().and().build();
+                              }
+                            }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Authentication - Reactive Web Stack</h4>
+                        <p>
+                            <img src="images/spring_security_authentication_reactive.png" class="plain">
+                        </p>
                     </section>
                 </section>
 
                 <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h1 style="color: white">Spring Security</h1>
+                        <h3 style="color: white">Hands-On</h3>
+                    </section>
                     <section>
                         <h2>Hands-On application</h2>
                         <h4>An online book library</h4>
@@ -353,15 +446,11 @@
                         <img src="images/workshop_lab_3.png" class="plain">
                         <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Lab 1</a></small></p>
                     </section>
-                    <section data-background="images/basic_auth.png" data-background-size="80%">
-                    </section>
                     <section>
                         <h3>Lab 2: Authentication</h3>
                         <h4>(Customized)</h4>
                         <img src="images/workshop_lab_4.png" class="plain">
                         <p><small><a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">Online Tutorial: Lab 2</a></small></p>
-                    </section>
-                    <section data-background="images/session_auth.png" data-background-size="80%">
                     </section>
                     <section>
                         <h3>Lab 3: Authorization</h3>
@@ -872,8 +961,6 @@
                             <li>Intro-Lab: Authorization Code Flow Demo</li>
                             <li>Lab 5: OAuth2/OIDC Resource Server</li>
                             <li>Lab 6: OAuth2/OIDC Client (Auth Code Flow)</li>
-                            <li>Lab 7: OAuth2/OIDC Client (Client-Credentials Flow)</li>
-                            <li>Lab 8: OAuth2/OIDC Testing Environment</li>
                         </ul>
                         <p style="color: darkblue">Please follow <a href="https://andifalk.github.io/reactive-spring-security-5-workshop/workshop-tutorial.html">online tutorial</a> in GitHub Repo</p>
                     </section>
@@ -1075,7 +1162,7 @@
                         <a href="https://www.novatec-gmbh.de">https://www.novatec-gmbh.de</a>
                         </div>
                     </section>
-                    <section data-background="images/andrena_feedback.png">
+                    <section data-background="images/andrena_feedback.png" data-background-size="97%">
                     </section>
                 </section>
 			</div>
