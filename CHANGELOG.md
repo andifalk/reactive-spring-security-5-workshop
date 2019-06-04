@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.1.0 (04/06/2019)
+- [**closed**] Refactor library server application [#13](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/13)
+- [**closed**] Restructure workshop labs [#12](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/12)
+- [**closed**] Update dependencies and gradle version [#11](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/11)
+
 ## v2.0-frankfurt-entwicklertag (20/02/2019)
 - [**closed**] Add automated CI build with Travis CI [#9](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/9)
 - [**closed**] Use certified OpenID Connect Provider service [#8](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/8)
