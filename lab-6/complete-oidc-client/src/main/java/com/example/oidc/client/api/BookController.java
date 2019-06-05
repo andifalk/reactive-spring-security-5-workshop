@@ -2,9 +2,6 @@ package com.example.oidc.client.api;
 
 import com.example.oidc.client.api.resource.BookResource;
 import com.example.oidc.client.api.resource.CreateBookResource;
-import net.minidev.json.JSONArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,8 +24,6 @@ import java.io.IOException;
 @Controller
 public class BookController {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
-
   private final WebClient webClient;
 
   @Value("${library.server}")
@@ -36,13 +31,6 @@ public class BookController {
 
   public BookController(WebClient webClient) {
     this.webClient = webClient;
-  }
-
-  @ModelAttribute("isCurator")
-  Mono<Boolean> isCurator(@AuthenticationPrincipal OAuth2User user) {
-    return Mono.just(
-        ((JSONArray) user.getAttributes().get("groups"))
-            .stream().anyMatch(g -> g.equals("library_curator")));
   }
 
   @ModelAttribute("books")
@@ -108,7 +96,7 @@ public class BookController {
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
         .log()
-        .then(Mono.just("index"));
+        .then(Mono.just("redirect:/"));
   }
 
   @GetMapping("/borrow")
@@ -131,7 +119,7 @@ public class BookController {
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
         .log()
-        .then(Mono.just("index"));
+        .then(Mono.just("redirect:/"));
   }
 
   @GetMapping("/return")

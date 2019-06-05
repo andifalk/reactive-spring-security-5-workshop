@@ -4,9 +4,6 @@ package com.example.oidc.client.api;
 
 import com.example.oidc.client.api.resource.BookResource;
 import com.example.oidc.client.api.resource.CreateBookResource;
-import net.minidev.json.JSONArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,8 +26,6 @@ import java.io.IOException;
 @Controller
 public class BookController { # <1>
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
-
   private final WebClient webClient;
 
   @Value("${library.server}")
@@ -38,13 +33,6 @@ public class BookController { # <1>
 
   public BookController(WebClient webClient) {
     this.webClient = webClient;
-  }
-
-  @ModelAttribute("isCurator")
-  Mono<Boolean> isCurator(@AuthenticationPrincipal OAuth2User user) {
-    return Mono.just(
-        ((JSONArray) user.getAttributes().get("groups"))
-            .stream().anyMatch(g -> g.equals("library_curator")));
   }
 
   @ModelAttribute("books")
@@ -109,7 +97,7 @@ public class BookController { # <1>
             HttpStatus::is5xxServerError,
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
-        .then(Mono.just("index"));
+        .then(Mono.just("redirect:/"));
   }
 
   @GetMapping("/borrow") # <6>
@@ -131,7 +119,7 @@ public class BookController { # <1>
             HttpStatus::is5xxServerError,
             cr -> Mono.just(new Exception(cr.statusCode().getReasonPhrase())))
         .bodyToMono(BookResource.class)
-        .then(Mono.just("index"));
+        .then(Mono.just("redirect:/"));
   }
 
   @GetMapping("/return")
