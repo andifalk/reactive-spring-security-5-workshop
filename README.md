@@ -19,7 +19,7 @@ Topics that will be covered by this workshop are:
 * Base concepts of [Spring Security 5](https://spring.io/projects/spring-security) (i.e. Security Web Filter Chain)
 * Authentication
 * Authorization
-* Secure Password encryption and encryption upgrading
+* Secure [password encoding](https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#core-services-password-encoding) and encoding upgrades
 * [Security Headers](https://securityheaders.com)
 * Coverage of common security challenges like
   * Session fixation

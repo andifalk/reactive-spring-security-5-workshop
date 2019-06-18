@@ -472,7 +472,7 @@ These are handled centrally by the _WebFilterChainProxy_ class.
 
 include::{snippets}/step-2-web-filter-chain-proxy.adoc[]
 
-==== Step 1: Encrypting Passwords
+==== Step 1: Encoding Passwords
 
 [NOTE]
 ====
@@ -482,7 +482,6 @@ https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure[OWASP Top
 - Store passwords using strong adaptive and salted hashing functions with a work factor (delay factor),
   such as Argon2, scrypt, bcrypt or PBKDF2
 ====
-
 
 We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
 To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
@@ -499,7 +498,7 @@ The _WebSecurityConfiguration_ implementation does two important things:
   https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#security-filter-chain[_spring security filter chain_].
   In spring webflux the _SecurityWebFilterChain_ is the similar approach
   based on matching a request with one or more WebFilter.
-. Configures a _PasswordEncoder_. A password encoder is used by spring security to encrypt passwords and to check
+. Configures a _PasswordEncoder_. A password encoder is used by spring security to encode (hash) passwords and to check
   if a given password matches the encrypted one.
 
 .PasswordEncoder interface
@@ -509,8 +508,17 @@ include::{snippets}/step-2-password-encoder.adoc[]
 In spring security 5 creating an instance of the _DelegatingPasswordEncoder_ is much easier
 by using the class _PasswordEncoderFactories_. In past years several previously used password encryption algorithms
 have been broken (like _MD4_ or _MD5_). By using _PasswordEncoderFactories_ you always get a configured
-_PasswordEncoder_ that uses an _PasswordEncoder_ with a _state of the art_ encryption algorithm like _BCrypt_ at the time
-of creating this workshop.
+_DelegatingPasswordEncoder_ instance that configures a map of _PasswordEncoder_ instances for the recommended password hashing algorithms like
+
+* https://en.wikipedia.org/wiki/Bcrypt[Bcrypt]
+* https://en.wikipedia.org/wiki/Scrypt[Scrypt]
+* https://en.wikipedia.org/wiki/PBKDF2[PBKDF2]
+
+At the time of creating this workshop the _DelegatingPasswordEncoder_ instance configures the _Bcrypt_ algorithm
+as the default to be used for encoding new passwords.
+
+If you want to know more about why to use hashing algorithms like Bcrypt, Scrypt or PBKDF2 instead of other ones like SHA-2 then
+read the very informative blog post https://security.blogoverflow.com/2013/09/about-secure-password-hashing[About Secure Password Hashing].
 
 .DelegatingPasswordEncoder class
 
@@ -525,7 +533,7 @@ include::{snippets}/step-2-data-initializer.adoc[]
 
 ==== Step 2: Persistent User Storage
 
-Now that we already have configured the encrypting part for passwords of our user storage
+Now that we already have configured the encoding part for passwords of our user storage
 we need to connect our own user store (the users already stored in the MongoDB) with spring security's
 authentication manager.
 
@@ -579,7 +587,7 @@ __Important:__ We will use the following users in all subsequent labs from now o
 |LIBRARY_ADMIN
 |===
 
-=== Automatic Password Encryption Updates
+=== Automatic Password Encoding Updates
 
 We already looked into the _DelegatingPasswordEncoder_ and _PasswordEncoderFactories_. As these classes have knowledge
 about all encryption algorithms that are supported in spring security, the framework can detect
@@ -593,14 +601,14 @@ The _ReactiveUserDetailsPasswordService_ interface just defines one more operati
 
 include::{snippets}/step-2-reactive-user-details-password-service.adoc[]
 
-First we need a user having a password that is encrypted using an _outdated_ algorithm. We achieve this by modifying
+First we need a user having a password that is encoded using an _outdated_ hashing algorithm. We achieve this by modifying
 the existing _DataInitializer_ class.
 
 .DataInitializer class
 
 include::{snippets}/step-2-data-initializer-old-user.adoc[]
 
-To activate support for automatic password encryption upgrades we need to extend our existing
+To activate support for automatic password encoding upgrades we need to extend our existing
 _LibraryReactiveUserDetailsService_ class.
 
 .LibraryReactiveUserDetailsService class
@@ -610,11 +618,11 @@ include::{snippets}/step-2-library-user-details-password-service.adoc[]
 Now restart the application and see what happens if we try to get the list of books using this new
 user (username='old@example.com', password='user').
 
-In the console you should see the log output showing the old _MD5_ password being updated to _bcrypt_ password.
+In the console you should see the log output showing the old _MD5_ password being updated to _Bcrypt_ password.
 
 [CAUTION]
 ====
-Never log any sensitive data like passwords, tokens etc., even in encrypted format. Also never put such sensitive data
+Never log any sensitive data like passwords, tokens etc., even in hashed format. Also never put such sensitive data
 into your version control. And never let error details reach the client (via REST API or web application).
 Make sure you disable stacktraces in client error messages using property _server.error.include-stacktrace=never_
 ====

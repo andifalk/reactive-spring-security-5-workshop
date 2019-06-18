@@ -1,4 +1,6 @@
 rootProject.name = 'reactive-spring-security-5-workshop'
+include 'intro-labs:authentication-servlet-demo'
+include 'intro-labs:authentication-reactive-demo'
 include 'intro-labs:reactive-playground'
 include 'intro-labs:auth-code-demo'
 include 'intro-labs:github-client'
