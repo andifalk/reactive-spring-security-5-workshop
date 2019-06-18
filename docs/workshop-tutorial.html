@@ -456,24 +456,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_the_workshop_application">5. The workshop application</a></li>
 <li><a href="#_basic_security_labs">6. Basic Security Labs</a>
 <ul class="sectlevel2">
-<li><a href="#_lab_1_auto_configuration">6.1. Lab 1: Auto Configuration</a>
+<li><a href="#_run_the_initial_application">6.1. Run the initial application</a></li>
+<li><a href="#_lab_1_auto_configuration">6.2. Lab 1: Auto Configuration</a>
 <ul class="sectlevel3">
-<li><a href="#_login">6.1.1. Login</a></li>
-<li><a href="#_common_security_problems">6.1.2. Common Security Problems</a></li>
-<li><a href="#_logout">6.1.3. Logout</a></li>
+<li><a href="#_login">6.2.1. Login</a></li>
+<li><a href="#_common_security_problems">6.2.2. Common Security Problems</a></li>
+<li><a href="#_logout">6.2.3. Logout</a></li>
 </ul>
 </li>
-<li><a href="#_lab_2_customize_authentication">6.2. Lab 2: Customize Authentication</a>
+<li><a href="#_lab_2_customize_authentication">6.3. Lab 2: Customize Authentication</a>
 <ul class="sectlevel3">
-<li><a href="#_webfilter">6.2.1. WebFilter</a></li>
-<li><a href="#_webfilterchainproxy">6.2.2. WebFilterChainProxy</a></li>
-<li><a href="#_step_1_encrypting_passwords">6.2.3. Step 1: Encrypting Passwords</a></li>
-<li><a href="#_step_2_persistent_user_storage">6.2.4. Step 2: Persistent User Storage</a></li>
+<li><a href="#_webfilter">6.3.1. WebFilter</a></li>
+<li><a href="#_webfilterchainproxy">6.3.2. WebFilterChainProxy</a></li>
+<li><a href="#_step_1_encoding_passwords">6.3.3. Step 1: Encoding Passwords</a></li>
+<li><a href="#_step_2_persistent_user_storage">6.3.4. Step 2: Persistent User Storage</a></li>
 </ul>
 </li>
-<li><a href="#_automatic_password_encryption_updates">6.3. Automatic Password Encryption Updates</a></li>
-<li><a href="#_lab_3_add_authorization">6.4. Lab 3: Add Authorization</a></li>
-<li><a href="#_lab_4_security_testing">6.5. Lab 4: Security Testing</a></li>
+<li><a href="#_automatic_password_encoding_updates">6.4. Automatic Password Encoding Updates</a></li>
+<li><a href="#_lab_3_add_authorization">6.5. Lab 3: Add Authorization</a></li>
+<li><a href="#_lab_4_security_testing">6.6. Lab 4: Security Testing</a></li>
 </ul>
 </li>
 <li><a href="#_oauth2openid_connect_labs">7. OAuth2/OpenID Connect Labs</a>
@@ -575,6 +576,9 @@ more and more secure step-by-step.</p>
 </li>
 <li>
 <p><a href="https://curl.haxx.se">Curl</a> or <a href="https://httpie.org">Httpie</a> to call the REST API from command line</p>
+</li>
+<li>
+<p><a href="https://robomongo.org">Robo 3T</a> to look inside the embedded MongoDB instance</p>
 </li>
 </ul>
 </div>
@@ -830,7 +834,15 @@ imperative and reactive programming style.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In this workshop you will be provided a finished but completely unsecured reactive
-web application. This library server application provides a <a href="https://martinfowler.com/articles/richardsonMaturityModel.html">RESTful service</a> for administering books and users.</p>
+web application.
+This library server application provides a <a href="https://martinfowler.com/articles/richardsonMaturityModel.html">RESTful service</a>
+for administering books and users.</p>
+</div>
+<div class="paragraph">
+<p>You can find this provided workshop application in sub project <strong>lab-1/initial-library-server</strong>.</p>
+</div>
+<div class="paragraph">
+<p>This will also be your <strong>starting point</strong> into the hands-on part that we will dive into shortly.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -946,15 +958,82 @@ Therefore the application is build using:</p>
 always can just start over with the existing application of next step.</p>
 </div>
 <div class="paragraph">
-<p>For example if you could not manage to complete the tutorial based on <strong>lab-1/initial-library-server</strong>
-just continue using <strong>lab-1/complete-library-server</strong>.</p>
+<p>For example if you could not complete the lab 1 in time
+just continue with lab 2 using <strong>lab-1/complete-library-server</strong> as new starting point.</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_lab_1_auto_configuration"><a class="anchor" href="#_lab_1_auto_configuration"></a><a class="link" href="#_lab_1_auto_configuration">6.1. Lab 1: Auto Configuration</a></h3>
+<h3 id="_run_the_initial_application"><a class="anchor" href="#_run_the_initial_application"></a><a class="link" href="#_run_the_initial_application">6.1. Run the initial application</a></h3>
+<div class="paragraph">
+<p>To ensure your java environment is configured correctly please run the initial
+workshop application.</p>
+</div>
+<div class="paragraph">
+<p>To achieve this run the class <em>com.example.library.server.InitialLibraryServerApplication</em> in project <strong>lab-1/initial-library-server</strong>.</p>
+</div>
+<div class="paragraph">
+<p>This should also start the embedded MongoDB instance. In case you get an error here telling that the corresponding port <em>40495</em>
+is already bound to another service then please change the configuration to a different port in file <em>application.yml</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>spring:
+  data:
+    mongodb:
+      port: 40495</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To look into the embedded MongoDB instance the UI tool <a href="https://robomongo.org/">Robo 3T</a> is
+very helpful and easy to use. In case you did not yet install this tool just go to
+<a href="https://robomongo.org/download" class="bare">https://robomongo.org/download</a> and download the corresponding file for your operating system
+(please do NOT download the commercial variant named <em>Studio 3T</em>).</p>
+</div>
+<div class="paragraph">
+<p>After you downloaded the install file and extracted/installed the tool you have to configure
+the connection to the embedded MongoDB like in the following figure.
+If you have configured your embedded MongoDB instance to a different port then use that one
+instead of <em>40495</em>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/robo3t.png" alt="Library service stack">
+</div>
+<div class="title">Figure 8. Robo 3T Connection configuration</div>
+</div>
+<div class="paragraph">
+<p>Finally you can navigate your web browser to <a href="http://localhost:9091/books" class="bare">http://localhost:9091/books</a> then you
+should see a list of books.</p>
+</div>
+<div class="paragraph">
+<p>You can achieve the same on the command line using <a href="https://httpie.org/">httpie</a>
+or <a href="https://curl.haxx.se/download.html">curl</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Curl</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>curl 'http://localhost:9091/books' | jq</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Httpie</div>
+<div class="content">
+<pre class="highlightjs highlight"><code>http localhost:9091/books</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If both the workshop application and the Robo 3T tool run fine and you could see
+the list of books then you are setup and ready to start the first lab.</p>
+</div>
+<div class="paragraph">
+<p>So head over to the next section and start with Lab 1.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lab_1_auto_configuration"><a class="anchor" href="#_lab_1_auto_configuration"></a><a class="link" href="#_lab_1_auto_configuration">6.2. Lab 1: Auto Configuration</a></h3>
 <div class="paragraph">
 <div class="title">In the first step we start quite easy by just adding the spring boot starter dependency for spring security.</div>
 <p>We just need to add the following two dependencies to the <em>build.gradle</em> file of the initial application (lab-1/initial-library-server_).</p>
@@ -986,13 +1065,13 @@ just continue using <strong>lab-1/complete-library-server</strong>.</p>
 <div class="content">
 <img src="images/workshop_lab_3.png" alt="Library service authentication">
 </div>
-<div class="title">Figure 8. Authentication using in-memory user</div>
+<div class="title">Figure 9. Authentication using in-memory user</div>
 </div>
 <div class="paragraph">
 <p>Please start the application by running the class <em>InitialLibraryServerApplication</em>.</p>
 </div>
 <div class="sect3">
-<h4 id="_login"><a class="anchor" href="#_login"></a><a class="link" href="#_login">6.1.1. Login</a></h4>
+<h4 id="_login"><a class="anchor" href="#_login"></a><a class="link" href="#_login">6.2.1. Login</a></h4>
 <div class="paragraph">
 <p>Spring Security 5 added a nicer auto-generated login form (build with bootstrap library).</p>
 </div>
@@ -1000,7 +1079,7 @@ just continue using <strong>lab-1/complete-library-server</strong>.</p>
 <div class="content">
 <img src="images/loginform.png" alt="owasp_top_10">
 </div>
-<div class="title">Figure 9. Autogenerated login formular</div>
+<div class="title">Figure 10. Autogenerated login formular</div>
 </div>
 <div class="paragraph">
 <p>If you browse to <a href="http://localhost:8080/books">localhost:8080/books</a> then you will notice
@@ -1104,7 +1183,7 @@ basic authentication and form based authentication for all web endpoints.</p>
 <div class="content">
 <img src="images/session_auth.png" alt="form_login">
 </div>
-<div class="title">Figure 10. Form-based authentication with session cookies</div>
+<div class="title">Figure 11. Form-based authentication with session cookies</div>
 </div>
 <div class="paragraph">
 <p>This also applies to all actuator endpoints like <a href="http://localhost:8080/actuator/health">/actuator/health</a>.
@@ -1114,7 +1193,7 @@ for details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_common_security_problems"><a class="anchor" href="#_common_security_problems"></a><a class="link" href="#_common_security_problems">6.1.2. Common Security Problems</a></h4>
+<h4 id="_common_security_problems"><a class="anchor" href="#_common_security_problems"></a><a class="link" href="#_common_security_problems">6.2.2. Common Security Problems</a></h4>
 <div class="paragraph">
 <p>Additionally spring security improved the security of the web application automatically for:</p>
 </div>
@@ -1151,7 +1230,7 @@ X-XSS-Protection: 1 ; mode=block</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_logout"><a class="anchor" href="#_logout"></a><a class="link" href="#_logout">6.1.3. Logout</a></h4>
+<h4 id="_logout"><a class="anchor" href="#_logout"></a><a class="link" href="#_logout">6.2.3. Logout</a></h4>
 <div class="paragraph">
 <p>Spring security 5 also added a bit more user friendly logout functionality out of the box.
 If you direct your browser to <a href="http://localhost:8080/logout">localhost:8080/logout</a> you will see the following
@@ -1161,7 +1240,7 @@ dialog on the screen.</p>
 <div class="content">
 <img src="images/logoutform.png" alt="owasp_top_10">
 </div>
-<div class="title">Figure 11. Autogenerated logout formular</div>
+<div class="title">Figure 12. Autogenerated logout formular</div>
 </div>
 <div class="paragraph">
 <p>The application already contains a central error handler for the whole web application using <em>@RestControllerAdvice</em>.
@@ -1249,7 +1328,7 @@ webTestClient
 </div>
 </div>
 <div class="sect2">
-<h3 id="_lab_2_customize_authentication"><a class="anchor" href="#_lab_2_customize_authentication"></a><a class="link" href="#_lab_2_customize_authentication">6.2. Lab 2: Customize Authentication</a></h3>
+<h3 id="_lab_2_customize_authentication"><a class="anchor" href="#_lab_2_customize_authentication"></a><a class="link" href="#_lab_2_customize_authentication">6.3. Lab 2: Customize Authentication</a></h3>
 <div class="paragraph">
 <div class="title">Now it is time to start customizing the auto-configuration.</div>
 <p>The spring boot auto-configuration will back-off a bit in this lab and will back-off completely in next step.</p>
@@ -1258,14 +1337,14 @@ webTestClient
 <div class="content">
 <img src="images/workshop_lab_4.png" alt="Library service custom authentication">
 </div>
-<div class="title">Figure 12. Custom authentication with persistent users</div>
+<div class="title">Figure 13. Custom authentication with persistent users</div>
 </div>
 <div class="paragraph">
 <p>Before we start let&#8217;s look into some internal details how spring security works
 for the reactive web stack.</p>
 </div>
 <div class="sect3">
-<h4 id="_webfilter"><a class="anchor" href="#_webfilter"></a><a class="link" href="#_webfilter">6.2.1. WebFilter</a></h4>
+<h4 id="_webfilter"><a class="anchor" href="#_webfilter"></a><a class="link" href="#_webfilter">6.3.1. WebFilter</a></h4>
 <div class="paragraph">
 <p>Like the <em>javax.servlet.Filter</em> in the blocking servlet-based web stack there is a comparable functionality
 in the reactive world: The <em>WebFilter</em>.</p>
@@ -1350,7 +1429,7 @@ public class LoggingWebFilter implements WebFilter {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_webfilterchainproxy"><a class="anchor" href="#_webfilterchainproxy"></a><a class="link" href="#_webfilterchainproxy">6.2.2. WebFilterChainProxy</a></h4>
+<h4 id="_webfilterchainproxy"><a class="anchor" href="#_webfilterchainproxy"></a><a class="link" href="#_webfilterchainproxy">6.3.2. WebFilterChainProxy</a></h4>
 <div class="paragraph">
 <p>In lab 1 we just used the auto configuration of Spring Boot.
 This configured the default security settings as follows:</p>
@@ -1465,7 +1544,7 @@ of <em>SecurityWebFilterChain</em> configuration methods.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_step_1_encrypting_passwords"><a class="anchor" href="#_step_1_encrypting_passwords"></a><a class="link" href="#_step_1_encrypting_passwords">6.2.3. Step 1: Encrypting Passwords</a></h4>
+<h4 id="_step_1_encoding_passwords"><a class="anchor" href="#_step_1_encoding_passwords"></a><a class="link" href="#_step_1_encoding_passwords">6.3.3. Step 1: Encoding Passwords</a></h4>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1542,7 +1621,7 @@ In spring webflux the <em>SecurityWebFilterChain</em> is the similar approach
 based on matching a request with one or more WebFilter.</p>
 </li>
 <li>
-<p>Configures a <em>PasswordEncoder</em>. A password encoder is used by spring security to encrypt passwords and to check
+<p>Configures a <em>PasswordEncoder</em>. A password encoder is used by spring security to encode (hash) passwords and to check
 if a given password matches the encrypted one.</p>
 </li>
 </ol>
@@ -1576,8 +1655,28 @@ public interface PasswordEncoder {
 <p>In spring security 5 creating an instance of the <em>DelegatingPasswordEncoder</em> is much easier
 by using the class <em>PasswordEncoderFactories</em>. In past years several previously used password encryption algorithms
 have been broken (like <em>MD4</em> or <em>MD5</em>). By using <em>PasswordEncoderFactories</em> you always get a configured
-<em>PasswordEncoder</em> that uses an <em>PasswordEncoder</em> with a <em>state of the art</em> encryption algorithm like <em>BCrypt</em> at the time
-of creating this workshop.</p>
+<em>DelegatingPasswordEncoder</em> instance that configures a map of <em>PasswordEncoder</em> instances for the recommended password hashing algorithms like</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Bcrypt">Bcrypt</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Scrypt">Scrypt</a></p>
+</li>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>At the time of creating this workshop the <em>DelegatingPasswordEncoder</em> instance configures the <em>Bcrypt</em> algorithm
+as the default to be used for encoding new passwords.</p>
+</div>
+<div class="paragraph">
+<p>If you want to know more about why to use hashing algorithms like Bcrypt, Scrypt or PBKDF2 instead of other ones like SHA-2 then
+read the very informative blog post <a href="https://security.blogoverflow.com/2013/09/about-secure-password-hashing">About Secure Password Hashing</a>.</p>
 </div>
 <div class="listingblock">
 <div class="title">DelegatingPasswordEncoder class</div>
@@ -1677,9 +1776,9 @@ public class DataInitializer implements CommandLineRunner {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_step_2_persistent_user_storage"><a class="anchor" href="#_step_2_persistent_user_storage"></a><a class="link" href="#_step_2_persistent_user_storage">6.2.4. Step 2: Persistent User Storage</a></h4>
+<h4 id="_step_2_persistent_user_storage"><a class="anchor" href="#_step_2_persistent_user_storage"></a><a class="link" href="#_step_2_persistent_user_storage">6.3.4. Step 2: Persistent User Storage</a></h4>
 <div class="paragraph">
-<p>Now that we already have configured the encrypting part for passwords of our user storage
+<p>Now that we already have configured the encoding part for passwords of our user storage
 we need to connect our own user store (the users already stored in the MongoDB) with spring security&#8217;s
 authentication manager.</p>
 </div>
@@ -1874,7 +1973,7 @@ replaced the default user with our own users from our MongoDB persistent storage
 </div>
 </div>
 <div class="sect2">
-<h3 id="_automatic_password_encryption_updates"><a class="anchor" href="#_automatic_password_encryption_updates"></a><a class="link" href="#_automatic_password_encryption_updates">6.3. Automatic Password Encryption Updates</a></h3>
+<h3 id="_automatic_password_encoding_updates"><a class="anchor" href="#_automatic_password_encoding_updates"></a><a class="link" href="#_automatic_password_encoding_updates">6.4. Automatic Password Encoding Updates</a></h3>
 <div class="paragraph">
 <p>We already looked into the <em>DelegatingPasswordEncoder</em> and <em>PasswordEncoderFactories</em>. As these classes have knowledge
 about all encryption algorithms that are supported in spring security, the framework can detect
@@ -1907,7 +2006,7 @@ public interface ReactiveUserDetailsPasswordService {
 </div>
 </div>
 <div class="paragraph">
-<p>First we need a user having a password that is encrypted using an <em>outdated</em> algorithm. We achieve this by modifying
+<p>First we need a user having a password that is encoded using an <em>outdated</em> hashing algorithm. We achieve this by modifying
 the existing <em>DataInitializer</em> class.</p>
 </div>
 <div class="listingblock">
@@ -1979,7 +2078,7 @@ Never do such a thing in production. Always use the default <em>PasswordEncoderF
 </table>
 </div>
 <div class="paragraph">
-<p>To activate support for automatic password encryption upgrades we need to extend our existing
+<p>To activate support for automatic password encoding upgrades we need to extend our existing
 <em>LibraryReactiveUserDetailsService</em> class.</p>
 </div>
 <div class="listingblock">
@@ -2043,7 +2142,7 @@ to enable automatic password encryption upgrades</td>
 user (username='<a href="mailto:old@example.com">old@example.com</a>', password='user').</p>
 </div>
 <div class="paragraph">
-<p>In the console you should see the log output showing the old <em>MD5</em> password being updated to <em>bcrypt</em> password.</p>
+<p>In the console you should see the log output showing the old <em>MD5</em> password being updated to <em>Bcrypt</em> password.</p>
 </div>
 <div class="admonitionblock caution">
 <table>
@@ -2053,7 +2152,7 @@ user (username='<a href="mailto:old@example.com">old@example.com</a>', password=
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Never log any sensitive data like passwords, tokens etc., even in encrypted format. Also never put such sensitive data
+<p>Never log any sensitive data like passwords, tokens etc., even in hashed format. Also never put such sensitive data
 into your version control. And never let error details reach the client (via REST API or web application).
 Make sure you disable stacktraces in client error messages using property <em>server.error.include-stacktrace=never</em></p>
 </div>
@@ -2084,7 +2183,7 @@ for our application.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_lab_3_add_authorization"><a class="anchor" href="#_lab_3_add_authorization"></a><a class="link" href="#_lab_3_add_authorization">6.4. Lab 3: Add Authorization</a></h3>
+<h3 id="_lab_3_add_authorization"><a class="anchor" href="#_lab_3_add_authorization"></a><a class="link" href="#_lab_3_add_authorization">6.5. Lab 3: Add Authorization</a></h3>
 <div class="paragraph">
 <div class="title">In this part of the workshop we want to add our customized authorization rules for our application.</div>
 <p>As a result of the previous workshop steps we now have authentication for all our web endpoints
@@ -2098,7 +2197,7 @@ allowed to do in our application (<strong>authorization</strong>).</p>
 <div class="content">
 <img src="images/workshop_lab_5.png" alt="Library service authorization">
 </div>
-<div class="title">Figure 13. Authorization for library-service</div>
+<div class="title">Figure 14. Authorization for library-service</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -2345,7 +2444,7 @@ to authorize using dynamic expressions (usually if you have roles with permissio
 <div class="content">
 <img src="images/roles_permissions.png" alt="roles_permissions">
 </div>
-<div class="title">Figure 14. Roles and Permissions</div>
+<div class="title">Figure 15. Roles and Permissions</div>
 </div>
 <div class="paragraph">
 <p>If you want to have a permission based authorization you can use the predefined interface <em>PermissionEvaluator</em> inside the
@@ -2664,7 +2763,7 @@ We will see how this works in the next workshop part.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_lab_4_security_testing"><a class="anchor" href="#_lab_4_security_testing"></a><a class="link" href="#_lab_4_security_testing">6.5. Lab 4: Security Testing</a></h3>
+<h3 id="_lab_4_security_testing"><a class="anchor" href="#_lab_4_security_testing"></a><a class="link" href="#_lab_4_security_testing">6.6. Lab 4: Security Testing</a></h3>
 <div class="paragraph">
 <div class="title">Now it is time to prove that we have implemented these authorization rules correctly with automatic testing.</div>
 <p>We start testing the rules on method layer for all operations regarding books.</p>
@@ -2673,7 +2772,7 @@ We will see how this works in the next workshop part.</p>
 <div class="content">
 <img src="images/workshop_lab_6.png" alt="Library service security tests">
 </div>
-<div class="title">Figure 15. Automated security tests</div>
+<div class="title">Figure 16. Automated security tests</div>
 </div>
 <div class="paragraph">
 <p>The tests will be implemented using the new JUnit 5 version as Spring 5.0 now supports this as well.<br>
@@ -3085,7 +3184,7 @@ for using business services in the internet like <a href="https://stackoverflow.
 <div class="content">
 <img src="images/oauth2_roles.png" alt="oauth_roles">
 </div>
-<div class="title">Figure 16. OAuth 2.0 role model</div>
+<div class="title">Figure 17. OAuth 2.0 role model</div>
 </div>
 <div class="paragraph">
 <p>Authorizations are permitted via scopes that the user has to confirm before
@@ -3120,7 +3219,7 @@ using the requested service.</p>
 <div class="content">
 <img src="images/authorization_code_1.png" alt="auth_code_grant">
 </div>
-<div class="title">Figure 17. Authorization code grant flow</div>
+<div class="title">Figure 18. Authorization code grant flow</div>
 </div>
 </div>
 <div class="sect3">
@@ -3135,7 +3234,7 @@ In OAuth2 the format of <a href="https://tools.ietf.org/html/rfc6750">bearer tok
 <div class="content">
 <img src="images/oidc_roles.png" alt="openid_roles">
 </div>
-<div class="title">Figure 18. OpenID Connect 1.0 role model</div>
+<div class="title">Figure 19. OpenID Connect 1.0 role model</div>
 </div>
 <div class="paragraph">
 <p>OIDC adds an id token in addition to the access token of OAuth2 and specifies
@@ -3383,7 +3482,7 @@ of Spring Security 5.1.</p>
 <div class="content">
 <img src="images/workshop_lab_7.png" alt="OAuth2 spring roles">
 </div>
-<div class="title">Figure 19. Library client, service and identity provider service</div>
+<div class="title">Figure 20. Library client, service and identity provider service</div>
 </div>
 <div class="paragraph">
 <p>These micro-services have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
@@ -4808,7 +4907,7 @@ Free use of this software is granted under the terms of the Apache 2.0 License.<
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0-SNAPSHOT<br>
-Last updated 2019-06-04 22:37:56 +0200
+Last updated 2019-06-18 23:25:57 +0200
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">

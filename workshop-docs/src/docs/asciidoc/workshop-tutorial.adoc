@@ -39,6 +39,7 @@ You will make your hands dirty in code in the following steps:
 * Any Java IDE capable of building with https://gradle.org/[Gradle] (IntelliJ, Eclipse, VS Code, ...)
 * Basic knowledge of https://www.reactivemanifesto.org[Reactive Systems] and reactive programming using https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux] & https://projectreactor.io[Reactor]
 * https://curl.haxx.se[Curl] or https://httpie.org[Httpie] to call the REST API from command line
+* https://robomongo.org[Robo 3T] to look inside the embedded MongoDB instance
 
 As we are building the samples using https://gradle.org[Gradle] your Java IDE should be capable use this.
 As IntelliJ user support for https://gradle.org/[Gradle] is included by default.
@@ -174,7 +175,14 @@ The following resources might be helpful for first steps into the reactive world
 == The workshop application
 
 In this workshop you will be provided a finished but completely unsecured reactive
-web application. This library server application provides a https://martinfowler.com/articles/richardsonMaturityModel.html[RESTful service] for administering books and users.
+web application.
+This library server application provides a https://martinfowler.com/articles/richardsonMaturityModel.html[RESTful service]
+for administering books and users.
+
+You can find this provided workshop application in sub project **lab-1/initial-library-server**.
+
+This will also be your **starting point** into the hands-on part that we will dive into shortly.
+
 
 .The workshop application
 
@@ -230,9 +238,64 @@ To start the workshop please begin by adapting the **lab-1/initial-library-serve
 If you are not able to keep up with completing a particular step you
 always can just start over with the existing application of next step.
 
-For example if you could not manage to complete the tutorial based on **lab-1/initial-library-server**
-just continue using **lab-1/complete-library-server**.
+For example if you could not complete the lab 1 in time
+just continue with lab 2 using **lab-1/complete-library-server** as new starting point.
 ====
+
+=== Run the initial application
+
+To ensure your java environment is configured correctly please run the initial
+workshop application.
+
+To achieve this run the class _com.example.library.server.InitialLibraryServerApplication_ in project **lab-1/initial-library-server**.
+
+This should also start the embedded MongoDB instance. In case you get an error here telling that the corresponding port _40495_
+is already bound to another service then please change the configuration to a different port in file _application.yml_:
+
+```
+spring:
+  data:
+    mongodb:
+      port: 40495
+```
+
+To look into the embedded MongoDB instance the UI tool https://robomongo.org/[Robo 3T] is
+very helpful and easy to use. In case you did not yet install this tool just go to
+https://robomongo.org/download and download the corresponding file for your operating system
+(please do NOT download the commercial variant named _Studio 3T_).
+
+After you downloaded the install file and extracted/installed the tool you have to configure
+the connection to the embedded MongoDB like in the following figure.
+If you have configured your embedded MongoDB instance to a different port then use that one
+instead of _40495_.
+
+.Robo 3T Connection configuration
+
+image::images/robo3t.png[scaledwidth="75%",alt="Library service stack"]
+
+Finally you can navigate your web browser to http://localhost:9091/books then you
+should see a list of books.
+
+You can achieve the same on the command line using https://httpie.org/[httpie]
+or https://curl.haxx.se/download.html[curl].
+
+.Curl
+
+```
+curl 'http://localhost:9091/books' | jq
+```
+
+.Httpie
+
+```
+http localhost:9091/books
+```
+
+If both the workshop application and the Robo 3T tool run fine and you could see
+the list of books then you are setup and ready to start the first lab.
+
+So head over to the next section and start with Lab 1.
+
 
 === Lab 1: Auto Configuration
 
