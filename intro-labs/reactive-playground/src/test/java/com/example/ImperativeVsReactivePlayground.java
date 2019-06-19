@@ -3,6 +3,9 @@ package com.example;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
 
 @DisplayName("Imperative versus reactive playground")
 class ImperativeVsReactivePlayground {
@@ -19,9 +22,14 @@ class ImperativeVsReactivePlayground {
   @DisplayName("reactive code")
   @Test
   void testReactive() {
-    Mono.just("World")
-        .map(String::toUpperCase)
-        .map(um -> "Hello " + um + "!")
-        .subscribe(System.out::println);
+    Mono<String> mono = Mono.just("World")
+            .map(String::toUpperCase)
+            .map(um -> "Hello " + um + "!")
+            .map(um -> {System.out.println(um); return um;});
+
+    mono.subscribe();
+
+    //StepVerifier.create(mono).expectNext("Hello WORLD!").verifyComplete();
+
   }
 }
