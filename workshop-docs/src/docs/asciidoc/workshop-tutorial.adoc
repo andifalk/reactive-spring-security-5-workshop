@@ -581,7 +581,8 @@ At the time of creating this workshop the _DelegatingPasswordEncoder_ instance c
 as the default to be used for encoding new passwords.
 
 If you want to know more about why to use hashing algorithms like Bcrypt, Scrypt or PBKDF2 instead of other ones like SHA-2 then
-read the very informative blog post https://security.blogoverflow.com/2013/09/about-secure-password-hashing[About Secure Password Hashing].
+read the very informative blog post
+https://security.blogoverflow.com/2013/09/about-secure-password-hashing[About Secure Password Hashing].
 
 .DelegatingPasswordEncoder class
 
