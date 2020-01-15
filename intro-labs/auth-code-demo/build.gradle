@@ -1,9 +1,8 @@
 plugins {
-    id 'org.springframework.boot' version '2.1.5.RELEASE'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
 }
-
-apply plugin: 'io.spring.dependency-management'
 
 group = 'com.example'
 version = '1.0.0-SNAPSHOT'
@@ -20,6 +19,12 @@ dependencies {
     implementation 'io.projectreactor.netty:reactor-netty'
     implementation 'org.apache.commons:commons-lang3'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
     testImplementation 'io.projectreactor:reactor-test'
+}
+
+test {
+    useJUnitPlatform()
 }

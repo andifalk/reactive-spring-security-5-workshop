@@ -1,34 +1,31 @@
-buildscript {
-    ext {
-        springBootVersion = '2.1.5.RELEASE'
-        asciidoctorVersion = '1.5.6'
-        snippetsDir = file('build/generated-snippets')
-    }
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.asciidoctor:asciidoctor-gradle-plugin:${asciidoctorVersion}")
-    }
+plugins {
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'java'
 }
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: "org.asciidoctor.convert"
 
 group = 'com.example'
 version = '1.0.0-SNAPSHOT'
 sourceCompatibility = 8
 
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
 test {
+    outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
@@ -61,16 +58,16 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-webflux')
     implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server')
     implementation('org.apache.commons:commons-lang3')
-    implementation('org.modelmapper:modelmapper:2.3.2')
-    runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    implementation('org.modelmapper:modelmapper:2.3.5')
+    developmentOnly('org.springframework.boot:spring-boot-devtools')
     runtimeOnly('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
     testImplementation('org.springframework.security:spring-security-test')
     testImplementation('io.projectreactor:reactor-test')
     asciidoctor('org.springframework.restdocs:spring-restdocs-asciidoctor')
     testImplementation('org.springframework.restdocs:spring-restdocs-webtestclient')
     testImplementation('org.mockito:mockito-junit-jupiter')
-    testImplementation('org.junit.jupiter:junit-jupiter-api')
     testImplementation('org.junit.jupiter:junit-jupiter-params')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine')
 }

@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.2.0 ()
+- [**closed**] Spring Boot 2.2.2 Update [#16](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/16)
+
 ## v2.1.0 (04/06/2019)
 - [**closed**] Refactor library server application [#13](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/13)
 - [**closed**] Restructure workshop labs [#12](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/12)

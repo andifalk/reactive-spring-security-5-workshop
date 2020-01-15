@@ -11,16 +11,16 @@ repositories {
 }
 
 ext {
-    reactorVersion = '3.2.9.RELEASE'
-    junitVersion = '5.4.2'
+    reactorVersion = '3.3.1.RELEASE'
+    junitVersion = '5.5.2'
 }
 
 dependencies {
     implementation("io.projectreactor:reactor-core:${reactorVersion}")
     implementation("io.projectreactor:reactor-test:${reactorVersion}")
-    implementation('org.slf4j:slf4j-api:1.7.26')
+    implementation('org.slf4j:slf4j-api:1.7.29')
     implementation('ch.qos.logback:logback-classic:1.2.3')
-    testImplementation('org.assertj:assertj-core:3.12.2')
+    testImplementation('org.assertj:assertj-core:3.13.2')
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-params:${junitVersion}")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
