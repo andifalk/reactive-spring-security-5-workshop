@@ -33,7 +33,7 @@ Topics that will be covered by this workshop are:
 
 To start the workshop you need:
 
-* [Java JDK version 8, 9 or 11](https://openjdk.java.net/install/)
+* [Java JDK version 8, 11 or 14](https://openjdk.java.net/install/)
 * A Java IDE ([Eclipse](https://www.eclipse.org/), [STS](https://spring.io/tools), [IntelliJ](https://www.jetbrains.com/idea/), [VS Code](https://code.visualstudio.com/), [NetBeans](https://netbeans.org/), ...)
 * To test the RESTful services on the command line [curl](https://curl.haxx.se/download.html) or [httpie](https://httpie.org/) would be helpful to install
 * [Robo 3T](https://robomongo.org) to look inside the embedded MongoDB instance
@@ -58,6 +58,6 @@ The workshop is split up into the following parts:
 
 Apache 2.0 licensed
 
-Copyright (c) by 2019 Andreas Falk
+Copyright (c) by 2019-2020 Andreas Falk
 
 [1]:http://www.apache.org/licenses/LICENSE-2.0.txt

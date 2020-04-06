@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.3.0 ()
+- [**closed**] Update spring boot and gradle to latest version [#16](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/17)
+
 ## v2.2.0 ()
 - [**closed**] Spring Boot 2.2.2 Update [#16](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/16)
 
