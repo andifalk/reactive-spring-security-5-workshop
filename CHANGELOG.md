@@ -1,6 +1,7 @@
 # Changelog
 
 ## v2.3.0 ()
+- [**closed**] Fix vulnerabilities in reveal.js presentation [#20](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/20)
 - [**closed**] Update spring boot and gradle to latest version [#16](https://github.com/andifalk/reactive-spring-security-5-workshop/issues/17)
 
 ## v2.2.0 ()
