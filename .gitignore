@@ -29,6 +29,4 @@ bin/
 .project
 .classpath
 .vscode/
-
-docs/html5
-docs/pdf
+docs/pdf/images
