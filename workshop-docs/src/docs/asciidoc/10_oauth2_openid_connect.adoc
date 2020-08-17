@@ -1,0 +1,593 @@
+== OAuth2/OpenID Connect Labs
+
+.In the last workshop part we will look at the new OAuth2 login client and resource server introduced in Spring Security 5.0 and 5.1.
+
+=== Introduction
+
+==== OAuth 2.0
+
+https://tools.ietf.org/html/rfc6749[OAuth 2.0] is the base protocol for authorizing 3rd party authentication services
+for using business services in the internet like https://stackoverflow.com[stackoverflow].
+
+.OAuth 2.0 role model
+
+image::images/oauth2_roles.png[scaledwidth="50%", scaledheight="50%",alt="oauth_roles"]
+
+Authorizations are permitted via scopes that the user has to confirm before
+using the requested service.
+
+Depending on the application type OAuth 2.0 provides the following grants (flows):
+
+- https://tools.ietf.org/html/rfc6749#section-4.1[Authorization Code Grant]
+- https://tools.ietf.org/html/rfc7636[Authorization Code Grant with PKCE]
+- https://tools.ietf.org/html/rfc6749#section-4.2[Implicit Grant]
+- https://tools.ietf.org/html/rfc6749#section-4.3[Resource Owner Password Credentials Grant]
+- https://tools.ietf.org/html/rfc6749#section-4.4[Client Credentials Grant]
+
+The following picture shows the mechanics of the _Authorization Code Grant Flow_.
+
+.Authorization code grant flow
+
+image::images/authorization_code_1.png[scaledwidth="50%", scaledheight="50%",alt="auth_code_grant"]
+
+==== OpenID Connect 1.0 (OIDC)
+
+https://openid.net/specs/openid-connect-core-1_0.html[OpenID Connect 1.0 (OIDC)] is build upon https://tools.ietf.org/html/rfc6749[OAuth2] and provides additional identity information
+to OAuth2. For common enterprise applications that typically require authentication OpenID Connect should be used.
+https://openid.net/specs/openid-connect-core-1_0.html[OIDC] adds https://tools.ietf.org/html/rfc7519[JSON web tokens (JWT)] as mandatory format for id tokens to the spec.
+In OAuth2 the format of https://tools.ietf.org/html/rfc6750[bearer tokens] is not specified.
+
+.OpenID Connect 1.0 role model
+
+image::images/oidc_roles.png[scaledwidth="50%", scaledheight="50%",alt="openid_roles"]
+
+OIDC adds an id token in addition to the access token of OAuth2 and specifies
+a user info endpoint to retrieve further user information using the access token.
+
+OIDC supports the following grant flows:
+
+- https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth[Authorization Code Flow]
+- https://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth[Implicit Flow]
+- https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth[Hybrid Flow]
+
+==== Tokens in OIDC and OAuth 2.0
+
+Tokens can be used in two ways:
+
+1. Self-contained token (containing all information directly in token payload, e.g. JWT)
+2. Reference token (token is used to look up further information)
+
+==== OAuth2/OIDC in Spring Security 5
+
+.Spring Security 5.0 introduced new support for OAuth2/OpenID Connect (OIDC) directly in spring security.
+
+In short Spring Security 5.0 adds a completely rewritten implementation for OAuth2/OIDC which now is largely based
+on a third party library https://connect2id.com/products/nimbus-oauth-openid-connect-sdk[Nimbus OAuth 2.0 SDK] instead of implementing all these functionality directly in Spring itself.
+
+Spring Security 5.0 only provides the client side for servlet-based clients.
+
+Spring Security 5.1 adds the resource server support and reactive support
+for reactive clients and resource server as well.
+
+Spring Security 5.2 adds client support for authorization code flow with PKCE.
+
+Spring Security 5.3 will add a basic OAuth2/OIDC authorization server again (for local dev
+and demos but not for productive use).
+
+Before Spring Security 5.0 and Spring Boot 2.0 to implement OAuth2 you needed the separate project module
+https://projects.spring.io/spring-security-oauth[Spring Security OAuth2].
+
+Now things have changed much, so it heavily depends now on the combination of Spring Security and Spring Boot versions
+that are used how to implement OAuth2/OIDC.
+
+Therefore you have to be aware of different approaches for Spring Security 4.x/Spring Boot 1.5.x
+and Spring Security 5.x/Spring Boot 2.x.
+
+.OAuth2 support in Spring Security + Spring Boot
+
+|===
+|Spring Security |Spring Boot|Client|Resource server|Authorization server|Reactive (WebFlux)
+|4.x
+|1.5.x
+|X^1^
+|X^1^
+|X^1^
+|--
+|5.0
+|2.0.x
+|X^2^
+|(X)^3^
+|(X)^3^
+|--
+|5.1
+|2.1.2
+|X^2^
+|X^4^
+|(X)^3^
+|X^5^
+|5.2
+|2.2.0
+|X^2^
+|X^4^
+|(X)^3^
+|X^5^
+|5.3
+|2.3.0
+|X^2^
+|X^4^
+|X^6^
+|X^5^
+|===
+
+^1^ Spring Boot auto-config and separate https://projects.spring.io/spring-security-oauth[Spring Security OAuth project] +
+^2^ New rewritten OAuth2 login client included in Spring Security 5.0 +
+^3^ No direct support in Spring Security 5.0/Spring Boot 2.0. For auto-configuration with Spring Boot 2.0
+you still have to use the separate https://projects.spring.io/spring-security-oauth[Spring Security OAuth project]
+together with https://github.com/spring-projects/spring-security-oauth2-boot[Spring Security OAuth2 Boot compatibilty project] +
+^4^ New refactored support for resource server as part of Spring Security 5.1 +
+^5^ OAuth2 login client and resource server with reactive support as part of Spring Security 5.1. +
+^6^ New OAuth2 authorization server is planned as part of Spring Security 5.2
+
+[TIP]
+====
+The OAuth2/OpenID Connect Authorization Server provided by Spring Security 5.3 will mainly suit for fast prototyping and demo
+purposes. For production please use one of the https://openid.net/developers/certified/[officially certified] products like for example
+https://www.keycloak.org/[KeyCloak], https://github.com/cloudfoundry/uaa[UAA], https://identityserver.io[IdentityServer], https://auth0.com[Auth0] or https://www.okta.com/products/single-sign-on/[Okta].
+====
+
+You can find more information on building OAuth2 secured microservices with Spring Boot *1.5.x* in
+
+* https://docs.spring.io/spring-boot/docs/1.5.x/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot 1.5 Reference Documentation]
+* https://projects.spring.io/spring-security-oauth/docs/oauth2.html[Spring Security OAuth2 Developers Guide]
+
+You can find more information on building OAuth2 secured microservices with Spring Boot *2.1*
+and Spring Security *5.1* in
+
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2[Spring Boot 2.1 Reference Documentation]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#webflux-oauth2-login[Spring Security OAuth2/OIDC Login Client Reference Documentation]
+* https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#webflux-oauth2-resource-server[Spring Security OAuth2/OIDC Resource Server Reference Documentation]
+* https://docs.spring.io/spring-security-oauth2-boot/docs/current/reference/htmlsingle[Spring Security OAuth Boot 2 Auto-config Documentation]
+* https://projects.spring.io/spring-security-oauth/docs/oauth2.html[Spring Security OAuth2 Developers Guide]
+
+In this workshop we will now look at what Spring Security 5.1 provides as new
+OAuth2/OIDC Login Client and Resource Server - In a reactive way.
+
+==== What we will build
+
+In **lab-5** you will be provided the following sub-projects:
+
+* *initial-resource-server*: The initial library server (almost similar to workshop step **lab-1/initial-library-server**)
+
+* *complete-resource-server*: The completed OIDC resource server (as reference)
+
+In *lab-6* you will be provided the following sub-projects:
+
+* *initial-oidc-client*: Initial code for this workshop part to implement the new OAuth2 Login Client
+
+* *complete-oidc-client*: Complete code of the new OIDC Client (as reference)
+
+[NOTE]
+====
+The spring implementation of the authorization server previously used (based on Spring Boot 1.5.x) is not
+fully compliant with OIDC and therefore not usable any more with OAuth2/OIDC implementation
+of Spring Security 5.1.
+====
+
+.Library client, service and identity provider service
+
+image::images/workshop_lab_7.png[scaledwidth="75%",alt="OAuth2 spring roles"]
+
+These micro-services have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).
+
+.Microservice & Identity Provider URL Adresses
+|===
+|Service |URL
+|Identity Management Service (Keycloak)
+|http://localhost:8080/auth[http://localhost:8080/auth]
+|Library Client (OIDC Client)
+|http://localhost:9090[http://localhost:9090]
+|Library Server (OIDC Resource Server)
+|http://localhost:9091[http://localhost:9091]
+|===
+
+So now let's start.
+Again, you will just use the provided _keycloak_ identity management server, the *lab-5/initial-resource-server*
+and the *lab-6/initial-oidc-client* as starting point and implement
+an OAuth2/OIDC resource server and client based on the project.
+
+But first read important information about how to setup and start the required _keycloak_ identity management server.
+
+[[identity-server]]
+=== Setup: Keycloak Identity Server
+
+For this workshop the OpenID Connect certified https://www.keycloak.org/[Keycloak identity provider server] is used.
+This provider supports solutions for authentication, authorization and user administration.
+For our purposes we will use this service to issue OpenID Connect compliant JSON web tokens (JWT).
+
+To setup the local keycloak server please copy/extract it from provided USB sticks
+or follow the setup instructions at https://tinyurl.com/y2mqyeua.
+
+[TIP]
+====
+You may look into https://openid.net/certification/[OpenID Connect certified products]
+to find a suitable identity management server for your project.
+====
+
+Every OpenID Connect 1.0 compliant identity server must provide a page at the endpoint _/.../.well-known/openid-configuration_
+
+To see the configuration please open the following url in your web browser:
+http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration[Well known OIDC configuration]
+
+The important information provided by this is:
+
+.Identity Server Configuration
+|===
+|Entry |Description |Value
+|issuer
+|Issuer url for issued tokens by this identity server
+|http://localhost:8080/auth/realms/workshop
+|authorization_endpoint
+|Handles authorization, usually asking for credentials and returns an authorization code
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth
+|token_endpoint
+|Token endpoint (exchanges given authorization code for access token)
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token
+|userinfo_endpoint
+|Endpoint for requesting further user information
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo
+|jwks_uri
+|Uri for loading public keys to verify signatures of JSON web tokens
+|http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs
+|===
+
+To login into your local keycloak use the following user credentials:
+
+* Username: admin
+* Password: admin
+
+The keycloak identity service has been preconfigured with the following user credentials
+for the workshop application:
+
+.User credentials
+|===
+| Username | Email | Password | Roles
+|bwayne
+|bruce.wayne@example.com
+|wayne
+|LIBRARY_USER
+|bbanner
+|bruce.banner@example.com
+|banner
+|LIBRARY_USER
+|pparker
+|peter.parker@example.com
+|parker
+|LIBRARY_CURATOR
+|ckent
+|clark.kent@example.com
+|kent
+|LIBRARY_ADMIN
+|===
+
+[[auth-code-demo]]
+=== Intro-Lab: Authorization Code Demo Client
+
+In this introduction lab you can see the authorization code grant flow step-by-step in detail.
+
+Please make sure that you have started keycloak server.
+Then check this out, go to project **intro-labs/auth-code-demo** and run the class _com.example.authorizationcode.client.AuthorizationCodeDemo_.
+
+[[resource-server]]
+=== Lab 5: OpenID Connect Resource Server
+
+For this workshop part the well-known library-server application is used and will be extended to act
+as a OAuth2 resource server.
+
+[[resource-server-gradle-dependencies]]
+==== Gradle dependencies
+
+To use the new OAuth2 resource server support of Spring Security 5.1 you have to add the
+following required dependencies to the existing gradle build file.
+
+.gradle.build file
+
+include::../snippets/step-5-oauth2-resource-server-gradle-build.adoc[]
+
+[NOTE]
+====
+These dependencies already have been added to the initial project.
+====
+
+[TIP]
+====
+You may look into the spring security oauth2 boot reference documentation
+https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2-server[Spring Boot 2.1 Reference Documentation]
+and the https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/html5/#webflux-oauth2-resource-server[Spring Security 5.1 Reference Documentation] on how to implement a resource server.
+====
+
+==== Implementation steps
+
+First step is to configure an OAuth2 resource server. For this you have to register the corresponding
+identity server/authorization server to use.
+
+Spring security 5 uses the
+[OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig) specification
+to completely configure the resource server to use our keycloak instance.
+
+Navigate your web browser to the url [localhost:8080/auth/realms/workshop/.well-known/openid-configuration](http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration).
+Then you should see the public discovery information that keycloak provides
+(like the following that only shows partial information).
+
+[source,json]
+----
+{
+  "issuer": "http://localhost:8080/auth/realms/workshop",
+  "authorization_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/auth",
+  "token_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/token",
+  "userinfo_endpoint": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/userinfo",
+  "jwks_uri": "http://localhost:8080/auth/realms/workshop/protocol/openid-connect/certs"
+}
+----
+
+For configuring a resource server the important entries are _issuer_ and _jwks_uri_.
+Spring Security 5 automatically configures a resource server by just specifying the _issuer_ uri value
+as part of the predefined spring property _spring.security.oauth2.resourceserver.jwt.issuer-uri_
+
+
+.application.yml file
+
+include::../snippets/step-5-oauth2-resource-server-properties.adoc[]
+
+[NOTE]
+====
+An error you get very often with files in yaml format is that the indents are not correct.
+This can lead to unexpected errors later when you try to run all this stuff.
+====
+
+With this configuration in place we have already a working resource server
+that can handle JWt access tokens transmitted via http bearer token header.
+Spring Security also validates by default:
+
+* the JWT signature against the queried public key(s) from jwks_url
+* the JWT _iss_ claim against the configured issuer uri
+* that the JWT is not expired
+
+The issuer URI is used to retrieve the well known OpenID Connect configuration.
+
+.http://localhost:8080/auth/realms/workshop/.well-known/openid-configuration
+
+include::../snippets/step-5-well-known-oidc-config.adoc[]
+
+The web security configuration looks like the ones we have seen before with all that authorization
+rule settings. The addition here is just for replacing the basic authentication with bearer token authentication
+(expected in the http header). Additionally there are two possible alternative JWT converters referenced there.
+
+Usually this configuration would be sufficient but as we also want to make sure that
+our resource server is working with stateless token authentication we have to configure stateless
+sessions (i.e. prevent _JSESSION_ cookies).
+Starting with Spring Boot 2 you always have to configure Spring Security
+yourself as soon as you introduce a class that extends _WebSecurityConfigurerAdapter_.
+
+.WebSecurityConfiguration.java file
+
+include::../snippets/step-5-oauth2-resource-server-websecurity.adoc[]
+
+This configuration above...
+
+* configures stateless sessions (i.e. no _JSESSION_ cookies)
+
+* disables CSRF protection (without session cookies we do not need this any more)
+(which also makes it possible to make post requests on the command line)
+
+* protects any request (i.e. requires authentication)
+
+* enables this as a resource server with expecting access tokens in JWT format
+
+With mapping user information like roles you always have the choice between
+
+* Getting the roles information from the JWT token payload
+* Getting the roles information from the mapped local persistent user
+
+The converter for getting roles from JWT token looks like the following:
+
+.LibraryUserJwtAuthenticationConverter.java file
+
+include::../snippets/step-5-library-user-jwt-converter.adoc[]
+
+The converter for using the roles from the mapped local user looks like this:
+
+.LibraryUserRolesJwtAuthenticationConverter.java file
+
+include::../snippets/step-5-library-user-roles-jwt-converter.adoc[]
+
+To start the resource server simply run the class _LibraryServerApplication_ in
+project *lab-5/complete-resource-server*.
+
+In the following paragraphs we now proceed to the client side of the OAuth2/OIDC part.
+
+[[oauth2-login-client]]
+=== Lab 6: OpenID Connect Client
+
+[[client-gradle-dependencies]]
+==== Gradle dependencies
+
+To use the new OAuth2 client support of Spring Security 5.1 you have to add the
+following required dependencies to the existing gradle build file.
+
+.gradle.build file
+
+include::../snippets/step-5-oauth2-client-gradle-build.adoc[]
+
+==== Implementation steps
+
+First step is to configure an OAuth2/OIDC client. For this you have to register the corresponding
+identity server/authorization server to use.
+Here you have two possibilities:
+
+. You can just use one of the predefined ones (Facebook, Google, etc.).
+. You register your own custom server.
+
+Spring security provides the enumeration _CommonOAuth2Provider_ which defines registration details
+for a lot of well-known identity providers.
+
+.CommonOAuth2Provider class
+
+include::../snippets/step-5-common-oauth2-provider.adoc[]
+
+To use one of these providers is quite easy. Just reference the enumeration constant as the provider.
+
+.Google provider properties class
+
+include::../snippets/step-5-google-oauth2-provider-properties.adoc[]
+
+[NOTE]
+====
+You can find a sample application using the common provider for GitHub in project *intro-labs/github-client*.
+====
+
+But in this workshop we will focus on the second possibility and use our own custom identity provider service. +
+To achieve this we add the following sections to the _application.yml_ file.
+
+Spring security 5 uses the
+[OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig) specification
+to completely configure the client to use our keycloak instance.
+
+For configuring an OAuth2 client the important entries are _issuer_, _authorization_endpoint_,
+_token_endpoint_, _userinfo_endpoint_ and _jwks_uri_.
+Spring Security 5 automatically configures an OAuth2 client by just specifying the _issuer_ uri value
+as part of the predefined spring property _spring.security.oauth2.client.provider.[id].issuer-uri_.
+
+For OAuth2 clients you always have to specify the client registration (with client id, client secret,
+authorization grant type, redirect uri to your client callback and optionally the scope).
+The client registration requires an OAuth2 provider. If you want to use your own provider you have to configure
+at least the _issuer uri_. We want to change the default user name mapping for the user identity as well (
+using the user name instead of the default value 'sub').
+
+.application.yml client configuration
+
+include::../snippets/step-5-oauth2-client-properties.adoc[]
+
+As the library-server is now configured as an OAuth2 resource server it requires
+a valid JWT token to successfully call the _/books_ endpoint now.
+
+For all requests to the resource server we use the reactive web client, that was introduced by Spring 5.
+WebClient is the successor of _RestTemplate_ and works for both worlds (Servlet-based and reactive).
+
+The next required step is to make this web client aware of transmitting the required bearer access tokens
+in the _Authorization_ header.
+
+To support JWT tokens in calls we have to add a client interceptor to the _WebClient_.
+The following code snippet shows how this is done:
+
+.WebClientConfiguration class
+
+include::../snippets/step-5-webclient-configuration.adoc[]
+
+With these additions we add a filter function to the web client that automatically adds the
+access token to all requests and also initiates the authorization grant flow if no valid
+access token is available.
+
+Finally, we need an updated client side security configuration to allow
+client endpoints and enable the OAuth2 client features:
+
+.SecurityConfiguration class
+
+include::../snippets/step-5-oauth2-client-security-configuration.adoc[]
+
+The client is build as a Thymeleaf web client. Thymeleaf basically works with HTML template files with some
+specials tags to connect the template with Spring beans.
+
+In our case there are already 3 HTML templates:
+
+* index.html: The main template that is displayed initially to show list of books
+* createbookform.html: This renders a form to create a new book
+* users.html: This shows the list of users retrieved from the library server
+* error.html: Template to show errors
+
+To map these HTML template files to the web request paths and also map the content (the 'model' as it is called
+in Spring MVC) a controller class (annotated with _@Controller_) is required.
+
+The corresponding class for the '/books' request is shown here.
+
+.BookController class
+
+include::../snippets/step-5-oauth2-client-book-controller.adoc[]
+
+In the client you can see the contents of the ID JWT token as well using the '/userinfo' endpoint.
+This endpoint is mapped to a _@RestController_.
+
+.UserInfoRestController class
+
+include::../snippets/step-5-oauth2-client-user-info-rest-controller.adoc[]
+
+===== Run all the components
+
+Finally start the two components:
+
+* Run _CompleteResourceServerApplication_ class in project *lab-5/complete-resource-server*
+* Run _InitialOidcClientApplication_ class in project *lab-6/initial-oidc-client*
+
+Now when you access http://localhost:9090/userinfo[localhost:9090/userinfo] you should be redirected to the keycloak identity server.
+After logging in you should get the current authenticated user info back from identity server.
+
+Here you can log in using one of these predefined users:
+
+.User credentials
+|===
+| Username | Email | Password | Roles
+|bwayne
+|bruce.wayne@example.com
+|wayne
+|LIBRARY_USER
+|bbanner
+|bruce.banner@example.com
+|banner
+|LIBRARY_USER
+|pparker
+|peter.parker@example.com
+|parker
+|LIBRARY_CURATOR
+|ckent
+|clark.kent@example.com
+|kent
+|LIBRARY_ADMIN
+|===
+
+You can now access http://localhost:9090[localhost:9090] as well.
+This returns the book list from the library-server (resource server).
+
+===== Logout Users
+
+After you have logged in into the library client using keycloak your session will remain valid until
+the access token has expired or the session at keycloak is invalidated.
+
+As the library client does not have a logout functionality, you have to follow the following steps to actually log out
+users:
+
+* Login to keycloak http://localhost:8080/auth/admin[admin console] and navigate on the left to menu item _session_
+Here you'll see all user sessions (active/offline ones). By clicking on button _Logout all_ you can revocate
+all active sessions.
+
+image::images/keycloak_sessions.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+
+* After you have revoked sessions in keycloak you have to delete the current _JSESSION_ cookie
+for the library client. You can do this by opening the application tab in the developer tools of chrome.
+Navigate to the cookies entry on the left and select the url of the library client, then delete the cookie
+on the right hand side
+
+image::images/devtools_cookies.png[scaledwidth="50%", scaledheight="50%",alt="novatec"]
+
+Now when you refresh the library client in the browser you should be redirected again to the login page of keycloak.
+
+[NOTE]
+====
+You find the completed code in project *lab-6/complete-oidc-client*.
+====
+
+This concludes our Spring Security 5 hands-on workshop.
+I hope you have learned a lot regarding security and especially Spring Security 5.
+
+[TIP]
+====
+So take the next step and make YOUR applications more secure !
+====

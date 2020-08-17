@@ -1,0 +1,28 @@
+== Common Web Security Risks
+
+In this workshop you will strive various parts of securing a web application that
+fit into the https://www.owasp.org/index.php/Top_10-2017_Top_10[OWASP Top 10 2017 list].
+
+We will look at:
+
+- https://www.owasp.org/index.php/Top_10-2017_A2-Broken_Authentication[A2: Broken Authentication]
+- https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure[A3: Sensitive Data Exposure]
+- https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control[A5: Broken Access Control]
+- https://www.owasp.org/index.php/Top_10-2017_A6-Security_Misconfiguration[A6: Security Misconfiguration]
+- https://www.owasp.org/index.php/Top_10-2017_A9-Using_Components_with_Known_Vulnerabilities[A9: Using components with known vulnerabilities]
+- https://www.owasp.org/index.php/Top_10-2017_A10-Insufficient_Logging%26Monitoring[A10: Insufficient Logging & Monitoring]
+
+.OWASP Top 10 2017
+
+image::images/owasp_top_10_2017.png[scaledwidth="50%", scaledheight="50%",alt="owasp_top_10"]
+
+The https://owasp.org[Open Web Application Security Project] has plenty of further free resources available.
+
+As a developer you may also have a look into the https://www.owasp.org/index.php/OWASP_Proactive_Controls[OWASP ProActive Controls] document which describes how to develop
+your applications using good security patterns.
+To help getting all security requirements right for your project and how to test these the https://github.com/OWASP/ASVS[Application Security Verification Standard] can help you here.
+
+[NOTE]
+====
+You will find more sources of information about security referenced in the <<References>> section.
+====

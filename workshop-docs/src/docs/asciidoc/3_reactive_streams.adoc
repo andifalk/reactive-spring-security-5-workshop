@@ -1,0 +1,73 @@
+== Reactive Systems & Streams
+
+The following subsections give a very condensed introduction to the basics of Reactive Systems,
+the Project Reactor and Spring WebFlux. +
+This might help to better understand the sample application for beginners of Reactive.
+
+[quote, https://www.reactivemanifesto.org]
+Reactive Systems are Responsive, Resilient, Elastic and Message Driven (Asynchronous).
+
+* *Responsiveness* means the system responds in a timely manner and is the cornerstone of usability
+* *Resilience* means the system stays responsive in the face of failure
+* *Elasticity* means that the throughput of a system scales up or down automatically to
+meet varying demand as resource is proportionally added or removed
+* *Message Driven* systems rely on asynchronous message-passing to establish a boundary between components
+that ensures loose coupling
+
+[quote, http://www.reactive-streams.org/]
+Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure..
+
+* *Back-Pressure*: When one component is struggling to keep-up, the system as a whole needs to respond in a sensible way.
+Back-pressure is an important feedback mechanism that allows systems to gracefully respond to load rather than
+collapse under it.
+
+=== Project Reactor
+
+The project https://projectreactor.io[Reactor] is a Reactive library for building non-blocking applications on
+the JVM based on the http://www.reactive-streams.org[Reactive Streams Specification] and can help to build
+Reactive Systems.
+
+Reactor is a fully non-blocking foundation and offers backpressure-ready
+network engines for HTTP (including Websockets), TCP and UDP.
+
+Reactor introduces composable reactive types that implement Publisher but also provide a rich vocabulary of operators,
+most notably _Flux_ and _Mono_.
+
+A _Mono<T>_ is a specialized _Publisher<T>_ that emits at most one item and then optionally terminates with
+an onComplete signal or an onError signal.
+
+.Mono, an Asynchronous 0-1 Result (source: projectreactor.io)
+
+image::images/mono.png[scaledwidth="80%", scaledheight="80%",alt="reactor_mono"]
+
+A _Flux<T>_ is a standard _Publisher<T>_ representing an asynchronous sequence of 0 to N emitted items,
+optionally terminated by either a completion signal or an error.
+
+.Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)
+
+image::images/flux.png[scaledwidth="80%", scaledheight="80%",alt="reactor_flux"]
+
+=== Spring WebFlux
+
+https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux]
+was added in Spring Framework 5.0. It is fully non-blocking, supports Reactive Streams back pressure, and runs
+on servers such as Netty, Undertow, and Servlet 3.1+ containers.
+
+Spring Webflux depends on Reactor and uses it internally to compose asynchronous logic
+and to provide Reactive Streams support.
+It provides two programming models:
+
+* Annotated Controllers: This is uses the same annotations as in the Spring MVC part
+* Functional Endpoints:  This provides a lambda-based, lightweight, functional programming model
+
+=== Intro-Lab: Reactive Programming
+
+Before we dive into the world of security, you have the chance to get a first glimpse on the difference between
+imperative and reactive programming style.
+
+To do this we will look into the project **intro-labs/reactive-playground**.
+
+The following resources might be helpful for first steps into the reactive world:
+
+* https://projectreactor.io/docs/core/release/reference/[Project Reactor Reference Documentation]
+* https://projectreactor.io/docs/core/release/reference/#which-operator[Which operator do I need?]

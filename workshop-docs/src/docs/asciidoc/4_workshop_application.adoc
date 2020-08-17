@@ -1,0 +1,55 @@
+== The workshop application
+
+In this workshop you will be provided a finished but completely unsecured reactive
+web application.
+This library server application provides a https://martinfowler.com/articles/richardsonMaturityModel.html[RESTful service]
+for administering books and users.
+
+You can find this provided workshop application in sub project **lab-1/initial-library-server**.
+
+This will also be your **starting point** into the hands-on part that we will dive into shortly.
+
+.The workshop application
+
+image::images/workshop_lab_1.png[scaledwidth="75%",alt="Library service"]
+
+The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
+users is build using the Spring WebFlux router model.
+
+The application contains a complete documentation for the RESTful API build with spring rest docs
+which you can find in the directory _build/asciidoc/html5_
+after performing a full gradle build.
+
+The domain model of this application is quite simple and just consists of _Book_ and _User_.
+The packages of the application are organized as follows:
+
+- *api*: Contains the complete RESTful service
+- *business*: All the service classes (quite simple for workshop, usually containing business logic)
+- *dataaccess*: All domain models and repositories
+- *config*: All spring configuration classes
+- *common*: Common classes used by several other packages
+
+.Library service stack
+
+image::images/workshop_lab_2.png[scaledwidth="75%",alt="Library service stack"]
+
+[NOTE]
+====
+To call the provided REST API you can use https://curl.haxx.se[curl] or https://httpie.org[httpie].
+For details on how to call the REST API please consult
+the https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html[REST API documentation]
+which also provides sample requests for _curl_ and _httpie_.
+====
+
+There are three target user roles for this application:
+
+- *Standard users*: A standard user can borrow and return his currently borrowed books
+- *Curators*: A curator user can add or delete books
+- *Administrators*: An administrator user can add or remove users
+
+If you are going into reactive systems this works best if all layers work in non-blocking reactive style.
+Therefore, the application is build using:
+
+- Spring 5 WebFlux on Netty
+- Spring Data MongoDB with reactive driver
+- In-memory Mongodb to have an easier setup for the workshop

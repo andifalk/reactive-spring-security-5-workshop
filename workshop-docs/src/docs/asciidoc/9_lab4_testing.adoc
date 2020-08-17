@@ -1,0 +1,49 @@
+== Lab 4: Security Testing
+
+.Now it is time to prove that we have implemented these authorization rules correctly with automatic testing.
+
+We start testing the rules on method layer for all operations regarding books.
+
+.Automated security tests
+
+image::images/workshop_lab_6.png[scaledwidth="75%",alt="Library service security tests"]
+
+The tests will be implemented using the new JUnit 5 version as Spring 5.0 now supports this as well. +
+In _BookServiceTest_ class we also use the new convenience annotation _@SpringJUnitConfig_ which is a shortcut of
+_@ExtendWith(value=SpringExtension.class)_ and _@ContextConfiguration_.
+
+As you can see in the following code only a small part is shown as a sample here to test the _BookService.create()_ operation.
+Authorization should always be tested for positive *AND* negative test cases. Otherwise you probably miss an authorization
+constraint. Depending on the time left in the workshop you can add some more test cases as you like or just look into the
+completed application _04-library-server_.
+
+.BookServiceAuthorizationTest class
+
+include::../snippets/step-4-book-authorization-test.adoc[]
+
+For sure you have to add similar tests as well for the user part.
+
+.UserServiceAuthorizationTest class
+
+include::../snippets/step-4-user-authorization-test.adoc[]
+
+[CAUTION]
+====
+Make sure you always add positive and negative authorization tests. Otherwise you may miss
+authorization endpoint leaks.
+====
+
+Another approach is to test the authentication for the reactive api.
+This is shown in following class.
+
+.BookApiAuthenticationTest
+
+include::../snippets/step-4-book-authentication-test.adoc[]
+
+The testing part is the last part of adding simple username/password based security to the reactive style of the _library-server_ project.
+The next step will dive into the world of token-based authentication.
+
+[NOTE]
+====
+You find the completed code in project **lab-4/complete-library-server**.
+====

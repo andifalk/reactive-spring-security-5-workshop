@@ -1,0 +1,232 @@
+== Lab 2: Customize Authentication
+
+.Now it is time to start customizing the auto-configuration.
+
+The spring boot auto-configuration will back-off a bit in this lab and will back-off completely in next step.
+
+.Custom authentication with persistent users
+
+image::images/workshop_lab_4.png[scaledwidth="75%",alt="Library service custom authentication"]
+
+Before we start let's look into some internal details how spring security works
+for the reactive web stack.
+
+=== WebFilter
+
+Like the _javax.servlet.Filter_ in the blocking servlet-based web stack there is a comparable functionality
+in the reactive world: The _WebFilter_.
+
+.WebFilter
+
+include::../snippets/step-2-web-filter.adoc[]
+
+By using the _WebFilter_ you can add functionality that called around each request and response.
+
+.Spring Security WebFilter
+|===
+|Filter |Description
+|AuthenticationWebFilter
+|Performs authentication of a particular request
+|AuthorizationWebFilter
+|Determines if an authenticated user has access to a specific object
+|CorsWebFilter
+|Handles CORS preflight requests and intercepts
+|CsrfWebFilter
+|Applies https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)[CSRF] protection using a synchronizer token pattern.
+|===
+
+To see how such a _WebFilter_ works we will implement a simple _LoggingWebFilter_:
+
+.LoggingWebFilter
+
+include::../snippets/step-2-logging-web-filter.adoc[]
+
+=== WebFilterChainProxy
+
+In lab 1 we just used the auto configuration of Spring Boot.
+This configured the default security settings as follows:
+
+.Default security configuration (with Spring Boot)
+
+include::../snippets/step-2-default-security-config.adoc[]
+
+As you can see this uses a _SecurityWebFilterChain_ as central component.
+
+.SecurityWebFilterChain
+
+include::../snippets/step-2-security-web-filter-chain.adoc[]
+
+To customize the spring security configuration you have to implement one or more
+of _SecurityWebFilterChain_ configuration methods.
+
+These are handled centrally by the _WebFilterChainProxy_ class.
+
+.WebFilterChainProxy
+
+include::../snippets/step-2-web-filter-chain-proxy.adoc[]
+
+=== Step 1: Encoding Passwords
+
+[NOTE]
+====
+https://www.owasp.org/index.php/Top_10-2017_A3-Sensitive_Data_Exposure[OWASP Top 10-2017 A3-Sensitive Data Exposure]
+
+- Make sure to encrypt all sensitive data at rest
+- Store passwords using strong adaptive and salted hashing functions with a work factor (delay factor),
+such as Argon2, scrypt, bcrypt or PBKDF2
+====
+
+We start by replacing the default user/password with our own persistent user storage (already present in MongoDB).
+To do this we add a new class _WebSecurityConfiguration_ to package _com.example.library.server.config_ having the following
+contents.
+
+.WebSecurityConfiguration class
+
+include::../snippets/step-2-password-encoder-config.adoc[]
+
+The _WebSecurityConfiguration_ implementation does two important things:
+
+. This adds the _SecurityWebFilterChain_. If you already have secured servlet based spring mvc web applications
+then you might know what's called the
+https://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#security-filter-chain[_spring security filter chain_].
+In spring webflux the _SecurityWebFilterChain_ is the similar approach
+based on matching a request with one or more WebFilter.
+. Configures a _PasswordEncoder_. A password encoder is used by spring security to encode (hash) passwords and to check
+if a given password matches the encrypted one.
+
+.PasswordEncoder interface
+
+include::../snippets/step-2-password-encoder.adoc[]
+
+In spring security 5 creating an instance of the _DelegatingPasswordEncoder_ is much easier
+by using the class _PasswordEncoderFactories_. In past years several previously used password encryption algorithms
+have been broken (like _MD4_ or _MD5_). By using _PasswordEncoderFactories_ you always get a configured
+_DelegatingPasswordEncoder_ instance that configures a map of _PasswordEncoder_ instances for the recommended password hashing algorithms like
+
+* https://en.wikipedia.org/wiki/Bcrypt[Bcrypt]
+* https://en.wikipedia.org/wiki/Scrypt[Scrypt]
+* https://en.wikipedia.org/wiki/PBKDF2[PBKDF2]
+
+At the time of creating this workshop the _DelegatingPasswordEncoder_ instance configures the _Bcrypt_ algorithm
+as the default to be used for encoding new passwords.
+
+If you want to know more about why to use hashing algorithms like Bcrypt, Scrypt or PBKDF2 instead of other ones like SHA-2 then
+read the very informative blog post
+https://security.blogoverflow.com/2013/09/about-secure-password-hashing[About Secure Password Hashing].
+
+.DelegatingPasswordEncoder class
+
+include::../snippets/step-2-delegating-password-encoder.adoc[]
+
+To have encrypted passwords in our MongoDB store we need to tweak our existing _DataInitializer_ a bit with the
+_PasswordEncoder_ we just have configured.
+
+.DataInitializer class
+
+include::../snippets/step-2-data-initializer.adoc[]
+
+=== Step 2: Persistent User Storage
+
+Now that we already have configured the encoding part for passwords of our user storage
+we need to connect our own user store (the users already stored in the MongoDB) with spring security's
+authentication manager.
+
+This is done in two steps:
+
+In the first step we need to implement spring security's definition of a user called _UserDetails_.
+
+.LibraryUser class
+
+include::../snippets/step-2-library-user.adoc[]
+
+In the second step we need to implement spring security's interface _ReactiveUserDetailsService_ to integrate our user store with the authentication manager.
+
+.LibraryReactiveUserDetailsService class
+
+include::../snippets/step-2-library-user-details-service.adoc[]
+
+After completing this part of the workshop we now still have the auto-configured _SecurityWebFilterChain_ but we have
+replaced the default user with our own users from our MongoDB persistent storage.
+
+If you restart the application now you have to use the following user credentials to log in:
+
+==== Users and roles
+
+There are three target user roles for this application:
+
+* LIBRARY_USER: Standard library user who can list, borrow and return his currently borrowed books
+* LIBRARY_CURATOR: A curator user who can add, edit or delete books
+* LIBRARY_ADMIN: An administrator user who can list, add or remove users
+
+__Important:__ We will use the following users in all subsequent labs from now on:
+
+.User credentials
+|===
+| Username | Email | Password | Roles
+|bwayne
+|bruce.wayne@example.com
+|wayne
+|LIBRARY_USER
+|bbanner
+|bruce.banner@example.com
+|banner
+|LIBRARY_USER
+|pparker
+|peter.parker@example.com
+|parker
+|LIBRARY_CURATOR
+|ckent
+|clark.kent@example.com
+|kent
+|LIBRARY_ADMIN
+|===
+
+=== Automatic Password Encoding Updates
+
+We already looked into the _DelegatingPasswordEncoder_ and _PasswordEncoderFactories_. As these classes have knowledge
+about all encryption algorithms that are supported in spring security, the framework can detect
+an _outdated_ encryption algorithm. By extending our already existing _LibraryReactiveUserDetailsService_ class
+with the additionally provided interface _ReactiveUserDetailsPasswordService_ we can now enable an automatic
+password encryption upgrade mechanism.
+
+The _ReactiveUserDetailsPasswordService_ interface just defines one more operation.
+
+.ReactiveUserDetailsPasswordService interface
+
+include::../snippets/step-2-reactive-user-details-password-service.adoc[]
+
+First we need a user having a password that is encoded using an _outdated_ hashing algorithm. We achieve this by modifying
+the existing _DataInitializer_ class.
+
+.DataInitializer class
+
+include::../snippets/step-2-data-initializer-old-user.adoc[]
+
+To activate support for automatic password encoding upgrades we need to extend our existing
+_LibraryReactiveUserDetailsService_ class.
+
+.LibraryReactiveUserDetailsService class
+
+include::../snippets/step-2-library-user-details-password-service.adoc[]
+
+Now restart the application and see what happens if we try to get the list of books using this new
+user (username='old@example.com', password='user').
+
+In the console you should see the log output showing the old _MD5_ password being updated to _Bcrypt_ password.
+
+[CAUTION]
+====
+Never log any sensitive data like passwords, tokens etc., even in hashed format. Also never put such sensitive data
+into your version control. And never let error details reach the client (via REST API or web application).
+Make sure you disable stacktraces in client error messages using property _server.error.include-stacktrace=never_
+====
+
+This is the end of lab 2 of the workshop.
+
+[NOTE]
+====
+You find the completed code in project **lab-2/complete-library-server**.
+====
+
+In the next workshop part we also adapt the _SecurityWebFilterChain_ to our needs and add authorization rules (in web and method layer)
+for our application.

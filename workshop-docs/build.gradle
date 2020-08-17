@@ -1,40 +1,45 @@
-
-buildscript {
-    ext {
-        snippetsDir = file('src/docs/snippets')
-        targetDir = file('../docs')
-    }
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'org.jruby:jruby-complete:9.2.5.0'
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.10'
-        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16'
-    }
-}
-
 plugins {
-    id 'java'
-    id("org.asciidoctor.convert") version "1.5.10"
+    id 'org.asciidoctor.jvm.convert' version '3.1.0'
 }
 
 group 'com.example'
 version '1.0.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-
 asciidoctor {
-    backends 'html5', 'pdf'
-    attributes 'snippets': snippetsDir
-    inputs.dir snippetsDir
-    outputDir  targetDir
-    separateOutputDirs false
+    baseDirFollowsSourceDir()
+    baseDirFollowsSourceFile()
+    sourceDir file('src/docs/asciidoc')
+    sources {
+        include 'workshop-tutorial.*'
+    }
+    outputDir  file('../docs')
+    outputOptions {
+        backends = ['html5','pdf']
+    }
+    asciidoctorj {
+        attributes 'source-highlighter': 'coderay',
+                sectnums        : true,
+                sectanchors     : true,
+                revnumber       : '1.0',
+                revdate         : getDate(),
+                projectVersion  : '1.0.0'
+        modules {
+            pdf {
+                version '1.5.3'
+            }
+        }
+    }
 }
+
+build.dependsOn asciidoctor
 
 repositories {
     mavenCentral()
     jcenter()
+}
+
+static def getDate() {
+    return new Date().format('dd.MM.yyyy')
 }
 
 

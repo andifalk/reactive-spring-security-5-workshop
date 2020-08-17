@@ -1,0 +1,57 @@
+== Introduction
+
+[quote, Jim Manico]
+From my experience all software developers are now security engineers whether they know it, admit to it or do it.
+Your code is now the security of the org you work for.
+
+.Welcome to the **Reactive Spring Security 5 Hands-On Workshop**.
+
+Target of this workshop is to learn how to make an initially unsecured (reactive) web application
+more and more secure step-by-step.
+
+You will make your hands dirty in code in the following steps:
+
+1. Add spring boot security starter dependency for simple auto configuration of security
+2. Customize authentication configuration (provide our own user store + encryption)
+3. Add authorization (access controls) to web and method layers
+4. Implement automated security integration tests
+5. Experiment with an OAuth2 & OpenID Connect Client and Resource Server of Spring Security 5
+
+=== Requirements for this workshop
+
+* Git
+* A Java JDK (Java 8, 11 or 14 are supported and tested)
+* Any Java IDE capable of building with https://gradle.org/[Gradle] (IntelliJ, Eclipse, VS Code, ...)
+* Basic knowledge of https://www.reactivemanifesto.org[Reactive Systems] and reactive programming using https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring WebFlux] & https://projectreactor.io[Reactor]
+* https://curl.haxx.se[Curl] or https://httpie.org[Httpie] to call the REST API from command line
+* https://robomongo.org[Robo 3T] to look inside the embedded MongoDB instance
+
+As we are building the samples using https://gradle.org[Gradle] your Java IDE should be capable use this.
+As IntelliJ user support for https://gradle.org/[Gradle] is included by default.
+As an Eclipse user you have to install a plugin via the marketplace
+
+.Eclipse Marketplace for Gradle integration
+
+image::images/eclipse_gradle.png[scaledwidth="50%", scaledheight="50%",alt="eclipse_gradle"]
+
+To get the workshop project you either can just clone the repository using
+
+[source]
+----
+git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git security_workshop
+----
+
+or
+
+[source]
+----
+ git clone git@github.com:andifalk/reactive-spring-security-5-workshop.git security_workshop
+----
+
+or simply download it as a https://github.com/andifalk/reactive-spring-security-5-workshop/archive/master.zip[zip archive].
+
+After that you can import the workshop project into your IDE
+
+* IntelliJ: "New project from existing sources..."
+* Eclipse: "Import/Gradle/Existing gradle project"
+* Visual Studio Code: Just open the corresponding project directory

@@ -1,0 +1,206 @@
+== Lab 3: Add Authorization
+
+.In this part of the workshop we want to add our customized authorization rules for our application.
+
+As a result of the previous workshop steps we now have authentication for all our web endpoints
+(including the actuator endpoints) and we can log in using our own users. But here security does not stop.
+
+We know who is using our application (*authentication*) but we do not have control over what this user is
+allowed to do in our application (*authorization*).
+
+.Authorization for library-service
+
+image::images/workshop_lab_5.png[scaledwidth="75%",alt="Library service authorization"]
+
+[NOTE]
+====
+https://www.owasp.org/index.php/Top_10-2017_A5-Broken_Access_Control[OWASP Top 10-2017 A5-Broken Access Control]
+
+- With the exception of public resources, deny by default
+- Implement access control mechanisms once and re-use them throughout the application, including minimizing CORS usage.
+====
+
+As a best practice the authorization should always be implemented on different layers like the web and method layer.
+This way the authorization still prohibits access even if a user manages to bypass the web url based authorization filter
+by playing around with manipulated URL's.
+
+Our required authorization rule matrix looks like this:
+
+.Authorization rules for library-server
+|===
+|URL | Http method|Restricted|Roles with access
+|/*.css,/*.jpg,/*.ico,...
+|All
+|No
+|--
+|/books/{bookId}/borrow
+|POST
+|Yes
+|LIBRARY_USER
+|/books/{bookId}/return
+|POST
+|Yes
+|LIBRARY_USER
+|/books
+|POST
+|Yes
+|LIBRARY_CURATOR
+|/books
+|DELETE
+|Yes
+|LIBRARY_CURATOR
+|/users
+|All
+|Yes
+|LIBRARY_ADMIN
+|/actuator/health
+|GET
+|No
+|--
+|/actuator/info
+|GET
+|No
+|--
+|/actuator/*
+|GET
+|Yes
+|LIBRARY_ADMIN
+|/*
+|All
+|Yes
+|All authenticated ones
+|===
+
+All the web layer authorization rules are configured in the _WebSecurityConfiguration_ class by adding
+a new bean for _SecurityWebFilterChain_. Here we also already switch on the support for method layer authorization
+by adding the annotation _@EnableReactiveMethodSecurity_.
+
+.WebSecurityConfiguration class
+
+include::../snippets/step-3-spring-security-filter-chain.adoc[]
+
+We also add a a _ServerLogoutSuccessHandler_ bean to redirect back to the _/books_ endpoint after a logout
+to omit the error message we got so far by redirecting to a non-existing page.
+
+We continue with authorization on the method layer by adding the rules to our business service classes
+_BookService_ and _UserService_. To achieve this we use the _@PreAuthorize_ annotations provided by spring security.
+Same as other spring annotations (e.g. @Transactional) you can put _@PreAuthorize_ annotations on global class level
+or on method level.
+
+Depending on your authorization model you may use _@PreAuthorize_ to authorize using static roles or
+to authorize using dynamic expressions (usually if you have roles with permissions).
+
+.Roles and Permissions
+
+image::images/roles_permissions.png[scaledwidth="50%", scaledheight="50%",alt="roles_permissions"]
+
+If you want to have a permission based authorization you can use the predefined interface _PermissionEvaluator_ inside the
+_@PreAuthorize_ annotations like this:
+
+[source,java]
+----
+class MyService {
+    @PreAuthorize("hasPermission(#uuid, 'user', 'write')")
+    void myOperation(UUID uuid) {
+      //...
+    }
+}
+----
+
+.PermissionEvaluator class
+
+include::../snippets/step-3-permission-evaluator.adoc[]
+
+In the workshop due to time constraints we have to keep things simple so we just use static roles. +
+Here it is done for the all operations of the book service.
+
+.BookService class
+
+include::../snippets/step-3-book-authorization.adoc[]
+
+And now we add it the same way for the all operations of the user service.
+
+.UserService class
+
+include::../snippets/step-3-user-authorization.adoc[]
+
+Now that we have the current user context available in our application we can use this to automatically
+set this user as the one who has borrowed a book or returns his borrowed book. The current user can always be evaluated
+using the _ReactiveSecurityContextHolder_ class. But a more elegant way is to just let the framework put the current user
+directly into our operation via _@AuthenticationPrincipal_ annotation.
+
+.BookRestController class
+
+include::../snippets/step-3-authentication-principal.adoc[]
+
+So please go ahead and re-start the application and try to borrow a book with an authenticated user.
+
+.httpie get list of books
+[source,shell]
+----
+http localhost:9091/books --auth 'bruce.wayne@example.com:wayne'
+----
+
+.httpie borrow a book
+[source,shell]
+----
+http POST localhost:9091/books/{bookId}/borrow --auth 'bruce.wayne@example.com:wayne'
+----
+
+Note: Replace _{bookId}_ with the id of one of the books you have got in the list of books.
+
+.curl get list of books
+[source,shell]
+----
+curl 'http://localhost:8080/books' -i -X GET \
+    -H 'Accept: application/json' -u bruce.wayne@example.com:wayne | jq
+----
+
+.curl borrow a book
+[source,shell]
+----
+curl 'http://localhost:8080/books/{bookId}/borrow' -i -X POST \
+    -H 'Accept: application/json' -u bruce.wayne@example.com:wayne | jq
+----
+
+Note: Replace _{bookId}_ with the id of one of the books you have got in the list of books.
+
+At first you will notice that even with the correct basic authentication header you get an error message like this one:
+
+.CSRF error output
+
+include::../snippets/step-3-csrf-error.adoc[]
+
+The library-server expects a CSRF token in the request but did not find one. If you use common UI frameworks like
+Thymeleaf or JSF (on the serverside) or a clientside one like Angular then these already handle this CSRF processing.
+
+In our case we do not have such handler. To successfully tra the borrow book request you have to switch off
+CSRF in the library server. +
+This is done like this in the _WebSecurityConfiguration_ class.
+
+.Disable CSRF
+
+include::../snippets/step-3-csrf-disable.adoc[]
+
+Restart the application and retry to borrow a book. This time the request should be successful.
+
+[CAUTION]
+====
+Do not disable CSRF on productive servers if you use session cookies, otherwise you are vulnerable to CSRF attacks.
+You may safely disable CSRF for servers that use a stateless authentication approach with bearer tokens like
+for OAuth2 or OpenID Connect.
+====
+
+In this workshop step we added the authorization to web and method layers. So now for particular RESTful endpoints access is only
+permitted to users with special roles.
+
+[NOTE]
+====
+You find the completed code in project **lab-3/complete-library-server**.
+====
+
+But how do you know that you have implemented all the authorization rules and did not leave a big security leak
+for your RESTful API? Or you may change some authorizations later by accident?
+
+To be on a safer side here you need automatic testing. Yes, this can also be done for security!
+We will see how this works in the next workshop part.
