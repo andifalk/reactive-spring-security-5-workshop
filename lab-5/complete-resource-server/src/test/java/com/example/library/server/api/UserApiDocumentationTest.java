@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -62,7 +63,8 @@ class UserApiDocumentationTest {
 
   @MockBean private UserService userService;
 
-  @SuppressWarnings("unused")
+  @MockBean private ReactiveJwtDecoder reactiveJwtDecoder;
+
   @MockBean
   private BookService bookService;
 
@@ -181,7 +183,7 @@ class UserApiDocumentationTest {
         .uri("/users")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(new ObjectMapper().writeValueAsString(userResource)))
+        .body(BodyInserters.fromValue(new ObjectMapper().writeValueAsString(userResource)))
         .exchange()
         .expectStatus()
         .isOk()

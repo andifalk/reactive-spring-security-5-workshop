@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -58,6 +59,8 @@ class BookApiDocumentationTest {
   private WebTestClient webTestClient;
 
   @MockBean private BookService bookService;
+
+  @MockBean private ReactiveJwtDecoder reactiveJwtDecoder;
 
   @BeforeEach
   void setUp(RestDocumentationContextProvider restDocumentation) {
