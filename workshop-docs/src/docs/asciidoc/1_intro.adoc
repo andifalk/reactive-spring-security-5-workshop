@@ -39,7 +39,7 @@ IntelliJ does not require any specific additional plugins or configuration.
 
 ==== Eclipse IDE
 
-If you are an Eclipse user, then the usage of the Eclipse-based [Spring ToolSuite](https://spring.io/tools) is strongly recommended.
+If you are an Eclipse user, then the usage of the Eclipse-based https://spring.io/tools[Spring ToolSuite] is strongly recommended.
 This eclipse variant already has all the required gradle and spring boot support pre-installed.
 
 In case you want to stick to your plain Eclipse installation then you have to add the following features via the
@@ -112,14 +112,14 @@ To configure and run Keycloak using docker:
 
 Wait until the docker container has been started completely. When you see the line _Started 590 of 885 services_,
 then Keycloak is configured and running.
-Now open your web browser and navigate to [localhost:8080/auth/admin](http://localhost:8080/auth/admin) and login
+Now open your web browser and navigate to http://localhost:8080/auth/admin[localhost:8080/auth/admin] and login
 using the user credentials _admin_/_admin_.
 
 ==== Local Installation
 
 To set up https://keycloak.org[Keycloak]:
 
-1. Download the [Standard Server Distribution of Keycloak (Version 10.0.x)](https://www.keycloak.org/downloads-archive.html).
+1. Download the https://www.keycloak.org/downloads-archive.html[Standard Server Distribution of Keycloak (Version 10.0.x)].
 2. Extract the downloaded zip/tar file __keycloak-x.x.x.zip__/__keycloak-x.x.x.tar-gz__ into a new local directory of your choice
 (this directory will be referenced as __<KEYCLOAK_INSTALL_DIR>__ in next steps)
 
@@ -196,4 +196,4 @@ image::images/keycloak_workshop.png[scaledwidth="50%", scaledheight="50%",alt="e
 ==== Further Information
 
 If you want to know more about setting up a Keycloak server for your own projects
-then please consult the [keycloak administration docs](https://www.keycloak.org/docs/latest/server_admin/index.html).
+then please consult the https://www.keycloak.org/docs/latest/server_admin/index.html[keycloak administration docs].
