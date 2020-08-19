@@ -35,11 +35,13 @@ To start the workshop you need:
 
 * [Java JDK version 8, 11 or 14](https://openjdk.java.net/install/)
 * A Java IDE ([Eclipse](https://www.eclipse.org/), [STS](https://spring.io/tools), [IntelliJ](https://www.jetbrains.com/idea/), [VS Code](https://code.visualstudio.com/), [NetBeans](https://netbeans.org/), ...)
-* To test the RESTful services on the command line [curl](https://curl.haxx.se/download.html) or [httpie](https://httpie.org/) would be helpful to install
-* [Robo 3T](https://robomongo.org) to look inside the embedded MongoDB instance
+* [Postman](https://www.getpostman.com/downloads), [Httpie](https://httpie.org/#installation), or [Curl](https://curl.haxx.se/download.html) for REST calls
+* [MongoDB Compass](https://www.mongodb.com/try/download/compass) or [Robo 3T](https://robomongo.org) to look inside the embedded MongoDB instance
 * The workshop tutorial documentation ([html](https://andifalk.github.io/reactive-spring-security-5-workshop/html5/workshop-tutorial.html) or [pdf](https://github.com/andifalk/reactive-spring-security-5-workshop/raw/master/docs/pdf/workshop-tutorial.pdf))
 * [The initial reactive application to be made secure](https://github.com/andifalk/reactive-spring-security-5-workshop/tree/master/lab-1/initial-library-server)
 * The [REST API documentation](https://andifalk.github.io/reactive-spring-security-5-workshop/api-doc.html) of the initial reactive application
+
+Please follow the [setup guide](setup) to get your machine ready for this workshop.
 
 ## Workshop structure
 

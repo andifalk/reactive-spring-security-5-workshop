@@ -446,7 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Andreas Falk</span><br>
 <span id="email" class="email"><a href="mailto:andreas.falk@novatec-gmbh.de">andreas.falk@novatec-gmbh.de</a></span><br>
 <span id="revnumber">version 1.0,</span>
-<span id="revdate">17.08.2020</span>
+<span id="revdate">19.08.2020</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -454,6 +454,25 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_introduction">1. Introduction</a>
 <ul class="sectlevel2">
 <li><a href="#_requirements_for_this_workshop">1.1. Requirements for this workshop</a></li>
+<li><a href="#_general_setup_for_this_workshop">1.2. General Setup for this workshop</a>
+<ul class="sectlevel3">
+<li><a href="#_intellij">1.2.1. IntelliJ</a></li>
+<li><a href="#_eclipse_ide">1.2.2. Eclipse IDE</a></li>
+<li><a href="#_visual_studio_code">1.2.3. Visual Studio Code</a></li>
+<li><a href="#_get_the_source_code">1.2.4. Get the source code</a></li>
+<li><a href="#_run_the_java_applications">1.2.5. Run the java applications</a></li>
+</ul>
+</li>
+<li><a href="#_setup_keycloak">1.3. Setup Keycloak</a>
+<ul class="sectlevel3">
+<li><a href="#_using_docker">1.3.1. Using Docker</a></li>
+<li><a href="#_local_installation">1.3.2. Local Installation</a></li>
+<li><a href="#_startup_keycloak">1.3.3. Startup Keycloak</a></li>
+<li><a href="#_remap_default_port_of_keycloak">1.3.4. Remap default port of Keycloak</a></li>
+<li><a href="#_open_keycloak_admin_ui">1.3.5. Open Keycloak Admin UI</a></li>
+<li><a href="#_further_information">1.3.6. Further Information</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_common_web_security_risks">2. Common Web Security Risks</a></li>
@@ -545,14 +564,28 @@ Your code is now the security of the org you work for.
 </div>
 <div class="paragraph">
 <div class="title">Welcome to the <strong>Reactive Spring Security 5 Hands-On Workshop</strong>.</div>
-<p>Target of this workshop is to learn how to make an initially unsecured (reactive) web application
-more and more secure step-by-step.</p>
+<p>Target of this workshop is to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Learn <a href="https://www.reactivemanifesto.org">Reactive Systems</a> and reactive programming
+using <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux">Spring WebFlux</a>
+&amp; <a href="https://projectreactor.io">Reactor</a></p>
+</li>
+<li>
+<p>How to make an initially unsecured reactive spring webflux application more and more secure step-by-step.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>You will make your hands dirty in code in the following steps:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
+<li>
+<p>Perform practical exercises for reactive streams programming using <a href="https://projectreactor.io">Reactor</a></p>
+</li>
 <li>
 <p>Add spring boot security starter dependency for simple auto configuration of security</p>
 </li>
@@ -566,7 +599,7 @@ more and more secure step-by-step.</p>
 <p>Implement automated security integration tests</p>
 </li>
 <li>
-<p>Experiment with an OAuth2 &amp; OpenID Connect Client and Resource Server of Spring Security 5</p>
+<p>Develop an OAuth2 &amp; OpenID Connect Client and Resource Server</p>
 </li>
 </ol>
 </div>
@@ -584,20 +617,45 @@ more and more secure step-by-step.</p>
 <p>Any Java IDE capable of building with <a href="https://gradle.org/">Gradle</a> (IntelliJ, Eclipse, VS Code, &#8230;&#8203;)</p>
 </li>
 <li>
-<p>Basic knowledge of <a href="https://www.reactivemanifesto.org">Reactive Systems</a> and reactive programming using <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux">Spring WebFlux</a> &amp; <a href="https://projectreactor.io">Reactor</a></p>
+<p>Java programming skills, recommended is some knowledge in Spring Boot and the Spring Framework</p>
 </li>
 <li>
-<p><a href="https://curl.haxx.se">Curl</a> or <a href="https://httpie.org">Httpie</a> to call the REST API from command line</p>
+<p><a href="https://www.getpostman.com/downloads">Postman</a>, <a href="https://curl.haxx.se">Curl</a> or <a href="https://httpie.org">Httpie</a> to call the REST API from command line</p>
 </li>
 <li>
-<p><a href="https://robomongo.org">Robo 3T</a> to look inside the embedded MongoDB instance</p>
+<p><a href="https://www.mongodb.com/try/download/compass">MongoDB Compass</a> or <a href="https://robomongo.org">Robo 3T</a> to look inside the embedded MongoDB instance</p>
 </li>
 </ul>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_general_setup_for_this_workshop"><a class="anchor" href="#_general_setup_for_this_workshop"></a>1.2. General Setup for this workshop</h3>
+<div class="sect3">
+<h4 id="_intellij"><a class="anchor" href="#_intellij"></a>1.2.1. IntelliJ</h4>
 <div class="paragraph">
-<p>As we are building the samples using <a href="https://gradle.org">Gradle</a> your Java IDE should be capable use this.
-As IntelliJ user support for <a href="https://gradle.org/">Gradle</a> is included by default.
-As an Eclipse user you have to install a plugin via the marketplace</p>
+<p>IntelliJ does not require any specific additional plugins or configuration.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_eclipse_ide"><a class="anchor" href="#_eclipse_ide"></a>1.2.2. Eclipse IDE</h4>
+<div class="paragraph">
+<p>If you are an Eclipse user, then the usage of the Eclipse-based [Spring ToolSuite](<a href="https://spring.io/tools" class="bare">https://spring.io/tools</a>) is strongly recommended.
+This eclipse variant already has all the required gradle and spring boot support pre-installed.</p>
+</div>
+<div class="paragraph">
+<p>In case you want to stick to your plain Eclipse installation then you have to add the following features via the
+eclipse marketplace:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>BuildShip Gradle Integration (Version 3.x). This might be already pre-installed depending
+on your eclipse variant (e.g. Eclipse JavaEE) installed.</p>
+</li>
+<li>
+<p>Spring Tools 4 for Spring Boot (Spring Tool Suite 4).</p>
+</li>
+</ul>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -605,40 +663,262 @@ As an Eclipse user you have to install a plugin via the marketplace</p>
 </div>
 <div class="title">Figure 1. Eclipse Marketplace for Gradle integration</div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_visual_studio_code"><a class="anchor" href="#_visual_studio_code"></a>1.2.3. Visual Studio Code</h4>
 <div class="paragraph">
-<p>To get the workshop project you either can just clone the repository using</p>
+<p>To be able to work properly in Visual Studio Code with this Spring Boot Java Gradle project you need at least these extensions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Java Extension Pack</p>
+</li>
+<li>
+<p>vscode-gradle-language</p>
+</li>
+<li>
+<p>VS Code Spring Boot Application Development Extension Pack</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_get_the_source_code"><a class="anchor" href="#_get_the_source_code"></a>1.2.4. Get the source code</h4>
+<div class="paragraph">
+<p>Clone this GitHub repository (<a href="https://github.com/andifalk/reactive-spring-security-5-workshop" class="bare">https://github.com/andifalk/reactive-spring-security-5-workshop</a>):</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git security_workshop</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code> git clone git@github.com:andifalk/reactive-spring-security-5-workshop.git security_workshop</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell">git clone https://github.com/andifalk/reactive-spring-security-5-workshop.git reactive_workshop</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>or simply download it as a <a href="https://github.com/andifalk/reactive-spring-security-5-workshop/archive/master.zip">zip archive</a>.</p>
 </div>
 <div class="paragraph">
-<p>After that you can import the workshop project into your IDE</p>
+<p>After that you can import the whole workshop project directory into your IDE as a <em>gradle project</em>:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>IntelliJ: "New project from existing sources&#8230;&#8203;"</p>
+<p><a href="https://www.jetbrains.com/idea">IntelliJ</a>: Open menu item "New project from existing sources&#8230;&#8203;" and then select 'Gradle' when prompted</p>
 </li>
 <li>
-<p>Eclipse: "Import/Gradle/Existing gradle project"</p>
+<p><a href="https://www.eclipse.org/">Eclipse</a> or <a href="https://spring.io/tools">Spring ToolSuite</a>: Open menu item "Import/Gradle/Existing gradle project"</p>
 </li>
 <li>
-<p>Visual Studio Code: Just open the corresponding project directory</p>
+<p><a href="https://code.visualstudio.com/">Visual Studio Code</a>: Just open the root directory in VS Code and wait until VS Code has configured the project</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_run_the_java_applications"><a class="anchor" href="#_run_the_java_applications"></a>1.2.5. Run the java applications</h4>
+<div class="paragraph">
+<p>All spring boot based java projects can either be run using your Java IDE or using the command line
+with changing into the corresponding project directory and issuing a <code>gradlew bootRun</code> command.</p>
+</div>
+<div class="paragraph">
+<p>For other demo applications like the ones for Micronaut or Quarkus please consult written instructions there.</p>
+</div>
+<div class="paragraph">
+<p>In this workshop we will use <a href="https://keycloak.org">Keycloak</a> by JBoss/RedHat as local identity provider.
+<a href="https://keycloak.org">Keycloak</a> is <a href="https://openid.net/developers/certified">certified for OpenID Connect 1.0</a> and
+implements OAuth 2.0 and OpenID Connect 1.0.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_setup_keycloak"><a class="anchor" href="#_setup_keycloak"></a>1.3. Setup Keycloak</h3>
+<div class="paragraph">
+<p>You need a compliant OAuth 2.0 / OpenID Connect provider for this workshop.
+Here we will use <a href="https://keycloak.org">Keycloak</a> by RedHat/JBoss.</p>
+</div>
+<div class="paragraph">
+<p>To set up Keycloak you have 2 options:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Run Keycloak using Docker (if you have Docker installed)</p>
+</li>
+<li>
+<p>Local Keycloak installation &amp; configuration</p>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_using_docker"><a class="anchor" href="#_using_docker"></a>1.3.1. Using Docker</h4>
+<div class="paragraph">
+<p>If you have Docker installed then setting up Keycloak is quite easy.</p>
+</div>
+<div class="paragraph">
+<p>To configure and run Keycloak using docker:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open a new command line terminal window</p>
+</li>
+<li>
+<p>Change directory to subdirectory <em>setup_keycloak</em> of the workshop repository</p>
+</li>
+<li>
+<p>Open and edit the script <em>run_keycloak_docker.sh</em> or <em>run_keycloak_docker.bat</em> (depending on your OS) and adapt the value for the <em>WORKSHOP_HOME</em> env variable to your local workshop repository directory</p>
+</li>
+<li>
+<p>Save and execute the script <em>run_keycloak_docker.sh</em> or <em>run_keycloak_docker.bat</em> (depending on your OS)</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Wait until the docker container has been started completely. When you see the line <em>Started 590 of 885 services</em>,
+then Keycloak is configured and running.
+Now open your web browser and navigate to [localhost:8080/auth/admin](<a href="http://localhost:8080/auth/admin" class="bare">http://localhost:8080/auth/admin</a>) and login
+using the user credentials <em>admin</em>/<em>admin</em>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_local_installation"><a class="anchor" href="#_local_installation"></a>1.3.2. Local Installation</h4>
+<div class="paragraph">
+<p>To set up <a href="https://keycloak.org">Keycloak</a>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the [Standard Server Distribution of Keycloak (Version 10.0.x)](<a href="https://www.keycloak.org/downloads-archive.html" class="bare">https://www.keycloak.org/downloads-archive.html</a>).</p>
+</li>
+<li>
+<p>Extract the downloaded zip/tar file <em>keycloak-x.x.x.zip</em>/<em>keycloak-x.x.x.tar-gz</em> into a new local directory of your choice
+(this directory will be referenced as <em>&lt;KEYCLOAK_INSTALL_DIR&gt;</em> in next steps)</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This workshop requires a pre-defined configuration for Keycloak (i.e. some OAuth2/OpenID Connect clients, and user accounts).</p>
+</div>
+<div class="paragraph">
+<p>To configure Keycloak you need to have checked out the GIT repository for this workshop.
+All you need to configure Keycloak is located in the subdirectory <em>setup_keycloak</em> of the repository.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Change into the subdirectory <em>setup_keycloak</em> of the workshop git repository</p>
+</li>
+<li>
+<p>Open the file <em>import_keycloak_realm.sh</em> or <em>import_keycloak_realm.bat</em> (depending on your OS) in the <em>setup_keycloak</em> subdirectory
+and change the value of the environment variable <em>KEYCLOAK_HOME</em> to your <em>&lt;KEYCLOAK_INSTALL_DIR&gt;</em> of step 2 and save the file</p>
+</li>
+<li>
+<p>Now open a new command-line terminal window, change into the subdirectory <em>setup_keycloak</em> again and execute the provided script
+<em>import_keycloak_realm.sh</em> or <em>import_keycloak_realm.bat</em> (depending on your OS).
+This starts a standalone Keycloak instance and automatically imports the required configuration.</p>
+</li>
+<li>
+<p>Wait until the import has finished (look for a line like <em>Started 590 of 885 services</em>) then
+direct your web browser to [localhost:8080/auth](<a href="http://localhost:8080/auth/" class="bare">http://localhost:8080/auth/</a>)</p>
+</li>
+<li>
+<p>Here you have to create the initial admin user to get started. Please use the value <em>admin</em> both as username and as password,
+then click the button <em>Create</em>. Please note: In production you must use a much more secure password for the admin user!</p>
+</li>
+<li>
+<p>Now you can continue to the <em>Administration Console</em> by clicking on the corresponding link displayed and login using the new user credentials.</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/keycloak_initial_admin.png" alt="eclipse_gradle">
+</div>
+<div class="title">Figure 2. Keycloak Administrator Initialization</div>
+</div>
+<div class="paragraph">
+<p>If all worked successfully you should see the settings page of the <em>Workshop</em> realm and Keycloak is ready for this Workshop !</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_startup_keycloak"><a class="anchor" href="#_startup_keycloak"></a>1.3.3. Startup Keycloak</h4>
+<div class="paragraph">
+<p>You only have to do the initial setup section for local install once.
+If you have stopped Keycloak and want to start it again then follow the next lines in this section.</p>
+</div>
+<div class="paragraph">
+<p>To startup <a href="https://keycloak.org">Keycloak</a>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open a terminal and change directory to sub directory <em>&lt;KEYCLOAK_INSTALL_DIR&gt;/bin</em> and start Keycloak using
+the <em>standalone.sh</em>(Linux or Mac OS) or <em>standalone.bat</em> (Windows) scripts</p>
+</li>
+<li>
+<p>Wait until keycloak has been started completely - you should see something like this <code>&#8230;&#8203;(WildFly Core &#8230;&#8203;) started in 6902ms - Started 580 of 842 services</code></p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_remap_default_port_of_keycloak"><a class="anchor" href="#_remap_default_port_of_keycloak"></a>1.3.4. Remap default port of Keycloak</h4>
+<div class="paragraph">
+<p>In case port <em>8080</em> does not work on your local machine (i.e. is used by another process) then you may have to change Keycloak to use another port.
+This can be done like this (e.g. for remapping port to 8090 instead of 8080):</p>
+</div>
+<div class="paragraph">
+<p>On Linux/MAC:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">./standalone.sh -Djboss.socket.binding.port-offset=10</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On Windows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">./standalone.bat -Djboss.socket.binding.port-offset=10</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note: Take into account that for all URL&#8217;s pointing to Keycloak in the hands-on steps you always have to use the remapped port
+instead of default one (8080) as well.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_open_keycloak_admin_ui"><a class="anchor" href="#_open_keycloak_admin_ui"></a>1.3.5. Open Keycloak Admin UI</h4>
+<div class="paragraph">
+<p>Independent of the setup type (docker or local install), to access the web admin UI of Keycloak
+you need to perform these steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Now direct your browser to [localhost:8080/auth/admin](<a href="http://localhost:8080/auth/admin/" class="bare">http://localhost:8080/auth/admin/</a>)</p>
+</li>
+<li>
+<p>Login into the admin console using <em>admin/admin</em> as credentials</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Now, if you see the realm <em>workshop</em> on the left then Keycloak is ready to use it for this workshop.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/keycloak_workshop.png" alt="eclipse_gradle">
+</div>
+<div class="title">Figure 3. Keycloak Workshop Realm</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_further_information"><a class="anchor" href="#_further_information"></a>1.3.6. Further Information</h4>
+<div class="paragraph">
+<p>If you want to know more about setting up a Keycloak server for your own projects
+then please consult the [keycloak administration docs](<a href="https://www.keycloak.org/docs/latest/server_admin/index.html" class="bare">https://www.keycloak.org/docs/latest/server_admin/index.html</a>).</p>
+</div>
 </div>
 </div>
 </div>
@@ -679,7 +959,7 @@ fit into the <a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">OWASP 
 <div class="content">
 <img src="images/owasp_top_10_2017.png" alt="owasp_top_10">
 </div>
-<div class="title">Figure 2. OWASP Top 10 2017</div>
+<div class="title">Figure 4. OWASP Top 10 2017</div>
 </div>
 <div class="paragraph">
 <p>The <a href="https://owasp.org">Open Web Application Security Project</a> has plenty of further free resources available.</p>
@@ -779,7 +1059,7 @@ an onComplete signal or an onError signal.</p>
 <div class="content">
 <img src="images/mono.png" alt="reactor_mono">
 </div>
-<div class="title">Figure 3. Mono, an Asynchronous 0-1 Result (source: projectreactor.io)</div>
+<div class="title">Figure 5. Mono, an Asynchronous 0-1 Result (source: projectreactor.io)</div>
 </div>
 <div class="paragraph">
 <p>A <em>Flux&lt;T&gt;</em> is a standard <em>Publisher&lt;T&gt;</em> representing an asynchronous sequence of 0 to N emitted items,
@@ -789,7 +1069,7 @@ optionally terminated by either a completion signal or an error.</p>
 <div class="content">
 <img src="images/flux.png" alt="reactor_flux">
 </div>
-<div class="title">Figure 4. Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)</div>
+<div class="title">Figure 6. Flux, an Asynchronous Sequence of 0-N Items (source: projectreactor.io)</div>
 </div>
 </div>
 <div class="sect2">
@@ -859,7 +1139,7 @@ for administering books and users.</p>
 <div class="content">
 <img src="images/workshop_lab_1.png" alt="Library service">
 </div>
-<div class="title">Figure 5. The workshop application</div>
+<div class="title">Figure 7. The workshop application</div>
 </div>
 <div class="paragraph">
 <p>The RESTful service for books is build using the Spring WebFlux annotation model and the RESTful service for
@@ -897,7 +1177,7 @@ The packages of the application are organized as follows:</p>
 <div class="content">
 <img src="images/workshop_lab_2.png" alt="Library service stack">
 </div>
-<div class="title">Figure 6. Library service stack</div>
+<div class="title">Figure 8. Library service stack</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1013,7 +1293,7 @@ instead of <em>40495</em>.</p>
 <div class="content">
 <img src="images/robo3t.png" alt="Library service stack">
 </div>
-<div class="title">Figure 7. Robo 3T Connection configuration</div>
+<div class="title">Figure 9. Robo 3T Connection configuration</div>
 </div>
 <div class="paragraph">
 <p>Finally, you can navigate your web browser to <a href="http://localhost:9091/books" class="bare">http://localhost:9091/books</a> then you
@@ -1079,7 +1359,7 @@ the list of books then you are setup and ready to start the first lab.</p>
 <div class="content">
 <img src="images/workshop_lab_3.png" alt="Library service authentication">
 </div>
-<div class="title">Figure 8. Authentication using in-memory user</div>
+<div class="title">Figure 10. Authentication using in-memory user</div>
 </div>
 <div class="paragraph">
 <p>Please start the application by running the class <em>InitialLibraryServerApplication</em>.</p>
@@ -1093,7 +1373,7 @@ the list of books then you are setup and ready to start the first lab.</p>
 <div class="content">
 <img src="images/loginform.png" alt="owasp_top_10">
 </div>
-<div class="title">Figure 9. Autogenerated login formular</div>
+<div class="title">Figure 11. Autogenerated login formular</div>
 </div>
 <div class="paragraph">
 <p>If you browse to <a href="http://localhost:8080/books">localhost:8080/books</a> then you will notice
@@ -1197,7 +1477,7 @@ basic authentication and form based authentication for all web endpoints.</p>
 <div class="content">
 <img src="images/session_auth.png" alt="form_login">
 </div>
-<div class="title">Figure 10. Form-based authentication with session cookies</div>
+<div class="title">Figure 12. Form-based authentication with session cookies</div>
 </div>
 <div class="paragraph">
 <p>This also applies to all actuator endpoints like <a href="http://localhost:8080/actuator/health">/actuator/health</a>.
@@ -1254,7 +1534,7 @@ dialog on the screen.</p>
 <div class="content">
 <img src="images/logoutform.png" alt="owasp_top_10">
 </div>
-<div class="title">Figure 11. Autogenerated logout formular</div>
+<div class="title">Figure 13. Autogenerated logout formular</div>
 </div>
 <div class="paragraph">
 <p>The application already contains a central error handler for the whole web application using <em>@RestControllerAdvice</em>.
@@ -1353,7 +1633,7 @@ webTestClient.mutateWith(csrf())
 <div class="content">
 <img src="images/workshop_lab_4.png" alt="Library service custom authentication">
 </div>
-<div class="title">Figure 12. Custom authentication with persistent users</div>
+<div class="title">Figure 14. Custom authentication with persistent users</div>
 </div>
 <div class="paragraph">
 <p>Before we start let&#8217;s look into some internal details how spring security works
@@ -2216,7 +2496,7 @@ allowed to do in our application (<strong>authorization</strong>).</p>
 <div class="content">
 <img src="images/workshop_lab_5.png" alt="Library service authorization">
 </div>
-<div class="title">Figure 13. Authorization for library-service</div>
+<div class="title">Figure 15. Authorization for library-service</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -2463,7 +2743,7 @@ to authorize using dynamic expressions (usually if you have roles with permissio
 <div class="content">
 <img src="images/roles_permissions.png" alt="roles_permissions">
 </div>
-<div class="title">Figure 14. Roles and Permissions</div>
+<div class="title">Figure 16. Roles and Permissions</div>
 </div>
 <div class="paragraph">
 <p>If you want to have a permission based authorization you can use the predefined interface <em>PermissionEvaluator</em> inside the
@@ -2795,7 +3075,7 @@ We will see how this works in the next workshop part.</p>
 <div class="content">
 <img src="images/workshop_lab_6.png" alt="Library service security tests">
 </div>
-<div class="title">Figure 15. Automated security tests</div>
+<div class="title">Figure 17. Automated security tests</div>
 </div>
 <div class="paragraph">
 <p>The tests will be implemented using the new JUnit 5 version as Spring 5.0 now supports this as well.<br>
@@ -3206,7 +3486,7 @@ for using business services in the internet like <a href="https://stackoverflow.
 <div class="content">
 <img src="images/oauth2_roles.png" alt="oauth_roles">
 </div>
-<div class="title">Figure 16. OAuth 2.0 role model</div>
+<div class="title">Figure 18. OAuth 2.0 role model</div>
 </div>
 <div class="paragraph">
 <p>Authorizations are permitted via scopes that the user has to confirm before
@@ -3241,7 +3521,7 @@ using the requested service.</p>
 <div class="content">
 <img src="images/authorization_code_1.png" alt="auth_code_grant">
 </div>
-<div class="title">Figure 17. Authorization code grant flow</div>
+<div class="title">Figure 19. Authorization code grant flow</div>
 </div>
 </div>
 <div class="sect3">
@@ -3256,7 +3536,7 @@ In OAuth2 the format of <a href="https://tools.ietf.org/html/rfc6750">bearer tok
 <div class="content">
 <img src="images/oidc_roles.png" alt="openid_roles">
 </div>
-<div class="title">Figure 18. OpenID Connect 1.0 role model</div>
+<div class="title">Figure 20. OpenID Connect 1.0 role model</div>
 </div>
 <div class="paragraph">
 <p>OIDC adds an id token in addition to the access token of OAuth2 and specifies
@@ -3504,7 +3784,7 @@ of Spring Security 5.1.</p>
 <div class="content">
 <img src="images/workshop_lab_7.png" alt="OAuth2 spring roles">
 </div>
-<div class="title">Figure 19. Library client, service and identity provider service</div>
+<div class="title">Figure 21. Library client, service and identity provider service</div>
 </div>
 <div class="paragraph">
 <p>These micro-services have to be configured to be reachable via the following URL addresses (Port 8080 is the default port in spring boot).</p>
@@ -3694,7 +3974,7 @@ Then check this out, go to project <strong>intro-labs/auth-code-demo</strong> an
 <h3 id="resource-server"><a class="anchor" href="#resource-server"></a>10.4. Lab 5: OpenID Connect Resource Server</h3>
 <div class="paragraph">
 <p>For this workshop part the well-known library-server application is used and will be extended to act
- as a OAuth2 resource server.</p>
+as a OAuth2 resource server.</p>
 </div>
 <div class="sect3">
 <h4 id="resource-server-gradle-dependencies"><a class="anchor" href="#resource-server-gradle-dependencies"></a>10.4.1. Gradle dependencies</h4>
@@ -4929,7 +5209,7 @@ Free use of this software is being granted under the terms of the Apache 2.0 Lic
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2020-08-17 22:42:58 +0200
+Last updated 2020-08-17 22:54:46 +0200
 </div>
 </div>
 <style>
