@@ -154,6 +154,6 @@ public class DataInitializer implements CommandLineRunner {
                   .log()
                   .then(bookRepository.count())
                   .subscribe(c -> logger.info("{} books created", c));
-            });
+            }, err -> logger.error("Error finding user", err), () -> logger.info("Found user, continue creating books"));
   }
 }
