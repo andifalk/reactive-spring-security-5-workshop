@@ -585,7 +585,10 @@
     "enabled" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "9584640c-3804-4dcd-997b-93593cfb9ea7",
-    "redirectUris" : [ "http://localhost:9090/library-client/login/oauth2/code/keycloak" ],
+    "redirectUris": [
+      "http://localhost:9090/login/oauth2/code/keycloak",
+      "http://localhost:9090/library-client/login/oauth2/code/keycloak"
+    ],
     "webOrigins" : [ "http://localhost:9090" ],
     "notBefore" : 0,
     "bearerOnly" : false,
