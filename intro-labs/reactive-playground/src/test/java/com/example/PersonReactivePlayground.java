@@ -48,24 +48,6 @@ class PersonReactivePlayground {
     personSet.add(person);
   }
 
-  @DisplayName("with strings")
-  @Test
-  void testWithString() throws InterruptedException {
-
-    ParallelFlux<String> hello_reactive = Flux.just("Hello Reactive")
-            .delayElements(Duration.ofMillis(100))
-            .parallel()
-            .runOn(Schedulers.newParallel("test", 5))
-            .log()
-            .map(String::toUpperCase)
-            .flatMap(s -> Flux.just(s.split("")));
-    hello_reactive.subscribe(System.out::println);
-
-    Thread.sleep(500);
-
-    //StepVerifier.create(hello_reactive).expectNext("H").expectNextCount(13).verifyComplete();
-  }
-
   @DisplayName("with persons")
   @Test
   void testWithPersons() {

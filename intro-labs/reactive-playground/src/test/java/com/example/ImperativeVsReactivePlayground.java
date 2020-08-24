@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Imperative versus reactive playground")
 class ImperativeVsReactivePlayground {
@@ -16,20 +19,25 @@ class ImperativeVsReactivePlayground {
     String msg = "World";
     String upperCaseMsg = msg.toUpperCase();
     String greeting = "Hello " + upperCaseMsg + "!";
-    System.out.println(greeting);
+    assertThat(greeting).isEqualTo("Hello WORLD!");
+  }
+
+  @DisplayName("functional code")
+  @Test
+  void testFunctional() {
+    String greeting =
+        Stream.of("World")
+            .map(String::toUpperCase)
+            .map(um -> "Hello " + um + "!")
+            .collect(Collectors.joining());
+    assertThat(greeting).isEqualTo("Hello WORLD!");
   }
 
   @DisplayName("reactive code")
   @Test
   void testReactive() {
-    Mono<String> mono = Mono.just("World")
-            .map(String::toUpperCase)
-            .map(um -> "Hello " + um + "!")
-            .map(um -> {System.out.println(um); return um;});
-
-    mono.subscribe();
-
-    //StepVerifier.create(mono).expectNext("Hello WORLD!").verifyComplete();
-
+    Mono<String> greeting =
+        Mono.just("World").map(String::toUpperCase).map(um -> "Hello " + um + "!");
+    StepVerifier.create(greeting).expectNext("Hello WORLD!").verifyComplete();
   }
 }
