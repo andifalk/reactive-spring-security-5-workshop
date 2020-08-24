@@ -60,8 +60,6 @@ After that you can import the whole workshop project directory into your IDE as 
 All spring boot based java projects can either be run using your Java IDE or using the command line
 with changing into the corresponding project directory and issuing a `gradlew bootRun` command.
 
-For other demo applications like the ones for Micronaut or Quarkus please consult written instructions there. 
-
 In this workshop we will use [Keycloak](https://keycloak.org) by JBoss/RedHat as local identity provider.  
 [Keycloak](https://keycloak.org) is [certified for OpenID Connect 1.0](https://openid.net/developers/certified/) and 
 implements OAuth 2.0 and OpenID Connect 1.0.
