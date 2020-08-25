@@ -1,14 +1,16 @@
 package com.example;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.ParallelFlux;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
@@ -19,99 +21,280 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("Basic reactive playground")
 class BasicReactivePlayground {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(BasicReactivePlayground.class);
+  private static final Logger log = LoggerFactory.getLogger(BasicReactivePlayground.class);
 
-  @BeforeAll
-  static void init() {
+  @BeforeEach
+  void init() {
     BlockHound.install();
+    Hooks.onOperatorDebug();
+  }
+
+  @DisplayName("imperative vs reactive")
+  @Nested
+  class ImperativeVsReactive {
+
+    @DisplayName("imperative code")
+    @Test
+    void testImperative() {
+      String msg = "World";
+      String upperCaseMsg = msg.toUpperCase();
+      String greeting = "Hello " + upperCaseMsg + "!";
+      assertThat(greeting).isEqualTo("Hello WORLD!");
+    }
+
+    @DisplayName("functional code")
+    @Test
+    void testFunctional() {
+      String greeting =
+              Stream.of("World")
+                      .map(String::toUpperCase)
+                      .map(um -> "Hello " + um + "!")
+                      .collect(Collectors.joining());
+      assertThat(greeting).isEqualTo("Hello WORLD!");
+    }
+
+    @DisplayName("reactive code")
+    @Test
+    void testReactive() {
+      Mono<String> greeting =
+              Mono.just("World").map(String::toUpperCase).map(um -> "Hello " + um + "!");
+      StepVerifier.create(greeting).expectNext("Hello WORLD!").verifyComplete();
+    }
   }
 
   @DisplayName("create Mono")
-  @Test
-  void testCreateMono() {
-    StepVerifier.create(Mono.empty()).expectNextCount(0).verifyComplete();
-    StepVerifier.create(Mono.just("Hello")).expectNext("Hello").verifyComplete();
-    StepVerifier.create(Mono.defer(() -> Mono.just("Hello"))).expectNext("Hello").verifyComplete();
-    StepVerifier.create(Mono.create(sink -> sink.success("Hello")))
-        .expectNext("Hello")
-        .verifyComplete();
-    StepVerifier.create(Mono.justOrEmpty(Optional.of("Hello")))
-        .expectNext("Hello")
-        .verifyComplete();
-    StepVerifier.create(Mono.error(new IllegalArgumentException("error")))
-        .expectError(IllegalArgumentException.class)
-        .verify();
+  @Nested
+  class createMono {
+
+    @DisplayName("with empty()")
+    @Test
+    void testCreateMonoEmpty() {
+      StepVerifier.create(Mono.empty()).expectNextCount(0).verifyComplete();
+    }
+
+    @DisplayName("with just()")
+    @Test
+    void testCreateMonoJust() {
+      StepVerifier.create(Mono.just("Hello")).expectNext("Hello").verifyComplete();
+    }
+
+    @DisplayName("with justOrEmpty()")
+    @Test
+    void testCreateMonoJustOrEmpty() {
+      StepVerifier.create(Mono.justOrEmpty(Optional.of("Hello")))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with defer()")
+    @Test
+    void testCreateMonoDefer() {
+      StepVerifier.create(Mono.defer(() -> Mono.just("Hello")))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with create()")
+    @Test
+    void testCreateMonoCreate() {
+      StepVerifier.create(Mono.create(sink -> sink.success("Hello")))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with error()")
+    @Test
+    void testCreateMonoError() {
+      StepVerifier.create(Mono.error(new IllegalArgumentException("error")))
+          .expectError(IllegalArgumentException.class)
+          .verify();
+    }
   }
 
   @DisplayName("create Flux")
-  @Test
-  void testCreateFlux() {
-    StepVerifier.create(Flux.empty()).expectNextCount(0).verifyComplete();
-    StepVerifier.create(Flux.just("Hello", "World"))
-        .expectNext("Hello")
-        .expectNext("World")
-        .verifyComplete();
-    StepVerifier.create(Flux.defer(() -> Mono.just("Hello"))).expectNext("Hello").verifyComplete();
-    StepVerifier.create(
-            Flux.create(
-                sink -> {
-                  sink.next("Hello");
-                  sink.complete();
-                }))
-        .expectNext("Hello")
-        .verifyComplete();
-    StepVerifier.create(Flux.fromArray(new String[] {"Hello"}))
-        .expectNext("Hello")
-        .verifyComplete();
-    StepVerifier.create(Flux.fromIterable(Arrays.asList("Hello", "World")))
-        .expectNext("Hello")
-        .expectNext("World")
-        .verifyComplete();
-    StepVerifier.create(
-            Flux.generate(
-                sink -> {
-                  sink.next("Hello");
-                  sink.complete();
-                }))
-        .expectNext("Hello")
-        .verifyComplete();
-    StepVerifier.create(Flux.fromStream(Stream.of("Hello", "World")))
-        .expectNext("Hello")
-        .expectNext("World")
-        .verifyComplete();
-    StepVerifier.create(Flux.range(1, 5)).expectNextCount(5).verifyComplete();
-    StepVerifier.create(Flux.error(new IllegalArgumentException("error")))
-        .expectError(IllegalArgumentException.class)
-        .verify();
+  @Nested
+  class CreateFlux {
+
+    @DisplayName("with empty()")
+    @Test
+    void testCreateFluxEmpty() {
+      StepVerifier.create(Flux.empty()).expectNextCount(0).verifyComplete();
+    }
+
+    @DisplayName("with just()")
+    @Test
+    void testCreateFluxJust() {
+      StepVerifier.create(Flux.just("Hello", "World"))
+          .expectNext("Hello")
+          .expectNext("World")
+          .verifyComplete();
+    }
+
+    @DisplayName("with defer()")
+    @Test
+    void testCreateFluxDefer() {
+      StepVerifier.create(Flux.defer(() -> Mono.just("Hello")))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with defer()")
+    @Test
+    void testCreateFluxCreate() {
+      StepVerifier.create(
+              Flux.create(
+                  sink -> {
+                    sink.next("Hello");
+                    sink.complete();
+                  }))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with fromArray()")
+    @Test
+    void testCreateFluxFromArray() {
+      StepVerifier.create(Flux.fromArray(new String[] {"Hello"}))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with fromIterable()")
+    @Test
+    void testCreateFluxFromIterable() {
+      StepVerifier.create(Flux.fromIterable(Arrays.asList("Hello", "World")))
+          .expectNext("Hello")
+          .expectNext("World")
+          .verifyComplete();
+    }
+
+    @DisplayName("with fromGenerate()")
+    @Test
+    void testCreateFluxFromGenerate() {
+      StepVerifier.create(
+              Flux.generate(
+                  sink -> {
+                    sink.next("Hello");
+                    sink.complete();
+                  }))
+          .expectNext("Hello")
+          .verifyComplete();
+    }
+
+    @DisplayName("with fromStream()")
+    @Test
+    void testCreateFluxFromStream() {
+      StepVerifier.create(Flux.fromStream(Stream.of("Hello", "World")))
+          .expectNext("Hello")
+          .expectNext("World")
+          .verifyComplete();
+      StepVerifier.create(Flux.range(1, 5)).expectNextCount(5).verifyComplete();
+      StepVerifier.create(Flux.error(new IllegalArgumentException("error")))
+          .expectError(IllegalArgumentException.class)
+          .verify();
+    }
+
+    @DisplayName("with range()")
+    @Test
+    void testCreateFluxRange() {
+      StepVerifier.create(Flux.range(1, 5)).expectNextCount(5).verifyComplete();
+      StepVerifier.create(Flux.error(new IllegalArgumentException("error")))
+          .expectError(IllegalArgumentException.class)
+          .verify();
+    }
+
+    @DisplayName("with error()")
+    @Test
+    void testCreateFluxError() {
+      StepVerifier.create(Flux.error(new IllegalArgumentException("error")))
+          .expectError(IllegalArgumentException.class)
+          .verify();
+    }
   }
 
   @DisplayName("transformations")
-  @Test
-  void testTransform() {
-    Mono<String> helloMono =
-        Flux.fromStream(Stream.of("Hello", "World")).collect(Collectors.joining(" "));
-    StepVerifier.create(helloMono).expectNext("Hello World").verifyComplete();
+  @Nested
+  class Transformations {
 
-    StepVerifier.create(Flux.range(1, 10).count()).expectNext(10L).verifyComplete();
-    StepVerifier.create(Flux.range(1, 5).reduce(1, Integer::sum)).expectNext(16).verifyComplete();
-    StepVerifier.create(
-            Flux.range(1, 5)
-                .handle(
-                    (a, b) -> {
-                      if (a > 3) b.next(a);
-                    }))
-        .expectNextCount(2)
-        .verifyComplete();
-    StepVerifier.create(
-            Flux.range(1, 10)
-                .log()
-                .groupBy(i -> i % 2 == 0 ? "even" : "odd")
-                .flatMap(s -> Flux.just(Objects.requireNonNull(s.key()))))
-        .expectNextCount(2)
-        .verifyComplete();
+    @DisplayName("with collect()")
+    @Test
+    void testTransformWithCollect() {
+      Mono<String> helloMono = Flux.just("Hello", "World").collect(Collectors.joining(" "));
+      StepVerifier.create(helloMono).expectNext("Hello World").verifyComplete();
+    }
+
+    @DisplayName("with count()")
+    @Test
+    void testTransformWithCount() {
+      StepVerifier.create(Flux.range(1, 10).count()).expectNext(10L).verifyComplete();
+    }
+
+    @DisplayName("with reduce()")
+    @Test
+    void testTransformWithReduce() {
+      StepVerifier.create(Flux.range(1, 5).reduce(1, Integer::sum)).expectNext(16).verifyComplete();
+    }
+
+    @DisplayName("with handle()")
+    @Test
+    void testTransformWithHandle() {
+      StepVerifier.create(
+              Flux.range(1, 5)
+                  .handle(
+                      (consumer, sink) -> {
+                        if (consumer > 3) sink.next(consumer);
+                      }))
+          .expectNextCount(2)
+          .verifyComplete();
+    }
+
+    @DisplayName("with groupBy()")
+    @Test
+    void testTransformWithGroupBy() {
+      StepVerifier.create(
+              Flux.range(1, 10)
+                  .log()
+                  .groupBy(i -> i % 2 == 0 ? "even" : "odd")
+                  .flatMap(s -> Flux.just(Objects.requireNonNull(s.key()))))
+          .expectNextCount(2)
+          .verifyComplete();
+    }
+
+    @DisplayName("with map()")
+    @Test
+    void testTransformWithMap() {
+      StepVerifier.create(Flux.just(
+              new Person("Peter", "Parker", new Address("Stuttgart", Country.GERMANY)),
+              new Person("Max", "Muster", new Address("Berlin", Country.GERMANY)),
+              new Person("Steffi", "Maier", new Address("Wien", Country.AUSTRIA)))
+              .map(p -> p.getFirstName() + " " + p.getLastName() + " in " + p.getAddress().getCity()).log())
+              .expectNext("Peter Parker in Stuttgart")
+              .expectNext("Max Muster in Berlin")
+              .expectNext("Steffi Maier in Wien")
+              .verifyComplete();
+    }
+
+    @DisplayName("with flatMap()")
+    @Test
+    void testTransformWithFlatMap() {
+      StepVerifier.create(Flux.just(
+              new Person("Peter", "Parker", new Address("Stuttgart", Country.GERMANY)),
+              new Person("Max", "Muster", new Address("Berlin", Country.GERMANY)),
+              new Person("Steffi", "Maier", new Address("Wien", Country.AUSTRIA)))
+              .flatMap(p -> Flux.just(p.getFirstName() + " " + p.getLastName(), "Lives in " + p.getAddress().getCity())).log())
+              .expectNext("Peter Parker")
+              .expectNext("Lives in Stuttgart")
+              .expectNext("Max Muster")
+              .expectNext("Lives in Berlin")
+              .expectNext("Steffi Maier")
+              .expectNext("Lives in Wien")
+              .verifyComplete();
+    }
   }
 
   @DisplayName("subscription")
@@ -127,65 +310,61 @@ class BasicReactivePlayground {
               }
             })
         .map(Object::toString)
-        .subscribe(
-            LOGGER::info,
-            err -> LOGGER.error(err.getMessage(), err),
-            () -> LOGGER.info("Completed"));
+        .subscribe(log::info, err -> log.error(err.getMessage(), err), () -> log.info("Completed"));
   }
 
-  @DisplayName("delay elements with sleep")
-  @Test
-  void testDelayWithSleep() throws InterruptedException {
+  @DisplayName("delay")
+  @Nested
+  class Delays {
 
-    Flux.range(1, 10)
-        .log()
-        .delayElements(Duration.ofMillis(50))
-        .filter(i -> i > 3)
-        .subscribe(null, null, () -> LOGGER.info("Completed"));
+    @DisplayName("with delaySequence()")
+    @Test
+    void testDelaySequence() {
+      Flux<Integer> sequence =
+          Flux.range(1, 10).delaySequence(Duration.ofSeconds(1)).map(i -> i + 1).log();
 
-    Thread.sleep(500);
-  }
+      StepVerifier.create(sequence).expectNextCount(10).verifyComplete();
+    }
 
-  @DisplayName("delay elements with step verifier")
-  @Test
-  void testDelayWithStepVerifier() {
+    @DisplayName("with delayElements()")
+    @Test
+    void testDelayElements() {
+      Flux<Integer> sequence =
+          Flux.range(1, 10).delayElements(Duration.ofMillis(500)).map(i -> i + 1).log();
 
-    Flux<Integer> rangeFlux =
-        Flux.range(1, 10).log().delayElements(Duration.ofMillis(50)).filter(i -> i > 3);
+      StepVerifier.create(sequence).expectNextCount(10).verifyComplete();
+    }
 
-    StepVerifier.create(rangeFlux).expectNextCount(7).verifyComplete();
+    @DisplayName("with delaySubscription()")
+    @Test
+    void testDelaySubscription() {
+      Flux<Integer> sequence =
+          Flux.range(1, 10).map(i -> i + 1).delaySubscription(Duration.ofSeconds(1)).log();
+
+      StepVerifier.create(sequence).expectNextCount(10).verifyComplete();
+    }
   }
 
   @Test
   void testBlockhound() {
-    Mono.delay(Duration.ofSeconds(1))
-        .doOnNext(
-            it -> {
-              Thread.yield();
-              /*
-              try {
-                Thread.sleep(10);
-              }
-              catch (InterruptedException e) {
-                throw new RuntimeException(e);
-              }*/
-            })
-        .block();
+
+    Scheduler canNotBlock = Schedulers.newParallel("test", 3);
+    Scheduler canBlock = Schedulers.elastic();
+    Flux<String> stringFlux =
+        Flux.just("A", "B", "C", "D", "E", "F")
+            .publishOn(canBlock)
+            .map(String::toLowerCase)
+            .log()
+            .doOnNext(s -> blocking());
+
+    StepVerifier.create(stringFlux).expectNextCount(6).verifyComplete();
   }
 
-  @DisplayName("with strings")
-  @Test
-  void testWithString() throws InterruptedException {
-
-    ParallelFlux<String> hello_reactive = Flux.just("Hello Reactive")
-            .delayElements(Duration.ofMillis(100))
-            .parallel()
-            .runOn(Schedulers.newParallel("test", 5))
-            .log()
-            .map(String::toUpperCase)
-            .flatMap(s -> Flux.just(s.split("")));
-    hello_reactive.subscribe(System.out::println);
-
-    StepVerifier.create(hello_reactive).expectNext("H").expectNextCount(13).verifyComplete();
+  private void blocking() {
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }

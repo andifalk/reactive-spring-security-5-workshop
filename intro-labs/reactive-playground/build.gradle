@@ -18,6 +18,7 @@ ext {
 dependencies {
     implementation("io.projectreactor:reactor-core:${reactorVersion}")
     implementation("io.projectreactor:reactor-test:${reactorVersion}")
+    implementation("io.projectreactor:reactor-tools:${reactorVersion}")
     implementation('org.slf4j:slf4j-api:1.7.30')
     implementation('ch.qos.logback:logback-classic:1.2.3')
     testImplementation('org.assertj:assertj-core:3.16.1')

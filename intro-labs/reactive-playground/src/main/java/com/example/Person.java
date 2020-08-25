@@ -1,62 +1,57 @@
 package com.example;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public class Person {
 
-    private final String firstName;
-    private final String lastName;
-    private final Set<Address> addresses;
+  private final String firstName;
+  private final String lastName;
+  private final Address address;
 
-    public Person(String firstName, String lastName, Set<Address> addresses) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.addresses = addresses != null ? addresses : new HashSet<>();
-    }
+  public Person(String firstName, String lastName, Address address) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.address = address;
+  }
 
-    public Person(String firstName, String lastName) {
-        this(firstName, lastName, new HashSet<>());
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public void addAddress(Address address) {
-        this.addresses.add(address);
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public Address getAddress() {
+    return address;
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Person person = (Person) o;
+    return Objects.equals(firstName, person.firstName)
+        && Objects.equals(lastName, person.lastName)
+        && Objects.equals(address, person.address);
+  }
 
-    public Set<Address> getAddresses() {
-        return addresses;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(firstName, lastName, address);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Person person = (Person) o;
-        return Objects.equals(firstName, person.firstName) &&
-                Objects.equals(lastName, person.lastName) &&
-                Objects.equals(addresses, person.addresses);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, lastName, addresses);
-    }
-
-    @Override
-    public String toString() {
-        return "Person{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", addresses=" + addresses +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Person{"
+        + "firstName='"
+        + firstName
+        + '\''
+        + ", lastName='"
+        + lastName
+        + '\''
+        + ", addresses="
+        + address
+        + '}';
+  }
 }
