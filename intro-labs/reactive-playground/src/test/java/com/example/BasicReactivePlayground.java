@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.blockhound.BlockHound;
+import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
@@ -15,6 +16,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -345,26 +347,60 @@ class BasicReactivePlayground {
     }
   }
 
+  @DisplayName("streams")
   @Test
-  void testBlockhound() {
-
-    Scheduler canNotBlock = Schedulers.newParallel("test", 3);
-    Scheduler canBlock = Schedulers.elastic();
-    Flux<String> stringFlux =
-        Flux.just("A", "B", "C", "D", "E", "F")
-            .publishOn(canBlock)
-            .map(String::toLowerCase)
-            .log()
-            .doOnNext(s -> blocking());
-
-    StepVerifier.create(stringFlux).expectNextCount(6).verifyComplete();
+  void testStream() {
+    Flux<LocalDateTime> dateTimeFlux = Flux.fromStream(Stream.generate(LocalDateTime::now)).log();
+    StepVerifier.create(dateTimeFlux).expectNextCount(10).thenCancel().verify();
   }
 
-  private void blocking() {
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+  @DisplayName("blocking")
+  @Nested
+  class Blocking {
+
+    @DisplayName("detection")
+    @Test
+    void testBlockDetection() {
+
+      Scheduler canNotBlock = Schedulers.newParallel("eventLoop", 4);
+      Flux<String> stringFlux =
+              Flux.just("a", "b", "c", "d", "e", "f")
+                      .subscribeOn(canNotBlock)
+                      .log()
+                      .map(this::blockingOperation);
+
+      StepVerifier.create(stringFlux).expectError(BlockingOperationError.class).verify();
+    }
+
+    @DisplayName("wrapping")
+    @Test
+    void testWrapBlockingCall() {
+      Flux<String> stringFlux =
+              Flux.just("a", "b", "c", "d", "e", "f")
+                      .log()
+                      .flatMap(this::blockingWrapper);
+      StepVerifier.create(stringFlux).expectNext("A", "B", "C", "D", "E", "F").verifyComplete();
+    }
+
+    private Mono<String> blockingWrapper(String s) {
+      return Mono.fromCallable(() -> blockingOperation(s))
+              .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private String blockingOperation(String input) {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        //ignore
+      }
+      return input.toUpperCase();
     }
   }
+
+  @DisplayName("your playground")
+  @Test
+  void playgroundTest() {
+
+  }
+
 }
