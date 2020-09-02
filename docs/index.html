@@ -73,41 +73,6 @@
                     </section>
                 </section>
 
-                <!-- Why Security ? -->
-
-                <section>
-                    <section data-background="images/novatec_title_back.png">
-                        <h1 style="color: white">Security ?</h1>
-                        <p style="color: white">&ldquo;From my experience all software developers are now security engineers wether they know it,
-                            admit to it or do it [...]&rdquo;</p>
-                            <p>&mdash; <a href="https://twitter.com/manicode/status/942965303310393344">Jim Manico on Twitter</a></p>
-                    </section>
-                    <section data-background="images/agile_security_attacks.svg" data-background-size="85%">
-                    </section>
-                    <section>
-                        <iframe width="800" height="600" src="https://www.youtube.com/embed/M7qMP3C5bkU?start=919"
-                                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen></iframe>
-                    </section>
-                    <section>
-                        <p>&ldquo;If it's not secure, it's not guaranteed to be anything else either&rdquo;</p>
-                        <img alt="maslow" src="images/software-quality-maslow.png" class="plain" width="55%">
-                        <p><small><a href="https://gojko.net/2012/05/08/redefining-software-quality/">https://gojko.net/2012/05/08/redefining-software-quality/</a></small></p>
-                    </section>
-                    <section data-background="images/big_picture_security.png" data-background-size="80%">
-                    </section>
-                    <section>
-                        <h4>OWASP Top 10 2017</h4>
-                        <img alt="owasp top 10" src="images/owasp_top_10_2017_risks.png" width="85%">
-                        <p><small><a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">https://www.owasp.org/index.php/Top_10-2017_Top_10</a></small></p>
-                    </section>
-                    <section>
-                        <p>Application Security Verification Standard</p>
-                        <img src="images/asvs_sample.png" width="100%" class="plain">
-                        <p><small><a href="https://github.com/OWASP/ASVS">https://github.com/OWASP/ASVS</a></small></p>
-                    </section>
-                </section>
-
                 <!-- Workshop Intro & Agenda-->
 
                 <section>
@@ -352,7 +317,70 @@
                             <img src="images/choose_appropriate_threading_model.png" class="plain">
                         </p>
                     </section>
+                    <section>
+                        <h2>Reactive Data Stores</h2>
+                        <p>
+                            <img src="images/reactive_datastores.png" class="plain">
+                        </p>
+                    </section>
+                    <section>
+                        <h3>Reactive Relational Database Connectivity (R2DBC)</h3>
+                        <ul>
+                            <li>Reactive programming APIs for relational databases</li>
+                            <li>JDBC: Blocking - R2DBC: Non-blocking reactive API</li>
+                            <li>R2DBC drivers available for:</li>
+                            <ul>
+                                <li>Google Cloud Spanner</li>
+                                <li>MySQL, MariaDB, PostgreSQL, H2</li>
+                                <li>Microsoft SQL Server</li>
+                            </ul>
+                        </ul>
+                        <p><small><a href="https://r2dbc.io/">https://r2dbc.io</a></small></p>
+                    </section>
+                    <section>
+                        <h2>Reactive Spring Book</h2>
+                        <h4>(Josh Long)</h4>
+                        <p>&mdash; <a href="https://leanpub.com/reactive-spring">https://leanpub.com/reactive-spring</a></p>
+                        <img src="images/reactive-spring-book.png" width="28%">
+                    </section>
                 </section>
+
+                <!-- Why Security ? -->
+
+                <section>
+                    <section data-background="images/novatec_title_back.png">
+                        <h1 style="color: white">Security ?</h1>
+                        <p style="color: white">&ldquo;From my experience all software developers are now security engineers wether they know it,
+                            admit to it or do it [...]&rdquo;</p>
+                        <p>&mdash; <a href="https://twitter.com/manicode/status/942965303310393344">Jim Manico on Twitter</a></p>
+                    </section>
+                    <section data-background="images/agile_security_attacks.svg" data-background-size="85%">
+                    </section>
+                    <section>
+                        <iframe width="800" height="600" src="https://www.youtube.com/embed/M7qMP3C5bkU?start=919"
+                                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                    </section>
+                    <section>
+                        <p>&ldquo;If it's not secure, it's not guaranteed to be anything else either&rdquo;</p>
+                        <img alt="maslow" src="images/software-quality-maslow.png" class="plain" width="55%">
+                        <p><small><a href="https://gojko.net/2012/05/08/redefining-software-quality/">https://gojko.net/2012/05/08/redefining-software-quality/</a></small></p>
+                    </section>
+                    <section data-background="images/big_picture_security.png" data-background-size="80%">
+                    </section>
+                    <section>
+                        <h4>OWASP Top 10 2017</h4>
+                        <img alt="owasp top 10" src="images/owasp_top_10_2017_risks.png" width="85%">
+                        <p><small><a href="https://www.owasp.org/index.php/Top_10-2017_Top_10">https://www.owasp.org/index.php/Top_10-2017_Top_10</a></small></p>
+                    </section>
+                    <section>
+                        <p>Application Security Verification Standard</p>
+                        <img src="images/asvs_sample.png" width="100%" class="plain">
+                        <p><small><a href="https://github.com/OWASP/ASVS">https://github.com/OWASP/ASVS</a></small></p>
+                    </section>
+                </section>
+
+                <!-- Spring Security -->
 
                 <section>
                     <section data-background="images/novatec_title_back.png">
@@ -364,6 +392,33 @@
                         <p>
                             <img src="images/spring_security_overview.png" class="plain">
                         </p>
+                    </section>
+                    <section>
+                        <h2>Spring Security 5</h2>
+                        <ul>
+                            <li>Authentication & Authorization</li>
+                            <li>Password Encoding & Crypto (BCrypt, Argon2, ...)</li>
+                            <li>Support for Servlet & Reactive Web Applications</li>
+                            <li>Support for OAuth 2.0 & OpenID Connect 1.0</li>
+                            <li>Authz Code (+ PKCE) & Client Credentials</li>
+                            <li>Supports JWT and Opaque Tokens</li>
+                            <li>Testing Support for Authentication/Authz/JWT</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Spring Security 5</h2>
+                        <h4>Secure By Default</h4>
+                        <ul>
+                            <li>Authentication required for all HTTP endpoints
+                            <li>Default Validation for JWT
+                            <li>Signature, Issuer, Expiration
+                            <li>Includes Actuator (Monitoring) Endpoints</li>
+                            <li>Except “health” and “info”</li>
+                            <li>Session Fixation Protection</li>
+                            <li>Session Cookie (HttpOnly, Secure)</li>
+                            <li>CSRF Protection</li>
+                            <li>Security Response Headers</li>
+                        </ul>
                     </section>
                     <section data-background="images/novatec_separator_back.png">
                         <h2 style="color: white">Spring Security</h2>
@@ -452,6 +507,8 @@
                         </p>
                     </section>
                 </section>
+
+                <!-- hands-On Workshop -->
 
                 <section>
                     <section data-background="images/novatec_title_back.png">
