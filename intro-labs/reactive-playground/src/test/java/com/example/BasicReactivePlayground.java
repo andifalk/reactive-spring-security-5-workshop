@@ -3,6 +3,7 @@ package com.example;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+import reactor.util.function.Tuples;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -53,10 +55,10 @@ class BasicReactivePlayground {
     @Test
     void testFunctional() {
       String greeting =
-              Stream.of("World")
-                      .map(String::toUpperCase)
-                      .map(um -> "Hello " + um + "!")
-                      .collect(Collectors.joining());
+          Stream.of("World")
+              .map(String::toUpperCase)
+              .map(um -> "Hello " + um + "!")
+              .collect(Collectors.joining());
       assertThat(greeting).isEqualTo("Hello WORLD!");
     }
 
@@ -64,7 +66,7 @@ class BasicReactivePlayground {
     @Test
     void testReactive() {
       Mono<String> greeting =
-              Mono.just("World").map(String::toUpperCase).map(um -> "Hello " + um + "!");
+          Mono.just("World").map(String::toUpperCase).map(um -> "Hello " + um + "!");
       StepVerifier.create(greeting).expectNext("Hello WORLD!").verifyComplete();
     }
   }
@@ -270,32 +272,46 @@ class BasicReactivePlayground {
     @DisplayName("with map()")
     @Test
     void testTransformWithMap() {
-      StepVerifier.create(Flux.just(
-              new Person("Peter", "Parker", new Address("Stuttgart", Country.GERMANY)),
-              new Person("Max", "Muster", new Address("Berlin", Country.GERMANY)),
-              new Person("Steffi", "Maier", new Address("Wien", Country.AUSTRIA)))
-              .map(p -> p.getFirstName() + " " + p.getLastName() + " in " + p.getAddress().getCity()).log())
-              .expectNext("Peter Parker in Stuttgart")
-              .expectNext("Max Muster in Berlin")
-              .expectNext("Steffi Maier in Wien")
-              .verifyComplete();
+      StepVerifier.create(
+              Flux.just(
+                      new Person("Peter", "Parker", new Address("Stuttgart", Country.GERMANY)),
+                      new Person("Max", "Muster", new Address("Berlin", Country.GERMANY)),
+                      new Person("Steffi", "Maier", new Address("Wien", Country.AUSTRIA)))
+                  .map(
+                      p ->
+                          p.getFirstName()
+                              + " "
+                              + p.getLastName()
+                              + " in "
+                              + p.getAddress().getCity())
+                  .log())
+          .expectNext("Peter Parker in Stuttgart")
+          .expectNext("Max Muster in Berlin")
+          .expectNext("Steffi Maier in Wien")
+          .verifyComplete();
     }
 
     @DisplayName("with flatMap()")
     @Test
     void testTransformWithFlatMap() {
-      StepVerifier.create(Flux.just(
-              new Person("Peter", "Parker", new Address("Stuttgart", Country.GERMANY)),
-              new Person("Max", "Muster", new Address("Berlin", Country.GERMANY)),
-              new Person("Steffi", "Maier", new Address("Wien", Country.AUSTRIA)))
-              .flatMap(p -> Flux.just(p.getFirstName() + " " + p.getLastName(), "Lives in " + p.getAddress().getCity())).log())
-              .expectNext("Peter Parker")
-              .expectNext("Lives in Stuttgart")
-              .expectNext("Max Muster")
-              .expectNext("Lives in Berlin")
-              .expectNext("Steffi Maier")
-              .expectNext("Lives in Wien")
-              .verifyComplete();
+      StepVerifier.create(
+              Flux.just(
+                      new Person("Peter", "Parker", new Address("Stuttgart", Country.GERMANY)),
+                      new Person("Max", "Muster", new Address("Berlin", Country.GERMANY)),
+                      new Person("Steffi", "Maier", new Address("Wien", Country.AUSTRIA)))
+                  .flatMap(
+                      p ->
+                          Flux.just(
+                              p.getFirstName() + " " + p.getLastName(),
+                              "Lives in " + p.getAddress().getCity()))
+                  .log())
+          .expectNext("Peter Parker")
+          .expectNext("Lives in Stuttgart")
+          .expectNext("Max Muster")
+          .expectNext("Lives in Berlin")
+          .expectNext("Steffi Maier")
+          .expectNext("Lives in Wien")
+          .verifyComplete();
     }
   }
 
@@ -364,10 +380,10 @@ class BasicReactivePlayground {
 
       Scheduler canNotBlock = Schedulers.newParallel("eventLoop", 4);
       Flux<String> stringFlux =
-              Flux.just("a", "b", "c", "d", "e", "f")
-                      .subscribeOn(canNotBlock)
-                      .log()
-                      .map(this::blockingOperation);
+          Flux.just("a", "b", "c", "d", "e", "f")
+              .subscribeOn(canNotBlock)
+              .log()
+              .map(this::blockingOperation);
 
       StepVerifier.create(stringFlux).expectError(BlockingOperationError.class).verify();
     }
@@ -376,31 +392,192 @@ class BasicReactivePlayground {
     @Test
     void testWrapBlockingCall() {
       Flux<String> stringFlux =
-              Flux.just("a", "b", "c", "d", "e", "f")
-                      .log()
-                      .flatMap(this::blockingWrapper);
+          Flux.just("a", "b", "c", "d", "e", "f").log().flatMap(this::blockingWrapper);
       StepVerifier.create(stringFlux).expectNext("A", "B", "C", "D", "E", "F").verifyComplete();
     }
 
     private Mono<String> blockingWrapper(String s) {
-      return Mono.fromCallable(() -> blockingOperation(s))
-              .subscribeOn(Schedulers.boundedElastic());
+      return Mono.fromCallable(() -> blockingOperation(s)).subscribeOn(Schedulers.boundedElastic());
     }
 
     private String blockingOperation(String input) {
       try {
         Thread.sleep(1000);
       } catch (InterruptedException e) {
-        //ignore
+        // ignore
       }
       return input.toUpperCase();
     }
   }
 
-  @DisplayName("your playground")
-  @Test
-  void playgroundTest() {
+  @DisplayName("merge streams")
+  @Nested
+  class MergeStreams {
 
+    @DisplayName("concat")
+    @RepeatedTest(5)
+    void concat() {
+      Flux<Integer> flux1 = Flux.range(1, 5).delayElements(Duration.ofMillis(200));
+      Flux<Integer> flux2 = Flux.range(6, 5);
+      StepVerifier.create(flux1.concatWith(flux2))
+          .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+          .verifyComplete();
+    }
+
+    @DisplayName("merge")
+    @RepeatedTest(5)
+    void merge() {
+      Flux<Integer> flux1 = Flux.range(1, 5).delayElements(Duration.ofMillis(200));
+      Flux<Integer> flux2 = Flux.range(6, 5);
+      StepVerifier.create(flux1.mergeWith(flux2).log())
+          .expectNext(6, 7, 8, 9, 10, 1, 2, 3, 4, 5)
+          .verifyComplete();
+    }
+
+    @DisplayName("merge sequential")
+    @RepeatedTest(5)
+    void mergeSequential() {
+      Flux<Integer> flux1 = Flux.range(1, 5).delayElements(Duration.ofMillis(200));
+      Flux<Integer> flux2 = Flux.range(6, 5);
+      StepVerifier.create(Flux.mergeSequential(flux1, flux2))
+          .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+          .verifyComplete();
+    }
+
+    @DisplayName("zip with")
+    @RepeatedTest(5)
+    void zipWith() {
+      Flux<Integer> flux1 = Flux.range(1, 5).delayElements(Duration.ofMillis(200));
+      Flux<Integer> flux2 = Flux.range(6, 5);
+      StepVerifier.create(flux1.zipWith(flux2))
+          .expectNext(
+              Tuples.of(1, 6), Tuples.of(2, 7), Tuples.of(3, 8), Tuples.of(4, 9), Tuples.of(5, 10))
+          .verifyComplete();
+    }
   }
 
+  // In Reactive Streams, errors are terminal events i.e. it stops the sequence
+  // and gets propagated to the last step (the subscriber)
+  @DisplayName("error handling")
+  @Nested
+  class ErrorHandling {
+
+    @DisplayName("try-catch-return")
+    @Test
+    void tryCatchWithReturn() {
+      StepVerifier.create(Flux.range(1, 10).log().map(this::someOtherCalc).onErrorReturn(6))
+          .expectNext(2, 6)
+          .expectComplete()
+          .verify();
+    }
+
+    @DisplayName("try-catch-resume")
+    @Test
+    void tryCatchWithResume() {
+      StepVerifier.create(
+              Flux.range(1, 10).log().map(this::someOtherCalc).onErrorResume(t -> Mono.just(42)))
+          .expectNext(2, 42)
+          .expectComplete()
+          .verify();
+    }
+
+    @DisplayName("try-catch-continue")
+    @Test
+    void tryCatchWithContinue() {
+      StepVerifier.create(
+              Flux.range(1, 10)
+                  .log()
+                  .map(this::someOtherCalc)
+                  .onErrorContinue((t, c) -> log.error(t.getMessage())))
+          .expectNext(2, 6, 8, 10, 12, 14, 16, 18, 20)
+          .expectComplete()
+          .verify();
+    }
+
+    @DisplayName("try-catch-remap")
+    @Test
+    void tryCatchWithRemap() {
+      StepVerifier.create(
+              Flux.range(1, 10)
+                  .log()
+                  .map(this::someOtherCalc)
+                  .onErrorMap(originalThrowable -> new RuntimeException("My own exception")))
+          .expectNext(2)
+          .expectError(RuntimeException.class)
+          .verify();
+    }
+
+    @DisplayName("try-catch-log")
+    @Test
+    void tryCatchWithLog() {
+      StepVerifier.create(
+              Flux.range(1, 10)
+                  .log()
+                  .map(this::someOtherCalc)
+                  .doOnError(
+                      throwable -> log.error("Error in calculation: {}", throwable.getMessage())))
+          .expectNext(2)
+          .expectError(IllegalArgumentException.class)
+          .verify();
+    }
+
+    @DisplayName("try-catch-finally")
+    @Test
+    void tryCatchFinally() {
+      StepVerifier.create(
+              Flux.range(1, 10)
+                  .log()
+                  .map(this::someOtherCalc)
+                  .doOnError(
+                      throwable -> log.error("Error in calculation: {}", throwable.getMessage()))
+                  .doFinally(signalType -> log.info("Finally: {}", signalType.name())))
+          .expectNext(2)
+          .expectError(IllegalArgumentException.class)
+          .verify();
+    }
+
+    @DisplayName("try-catch-checked-exception")
+    @Test
+    void tryCatchWithHandle() {
+      StepVerifier.create(
+              Flux.range(1, 10)
+                  .handle(
+                      (input, sink) -> {
+                        try {
+                          sink.next(someCalc(input));
+                        } catch (InvalidCalculationError ex) {
+                          sink.error(ex);
+                        }
+                      }))
+          .expectNext(2)
+          .expectError()
+          .verify();
+    }
+
+    private int someCalc(int i) throws InvalidCalculationError {
+      if (i == 2) {
+        throw new InvalidCalculationError("Invalid number " + i);
+      } else {
+        return i * 2;
+      }
+    }
+
+    private int someOtherCalc(int i) {
+      if (i == 2) {
+        throw new IllegalArgumentException("Invalid number " + i);
+      } else {
+        return i * 2;
+      }
+    }
+
+    class InvalidCalculationError extends Exception {
+      InvalidCalculationError(String message) {
+        super(message);
+      }
+    }
+  }
+
+  @DisplayName("your playground")
+  @Test
+  void playgroundTest() {}
 }
