@@ -89,6 +89,20 @@ In this workshop we will use https://keycloak.org[Keycloak] by JBoss/RedHat as l
 https://keycloak.org[Keycloak] is https://openid.net/developers/certified[certified for OpenID Connect 1.0] and
 implements OAuth 2.0 and OpenID Connect 1.0.
 
+=== Setup MongoDB Compass
+
+To look inside the MongoDB instance you may use https://www.mongodb.com/try/download/compass[MongoDB Compass] or https://robomongo.org[Robo 3T].
+
+Here we will use MongoDB Compass (this is completely free).
+To install this just go to https://www.mongodb.com/try/download/compass[MongoDB Compass] and download the tool for your operating system.
+Please use the latest stable version (not the _readonly_ or _isolated_ versions).
+
+To connect to the embedded MongoDB of our hands-on labs later use this connection url `mongodb://localhost:40495` (this will only work when you have started the corresponding spring application later.
+
+.MongoDB Compass
+
+image::images/mongodb_compass.png[scaledwidth="50%", scaledheight="50%",alt="mongodb_compass"]
+
 === Setup Keycloak
 
 You need a compliant OAuth 2.0 / OpenID Connect provider for this workshop.
