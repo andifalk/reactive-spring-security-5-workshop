@@ -71,3 +71,24 @@ The following resources might be helpful for first steps into the reactive world
 
 * https://projectreactor.io/docs/core/release/reference/[Project Reactor Reference Documentation]
 * https://projectreactor.io/docs/core/release/reference/#which-operator[Which operator do I need?]
+
+=== Intro-Lab: Migrate Apps To Reactive
+
+When moving in the direction of the reactive world, you usually have existing applications still running on blocking servlet stack.
+
+Important to mention is also the fact that you do **NOT** have to migrate all you applications to reactive.
+The servlet based stack has proven to work for most applications so this won't go away. If you do not have a present problem with the load on your server application with
+threads being exhausted then there is no need to act.
+
+To show a sample migration scenario, we will migrate the following applications to their reactive counterparts:
+
+* A server web application using Spring MVC with the blocking servlet stack on Tomcat
+* A client web application using a blocking `RestTemplate` to call the server application
+
+We will now migrate these to Spring WebFlux (the server application) and to using the reactive `WebClient` (the client application).
+
+Let's start by looking into the folder _migrate-to-reactive_.
+
+See the spring reference docs for full coverage of _Spring WebFlux_ and the `WebClient`:
+
+* https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html#spring-webflux[Spring Reference Docs]
