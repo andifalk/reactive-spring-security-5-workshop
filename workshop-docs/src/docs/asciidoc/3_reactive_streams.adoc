@@ -87,7 +87,7 @@ To show a sample migration scenario, we will migrate the following applications 
 
 We will now migrate these to Spring WebFlux (the server application) and to using the reactive `WebClient` (the client application).
 
-Let's start by looking into the folder _migrate-to-reactive_.
+Let's start by looking into the folder **intro-labs/migrate-to-reactive**.
 
 See the spring reference docs for full coverage of _Spring WebFlux_ and the `WebClient`:
 
