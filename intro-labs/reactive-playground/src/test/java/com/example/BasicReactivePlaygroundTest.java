@@ -28,9 +28,9 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Basic reactive playground")
-class BasicReactivePlayground {
+class BasicReactivePlaygroundTest {
 
-  private static final Logger log = LoggerFactory.getLogger(BasicReactivePlayground.class);
+  private static final Logger log = LoggerFactory.getLogger(BasicReactivePlaygroundTest.class);
 
   @BeforeEach
   void init() {
@@ -40,7 +40,7 @@ class BasicReactivePlayground {
 
   @DisplayName("imperative vs reactive")
   @Nested
-  class ImperativeVsReactive {
+  class ImperativeReactiveTest {
 
     @DisplayName("imperative code")
     @Test
@@ -73,7 +73,7 @@ class BasicReactivePlayground {
 
   @DisplayName("create Mono")
   @Nested
-  class createMono {
+  class CreateMonoTest {
 
     @DisplayName("with empty()")
     @Test
@@ -122,7 +122,7 @@ class BasicReactivePlayground {
 
   @DisplayName("create Flux")
   @Nested
-  class CreateFlux {
+  class CreateFluxTest {
 
     @DisplayName("with empty()")
     @Test
@@ -223,7 +223,7 @@ class BasicReactivePlayground {
 
   @DisplayName("transformations")
   @Nested
-  class Transformations {
+  class TransformationTest {
 
     @DisplayName("with collect()")
     @Test
@@ -333,7 +333,7 @@ class BasicReactivePlayground {
 
   @DisplayName("delay")
   @Nested
-  class Delays {
+  class DelayTest {
 
     @DisplayName("with delaySequence()")
     @Test
@@ -372,7 +372,7 @@ class BasicReactivePlayground {
 
   @DisplayName("blocking")
   @Nested
-  class Blocking {
+  class BlockingTest {
 
     @DisplayName("detection")
     @Test
@@ -402,7 +402,7 @@ class BasicReactivePlayground {
 
     private String blockingOperation(String input) {
       try {
-        Thread.sleep(1000);
+        Thread.sleep(2000);
       } catch (InterruptedException e) {
         // ignore
       }
@@ -412,7 +412,7 @@ class BasicReactivePlayground {
 
   @DisplayName("merge streams")
   @Nested
-  class MergeStreams {
+  class MergeStreamTest {
 
     @DisplayName("concat")
     @RepeatedTest(5)
@@ -460,7 +460,7 @@ class BasicReactivePlayground {
   // and gets propagated to the last step (the subscriber)
   @DisplayName("error handling")
   @Nested
-  class ErrorHandling {
+  class ErrorHandlingTest {
 
     @DisplayName("try-catch-return")
     @Test
