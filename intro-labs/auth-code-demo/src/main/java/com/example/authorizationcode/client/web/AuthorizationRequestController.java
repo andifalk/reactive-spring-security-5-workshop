@@ -68,8 +68,9 @@ public class AuthorizationRequestController {
     return webClient
         .get()
         .uri(authorizationRequest)
-        .exchange()
-        .map(cr -> ResponseEntity.status(cr.statusCode()).body(cr.statusCode().getReasonPhrase()));
+            .exchangeToMono(
+                    response -> Mono.just(ResponseEntity.status(response.statusCode())
+                            .body(response.statusCode().getReasonPhrase())));
   }
 
   private String generateRandomState() throws UnsupportedEncodingException {

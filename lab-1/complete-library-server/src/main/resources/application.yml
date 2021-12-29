@@ -17,7 +17,9 @@ spring:
   security:
     user:
       password: secret
-
+  mongodb:
+    embedded:
+      version: '4.0.12'
 server:
   error:
     include-stacktrace: never

@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("Verify that user service")
 @SpringJUnitConfig(CompleteResourceServerApplication.class)
+@TestPropertySource(properties = {"spring.mongodb.embedded.version=4.0.12"})
 class UserServiceAuthorizationTest {
 
   @Autowired private UserService userService;

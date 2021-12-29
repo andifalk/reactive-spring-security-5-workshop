@@ -14,6 +14,9 @@ spring:
   jackson:
     date-format: com.fasterxml.jackson.databind.util.StdDateFormat
     default-property-inclusion: non_null
+  mongodb:
+    embedded:
+      version: '4.0.12'
   security:
     oauth2:
       resourceserver:

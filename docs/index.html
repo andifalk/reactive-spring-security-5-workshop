@@ -8,31 +8,19 @@
         <meta name="description" content="Reactive Spring Security 5 Workshop">
         <meta name="author" content="Andreas Falk">
 
-		<link rel="stylesheet" href="css/reset.css">
-		<link rel="icon" href="images/cropped-novatec-favicon-32x32.png" sizes="32x32" />
-        <link rel="icon" href="images/cropped-novatec-favicon-192x192.png" sizes="192x192" />
-
-
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="css/reset.css">
-        <link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/novatec.css">
+        <link rel="stylesheet" href="dist/reset.css">
+        <link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="css/theme/novatec.css" id="theme">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
 	</head>
 	<body>
 		<div class="reveal">
@@ -1270,8 +1258,16 @@
 			</div>
 		</div>
 
-		<script src="js/reveal.js"></script>
-
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/search/search.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/markdown/marked.js"></script>
+		<script src="plugin/print-pdf/print-pdf.js"></script>
+		<script src="plugin/tagcloud/tagcloud.js"></script>
+		<script src="plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
 		<script>
 			// More info about config & dependencies:
 			// - https://github.com/hakimel/reveal.js#configuration
@@ -1279,16 +1275,7 @@
 			Reveal.initialize({
                 hash: true,
                 fragmentInURL: false,
-                dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-                    { src: 'plugin/print-pdf/print-pdf.js' },
-                    { src: 'plugin/zoom-js/zoom.js', async: true },
-                    { src: 'plugin/notes/notes.js', async: true },
-                    { src: 'plugin/tagcloud/tagcloud.js', async: true },
-                    { src: 'plugin/elapsed-time-bar/elapsed-time-bar.js'},
-					{ src: 'plugin/highlight/highlight.js', async: true }
-				]
+                plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
 			});
             Reveal.configure({
                 slideNumber: 'c/t',

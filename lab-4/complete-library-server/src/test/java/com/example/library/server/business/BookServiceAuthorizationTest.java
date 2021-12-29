@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("Verify that book service")
 @SpringJUnitConfig(Lab4CompleteLibraryServerApplication.class)
+@TestPropertySource(properties = {"spring.mongodb.embedded.version=4.0.12"})
 class BookServiceAuthorizationTest {
 
   @Autowired private BookService bookService;

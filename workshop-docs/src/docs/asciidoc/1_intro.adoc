@@ -25,7 +25,7 @@ You will make your hands dirty in code in the following steps:
 === Requirements for this workshop
 
 * Git
-* A Java JDK (Java 8, 11 or 14 are supported and tested)
+* A Java JDK (Java 8, 11 or 17 are supported and tested)
 * Any Java IDE capable of building with https://gradle.org/[Gradle] (IntelliJ, Eclipse, VS Code, ...)
 * Java programming skills, recommended is some knowledge in Spring Boot and the Spring Framework
 * https://www.getpostman.com/downloads[Postman], https://curl.haxx.se[Curl] or https://httpie.org[Httpie] to call the REST API from command line
